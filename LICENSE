@@ -1,0 +1,102 @@
+# LICENSE
+
+Plasma Fluid - Finite Difference Time Domain (PF-FDTD) Model
+
+## Original Work
+Based on research by Jeffrey D. Ward (2006)
+Master's Thesis: Plasma Frequency Probe Design and Implementation
+
+## Current Maintenance and Extensions
+Maintained and extended by:
+- Swadesh Patra
+- Edmund Spencer
+
+## License Terms
+
+### For Academic and Research Use
+
+This software is provided for academic research and educational purposes. 
+
+**Permitted Uses:**
+- Research and development
+- Educational instruction
+- Personal study
+- Publications and presentations (with attribution)
+
+**Requirements:**
+- Cite original dissertation by Jeffrey D. Ward (2006)
+- Attribute current maintainers (Swadesh Patra, Edmund Spencer)
+- Include this license with any distribution
+- Acknowledge funding sources (if applicable)
+
+### For Commercial Use
+
+Commercial use, including but not limited to:
+- Use in commercial software products
+- Incorporation into commercial services
+- Sale or licensing of software
+- Use within for-profit organizations
+
+...requires explicit written permission from the copyright holders.
+
+Contact: [To be specified by maintainers]
+
+### Citation Requirements
+
+If you use this software in research, please cite:
+
+```bibtex
+@mastersthesis{Ward2006,
+  author = {Ward, Jeffrey D.},
+  title = {Plasma Frequency Probe Design and Implementation},
+  school = {[University]},
+  year = {2006}
+}
+
+@software{PFFDTD2024,
+  author = {Patra, Swadesh and Spencer, Edmund},
+  title = {Plasma Fluid - Finite Difference Time Domain Model},
+  url = {https://github.com/sunswadesh/Plasma-Fluid-Simulation-PFFDTD},
+  year = {2024}
+}
+```
+
+### No Warranty
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+### Third-Party Components
+
+This software includes code from:
+
+**Numerical Recipes in C**
+- Functions: `darray1`, `darray2`, `darray3`, `darray4`, `darray5`
+- Source: memallocate.h
+- License: Used per Numerical Recipes license terms
+- Note: These are widely-available public domain functions
+
+### Modifications and Redistributions
+
+If you modify this software:
+
+1. Clearly mark modifications
+2. State what was changed and when
+3. Keep this license with the distribution
+4. Provide attribution to original authors
+5. For public distribution, consider contributing back to the project
+
+### Contact for License Questions
+
+For questions regarding licensing or commercial use, please contact:
+- Swadesh Patra
+- Edmund Spencer
+
+---
+
+Last Updated: January 2026
