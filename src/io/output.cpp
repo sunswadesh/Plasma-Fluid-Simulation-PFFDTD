@@ -1,13 +1,22 @@
-// Outputs to files
-// For Version 1.8+
+#include "output.h"
+#include <stdio.h>
+#include <math.h>
+#include "../utils/constants.h" // Required by plasma.h
+#include "../utils/memallocate.h" // Required by plasma.h for free functions
+#include "../physics/plasma.h" // For plasma flag and arrays
 
-// Author: Jeff Ward
-// Last Modified 1/28/05
+// Extern globals needed for output
+extern int Snum;
+extern int sx, sy, sz;
+extern int floc[2][3];
+extern int fout[6];
+extern int plasma; 
 
-/*****************************************************************************/
-/////////////////////////////
-// Header for Source output /
-/////////////////////////////
+// Field arrays
+extern double ****EX, ****EY, ****EZ;
+extern double ****BX, ****BY, ****BZ;
+// UX, UY, UZ, N, N_0 are defined in plasma.h
+
 void headvc(FILE *file_vc)
 {
   int i;
@@ -19,10 +28,6 @@ void headvc(FILE *file_vc)
 
 }
 
-/*****************************************************************************/
-////////////////////////////
-// Header of Fields output /
-////////////////////////////
 void headfd(FILE *file_fd)
 {
   int i,j,k;
@@ -123,10 +128,6 @@ void headfd(FILE *file_fd)
   fprintf(file_fd,"\n");
 }
 
-/*****************************************************************************/
-/////////////////////
-// Output of Fields /
-/////////////////////
 void outputfd(FILE *file_fd, int a, double timev)
 {
 
@@ -159,4 +160,3 @@ void outputfd(FILE *file_fd, int a, double timev)
 		
   fprintf(file_fd,"\n");
  }
-

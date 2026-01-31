@@ -1,10 +1,17 @@
-// Source Sub routine
-// Use with version 1.8+
-//
-// Author: Jeff Ward
-// Last Modified 2/14/05
-//
-/*****************************************************************************/
+#include "source.h"
+#include <stdio.h> // For printf if needed
+
+// Access to global variables defined in pffdtd.cpp
+// In a full modularization, these should be passed as arguments or part of a class.
+// For Phase 2, we use extern to link to them.
+
+extern int **Sloc;
+extern double *Spar;
+extern double dt, dx, dy, dz, df;
+extern double ****EX, ****EY, ****EZ;
+extern double ****BX, ****BY, ****BZ;
+extern double *VOLT, *CURRENT;
+
 void Esource(double timev, int a)
 {
   double value;
@@ -76,10 +83,6 @@ void Esource(double timev, int a)
 
 }
 
-/*****************************************************************************/
-//////////////////////////////////////////
-// Calculate the Input Voltage / Current /
-//////////////////////////////////////////
 void Rcalc( int a)
 {
   int x, y, z;
@@ -112,6 +115,3 @@ void Rcalc( int a)
     }
 
 }
-
-
-

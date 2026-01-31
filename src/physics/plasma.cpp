@@ -1,16 +1,10 @@
-// Plasma Subroutine (Multi Fluid Model)
-// Use with version 1.8.1+
+#include "plasma.h"
+#include <stdio.h>
+#include <math.h>
+#include "../utils/constants.h"
+#include "../utils/memallocate.h"
 
-// Author: Jeff Ward
-// Last Modified 6/8/05
-
-/*****************************************************************************/
-//Defaults
-#define ME 9.1066e-31                           // Mass of electron
-#define QE -1.6021917e-19                       // Charge of electron
-#define AMU 1.6605e-27                          // AMU -> kg
-#define K 1.380622e-23                          // Boltzmans Constant
-
+// Variable Definitions
 double FREQ_PLASMA = 5.3e6;			// Plasma Frequency (Hz)
 double FREQ_COL = 0.27;		                // Frequency of collision (% of fp)
 double FREQ_CYC = 18.7;		                // Cyclotron Frequency (Hz)
@@ -21,26 +15,20 @@ double UY_0 = 1.0;
 double UZ_0 = 1.0;
 double T = 0.0;					// Temparature in Kelvin
 double Charge = 1;                              // Delta for charging BC on Antenna (effects electrons only)
-#define NS 3                                    // Number of species (NS=1 is only electrons)
+
 double N_0[NS];                                 // initial density of species 
 double M[NS];                                   // Array of masses for species
 double Q[NS];                                   // Array of charges for species
-
-// Define the mass of the species (0->electron,...) in the PLASMAclear() function
 
 double *****UX, *****UY, *****UZ;	        // Partical Movement NOTE: [x][y][z][time][species:0=electron,1+=ions] 1/26/05
 double *****N;					// Density (same as UX)
 double ***SIG;					// Conductivity (used to define plasma field)
 double ***QF;                                   // Charging Factor (for electrons only
 
-void Ninital();
-void UBCcalc();
-void NBCcalc();
+// Externs for Field Arrays (defined in pffdtd.cpp or field modules, declared in plasma.h used here)
+// They are included via plasma.h -> which likely should include field header or declare them? 
+// Current plasma.h has them as externs.
 
-/*****************************************************************************/
-/////////////////////////////
-// Initialize Arrays for BC /
-/////////////////////////////
 int PLASMAallocate(int allocate)
 {
   int size;
@@ -124,11 +112,6 @@ void PLASMAfree()
 
 }
 
-/*****************************************************************************/
-///////////////////////////////////////////////////////////
-// Caculate the Average Velocity for the next time sample /
-//     Only calculated at points where data is available  /
-///////////////////////////////////////////////////////////
 void Ucalc()
 {
   int i, j, k, m;
@@ -190,14 +173,8 @@ void Ucalc()
 						  - C_U_TZ * ( N[i][j][k+1][2][m] - N[i][j][k-1][2][m] ) / N_0[m] ) / M[m]
 	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UZ[i][j][k][1][m] - UZ_0 );
 	}
-
-
 }
 
-/*****************************************************************************/
-///////////////////////////////////////////////////
-// Calculate the density for the next time sample /
-///////////////////////////////////////////////////
 void Ncalc()
 {
   int i, j, k, m;
@@ -227,11 +204,6 @@ void Ncalc()
 	}
 }
 
-/*****************************************************************************/
-/////////////////////////////////////////////////
-// Calculatest the Eletric Field at every point /
-// Calculated at every possible point (MODIFIED)/
-/////////////////////////////////////////////////
 void Ecalcmod()
 {
   int i, j, k, m;
@@ -280,10 +252,6 @@ void Ecalcmod()
 	}
 }
 
-/*****************************************************************************/
-////////////////////////////////
-// Calculate Routine for Plasma /
-////////////////////////////////
 void Pcalc()
 {
   // U

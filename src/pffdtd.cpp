@@ -58,10 +58,7 @@
 //#include "malloc.h"
 
 // Constants
-#define PI 3.14159265359
-#define MU_0 1.25663706143591729538505735331180115367886775e-6
-#define EPSILON_0 8.85418781762038985053656303171075026060837e-12
-#define C 2.998e8
+// Moved to utils/constants.h
 
 // Variables
 // Flags
@@ -92,39 +89,40 @@ int PLASMA_CYCLE;			// Number of plasma oscilations the simulation will run for.
 
 /*****************************************************************************/
 // Clear Memory
-void ClearArrays();
-// Calculation routines
-void Ecalc();
-void Bcalc();
-// File Output
-void statfile(char filepre[81]);
-FILE *openfile(char filepre[81], char filesuf[3]);
-FILE *openfile2(char filepre[81], char filesuf[3]);
-// Exiting
-double converg(double CMAX, double CMIN, double CPEAK, int i);
-// Import Routines
-int setup1(FILE *fp1);
-int setup2(FILE *fp1);
+// Output routines
+#include "io/output.h"
+
+/*****************************************************************************/
+// Constants (Must be first)
 // Exit routine
 void ctrlc_handler(int);
 
 /*****************************************************************************/
+// Constants (Must be first)
+#include "utils/constants.h"
+
 // Memory allocation routine
-#include "memallocate.h"
+#include "utils/memallocate.h"
 
 // Defines sources	
-#include "source.h"
+#include "source/source.h"
+
+// Fields
+#include "fields/field_calculator.h"
 
 // Plasma routines
 // If included set plasma = 1 in main
-#include "plasma.h"
+#include "physics/plasma.h"
 		
 // BC subroutines ('Retard.h' - Retarded Time Absorbing BC, 'TubeBC.h' - Plasma Tube)
-#include "Retard.h"
+#include "boundary/Retard.h"
 //#include "TubeBC.h"
 
 // Output routines
-#include "output.h"
+#include "io/output.h"
+
+// File Handler
+#include "io/file_handler.h"
 
 /*****************************************************************************/
 /////////
@@ -403,37 +401,7 @@ int main(int argc, char*argv[])
 // 1 -> Write         /
 // 2 -> Read          /
 ///////////////////////
-FILE *openfile(char filepre[81], char filesuf[3])
-{
-  char temp[81];
-  FILE *filevar;
-  
-  // Open Source File
-  strcpy(temp, filepre);
-  strcat(temp, filesuf);
-  if ((filevar = fopen(temp,"w")) == NULL)
-    {
-      printf("Error opening file: %s\n", temp);
-      exit(1);
-    }
-  return filevar;
-}
 
-FILE *openfile2(char filepre[81], char filesuf[3])
-{
-  char temp[81];
-  FILE *filevar;
-  
-  // Open Source File
-  strcpy(temp, filepre);
-  strcat(temp, filesuf);
-  if ((filevar = fopen(temp,"r")) == NULL)
-    {
-      printf("Error opening file: %s\n", temp);
-      exit(1);
-    }
-  return filevar;
-}
 
 /*****************************************************************************/
 ////////////////////////////////////
@@ -442,273 +410,20 @@ FILE *openfile2(char filepre[81], char filesuf[3])
 // 2 -> BC, After array allocation /
 ////////////////////////////////////
 
-int setup1(FILE *fp1)
-{
-  char tp1[80];
-  char tp2[10],tp3[10],tp4[10];
-  int i;
- 
-  // File Name
-  if (fgets(tp1,80,fp1)==NULL)
-    return 1;
-  printf("\t%s",tp1);
-  // Grid Parameters
-  if (fgets(tp1,80,fp1)==NULL)
-    return 1;
-  printf("\t%s",tp1);
-  fgets(tp1,80,fp1);
-  if (sscanf(tp1,"%d\t%d\t%d",&sx,&sy,&sz)!=3)
-    return 1;
-  printf("\tsx=%d   \tsy=%d   \tsz=%d\n",sx,sy,sz);
-  fgets(tp1,80,fp1);
-  if (sscanf(tp1,"%s\t%s\t%s",&tp2,&tp3,&tp4)!=3)
-    return 1;
-  dx=atof(tp2);
-  dy=atof(tp3);
-  dz=atof(tp4);
-  printf("\tdx=%5.3f\tdy=%5.3f\tdz=%5.3f\n",dx,dy,dz);
-  dt=dx/(2*C);                         // Time iteration
-  printf("\tdt = %e\n",dt);
-  // Fail Safe Parameters
-  if (fgets(tp1,80,fp1)==NULL)
-    return 1;
-  printf("\t%s",tp1);
-  if (fgets(tp1,80,fp1)==NULL)
-    return 1;
-  FAIL_SAFE = atoi(tp1);
-  printf("\tMax Iteration = %d",FAIL_SAFE);
-  if (fgets(tp1,80,fp1)==NULL)
-    return 1;
-  PLASMA_CYCLE = atoi(tp1);
-  printf("\tMax Plasma Cycles = %d\n",PLASMA_CYCLE);
-  // Source Parameters
-  if (fgets(tp1,80,fp1)==NULL)
-    return 1;
-  printf("\t%s",tp1);
-  if (fgets(tp1,80,fp1)==NULL)
-    return 1;
-  Snum = atoi(tp1);
 
-  return 0;
-}
-
-int setup2(FILE *fp1)
-{
-  char tp1[80];
-  char tp2[10];
-  int a,b;
-  int i,j,k,l,m,n;
-  double ER[2];
-
-  // Source Parameters part 2
-  for (a=1;a<=Snum;a++)
-    {
-      fgets(tp1,80,fp1);
-      if (sscanf(tp1,"%d\t%d\t%d\t%d\t%d\t%s",&Sloc[a][0],&Sloc[a][1],&Sloc[a][2],&Sloc[a][3],&Sloc[a][4],tp2)!=6)
-	return 1;
-      Spar[a] = atof(tp2);
-      if ( (a==1) | (a==Snum) )
-	printf("\t#%d (%d,%d,%d) Field->%d Type->%d Parameter->%5.3f\n",a,Sloc[a][0],Sloc[a][1],Sloc[a][2],Sloc[a][3],Sloc[a][4],Spar[a]);
-      if ( (a==2) & (a!=Snum) )
-	printf("\t\t.\n\t\t.\n\t\t.\n");
-      //     if (Sloc[a][4] == 5)  // Error finder for gaussean derivitive sources
-//	{
-//	    if (Spar[a] > 1/8/dt)
-//		return 1;
-//	    if (Spar[a] < 2.5/FAIL_SAFE)
-//		return 1;
-//	    if (Spar[a] < 2.5*df/PLASMA_CYCLE)
-//		return 1;
-//	}
-    }
-  // Dielectric Parameters
-  if (fgets(tp1,80,fp1)==NULL)
-    return 1;
-  printf("\t%s",tp1);
-   if (fgets(tp1,80,fp1)==NULL)
-    return 1;
-  ER[0] = atof(tp1);
-  printf("\tEr 1 = %5.3f\n",ER[0]);
-  if (fgets(tp1,80,fp1)==NULL)
-    return 1;
-  ER[1] = atof(tp1);
-  printf("\tEr 2 = %5.3f\n",ER[1]);
-  // Antenna Parameters
-  if (fgets(tp1,80,fp1)==NULL)
-    return 1;
-  printf("\t%s",tp1);
-  if (fgets(tp1,80,fp1)==NULL)
-    return 1;
-  b = atoi(tp1);
-  for (a=1;a<=b;a++)
-    {
-      fgets(tp1,80,fp1);
-      if (sscanf(tp1,"%d\t%d\t%d\t%d\t%d\t%d",&i,&j,&k,&l,&m,&n)!=6)
-	return 1;
-      switch (l)
-	{
-	case 1:
-          ERX[i][j][k] = 0;
-	  if (plasma == 1)
-	      QF[i][j][k] = Charge;
-          break;
-        case 2:
-	  ERX[i][j][k] = 1/ER[0];
-	  break;
-        case 3:
-	  ERX[i][j][k] = 1/ER[1];
-          break;
-        default:
-	  ERX[i][j][k] = 1;
-	  break;
-	}
-      switch (m)
-	{
-	case 1:
-          ERY[i][j][k] = 0;
-	  if (plasma == 1)
-	      QF[i][j][k] = Charge;
-          break;
-        case 2:
-	  ERY[i][j][k] = 1/ER[0];
-	  break;
-        case 3:
-	  ERY[i][j][k] = 1/ER[1];
-          break;
-        default:
-	  ERY[i][j][k] = 1;
-	  break;
-	}
-      switch (n)
-	{
-	case 1:
-          ERZ[i][j][k] = 0;
-	  if (plasma == 1)
-	      QF[i][j][k] = Charge;
-          break;
-        case 2:
-	  ERZ[i][j][k] = 1/ER[0];
-	  break;
-        case 3:
-	  ERZ[i][j][k] = 1/ER[1];
-          break;
-        default:
-	  ERZ[i][j][k] = 1;
-	  break;
-	}
-      if ((plasma ==1) & (l>1) & (m>1) & (n>1))
-	SIG[i][j][k] = 0;                             // Turns off Plasma inside dielectrics
-      if ( (a==1) | (a==b) )
-	printf("\t(%d,%d,%d) 1/Erx->%5.3f 1/Ery->%5.3f 1/Erz->%5.3f \n",i,j,k,ERX[i][j][k],ERY[i][j][k],ERZ[i][j][k]);
-      if ( (a==2) & (a!=b) )
-	printf("\t\t.\n\t\t.\n\t\t.\n");
-
-    }
-  // Points of Field output (opt.)
-  if (fgets(tp1,80,fp1)==NULL)
-    return 0;
-  fields = 1;                                         // Turns field output on
-  printf("\t%s",tp1);
-  fgets(tp1,80,fp1);
-  if (sscanf(tp1,"%d\t%d\t%d\t%d\t%d\t%d\t%d",&frate,&fout[0],&fout[1],&fout[2],&fout[3],&fout[4],&fout[5])<2)
-    return 1;
-  printf("\tOutput ->");
-  if (fout[0]==1)
-    printf(" Electric");
-  if (fout[1]==1)
-    printf(" Magnetic");
-  if (fout[2]==1)
-    printf(" eVelocity");
-  if (fout[3]==1)
-    printf(" eDensity");
-  if (fout[4]==1)
-    printf(" ionVelocity");
-  if (fout[5]==1)
-    printf(" ionDensity");
-  printf("\n");
-  fgets(tp1,80,fp1);
-  if (sscanf(tp1,"%d\t%d\t%d",&floc[0][0],&floc[0][1],&floc[0][2])!=3)
-    return 1;
-  printf("\tLower Limit [%d %d %d]\n",floc[0][0],floc[0][1],floc[0][2]);
-  fgets(tp1,80,fp1);
-  if (sscanf(tp1,"%d\t%d\t%d",&floc[1][0],&floc[1][1],&floc[1][2])!=3)
-    return 1;
-  printf("\tUpper Limit [%d %d %d]\n",floc[1][0],floc[1][1],floc[1][2]);
-  
-  return 0;
-}
 
 /*****************************************************************************/
 /////////////////
 // Clear Arrays /
 /////////////////
-void ClearArrays()
-{
-  int i, j, k, l;
 
-  for (i=1;i<=sx;i++)
-    for (j=1;j<=sy;j++)
-      for (k=1;k<=sz;k++)
-	{
-	  for (l=0;l<=1;l++)
-	    {
-	      EX[i][j][k][l] = 0;
-	      EY[i][j][k][l] = 0;
-	      EZ[i][j][k][l] = 0;
-	      BX[i][j][k][l] = 0;
-	      BY[i][j][k][l] = 0;
-	      BZ[i][j][k][l] = 0;
-	    }
-	  ERX[i][j][k] = 1;
-	  ERY[i][j][k] = 1;
-	  ERZ[i][j][k] = 1;
-	}
-
-  for (j=1;j<=Snum;j++)
-  {
-      VOLT[j] = 0;
-      CURRENT[j] = 0;
-  }
-}
 
 /*****************************************************************************/
 /////////////////////////////////////////////////
 // Calculatest the Eletric Field at every point /
 // Calculated at every possible point           /
 /////////////////////////////////////////////////
-void Ecalc()
-{
-  int i, j, k;
-  double C_dx = dt/(MU_0*EPSILON_0*dx);
-  double C_dy = dt/(MU_0*EPSILON_0*dy);
-  double C_dz = dt/(MU_0*EPSILON_0*dz);
 
-
-  // Calculate the body (NOTE: One additional cell is added to eliminate the need for seperate loops for Ex, Ey, and EZ)
-  // Also ERX is actually 1/Er see setup2
-  for (i=2;i<sx;i++)
-    for (j=2;j<sy;j++)
-      for (k=2;k<sz;k++)
-	{
-	  // Save Old Values
-	  EX[i][j][k][0] = EX[i][j][k][1];
-	  EY[i][j][k][0] = EY[i][j][k][1];
-	  EZ[i][j][k][0] = EZ[i][j][k][1];
-
-	  // Calculate Ex
- 	  EX[i][j][k][1] = EX[i][j][k][0] + ( ( BZ[i][j+1][k][1] - BZ[i][j][k][1] ) * C_dy
-					    - ( BY[i][j][k+1][1] - BY[i][j][k][1] ) * C_dz ) * ERX[i][j][k];
- 		
-	  // Calculate Ey
- 	  EY[i][j][k][1] = EY[i][j][k][0] + ( ( BX[i][j][k+1][1] - BX[i][j][k][1] ) * C_dz
-					    - ( BZ[i+1][j][k][1] - BZ[i][j][k][1] ) * C_dx ) * ERY[i][j][k];
-		
-	  // Calculate Ez
- 	  EZ[i][j][k][1] = EZ[i][j][k][0] + ( ( BY[i+1][j][k][1] - BY[i][j][k][1] ) * C_dx
-					    - ( BX[i][j+1][k][1] - BX[i][j][k][1] ) * C_dy ) * ERZ[i][j][k];
-	}
-
-}
 
 /*****************************************************************************/
 //////////////////////////////////////////////////////////
@@ -716,34 +431,7 @@ void Ecalc()
 //     Asssumes that E is Forced at boundary and ignores /
 //     cells that don't effect E at boundary             /
 //////////////////////////////////////////////////////////
-void Bcalc()
-{
-  int i,j,k;
-  double C_dx = dt/dx;
-  double C_dy = dt/dy;
-  double C_dz = dt/dz;
 
-  // Calculate the body
-  for (i=2;i<sx;i++)
-    for (j=2;j<sy;j++)
-      for (k=2;k<sz;k++)
-	{
-	  // Save Old Values
-	  BX[i][j][k][0] = BX[i][j][k][1];
-	  BY[i][j][k][0] = BY[i][j][k][1];
-	  BZ[i][j][k][0] = BZ[i][j][k][1];
-
-	  // Calculate Bx
-	  BX[i][j][k][1] = BX[i][j][k][0] + ( ( EY[i][j][k][1] - EY[i][j][k-1][1] ) * C_dz
-				          - ( EZ[i][j][k][1] - EZ[i][j-1][k][1] ) * C_dy );
-	  // Calculate By
-	  BY[i][j][k][1] = BY[i][j][k][0] + ( ( EZ[i][j][k][1] - EZ[i-1][j][k][1] ) * C_dx
-				          - ( EX[i][j][k][1] - EX[i][j][k-1][1] ) * C_dz );
-	  // Calculate Bz
-	  BZ[i][j][k][1] = BZ[i][j][k][0] + ( ( EX[i][j][k][1] - EX[i][j-1][k][1] ) * C_dy
-				          - ( EY[i][j][k][1] - EY[i-1][j][k][1] ) * C_dx );
-	}
-}
 
 /*****************************************************************************/
 /////////////////////////////////////

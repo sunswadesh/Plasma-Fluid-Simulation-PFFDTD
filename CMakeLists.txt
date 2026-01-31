@@ -28,11 +28,23 @@ message(STATUS "Platform: ${CMAKE_SYSTEM_NAME}")
 
 # Source files
 set(SOURCES
-    pffdtd.cpp
+    src/pffdtd.cpp
+    src/source/source.cpp
+    src/fields/field_calculator.cpp
+    src/io/file_handler.cpp
+    src/io/output.cpp
+    src/physics/plasma.cpp
+    src/utils/memallocate.cpp
 )
 
 # Include directories
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/physics
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/boundary
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/io
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/utils
+)
 
 # Main executable - Debug
 add_executable(pffdtd_debug ${SOURCES})
@@ -136,6 +148,10 @@ message(STATUS "Build with: cmake --build . --config ${CMAKE_BUILD_TYPE}")
 message(STATUS "Or use: cmake --build . --target pffdtd_debug")
 message(STATUS "")
 
+# Tests
+enable_testing()
+add_subdirectory(tests)
+
 # Installation targets
 install(TARGETS pffdtd_release
     RUNTIME DESTINATION bin
@@ -152,7 +168,7 @@ if(OpenMP_CXX_FOUND)
 endif()
 
 # Help target
-add_custom_target(help
+add_custom_target(pffdtd_help
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake_help.txt 2>/dev/null || echo "CMake help: Run 'cmake --build . --target <target_name>'"
     COMMENT "Available targets:"
 )
