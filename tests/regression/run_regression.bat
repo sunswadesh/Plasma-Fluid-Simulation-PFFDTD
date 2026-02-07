@@ -4,10 +4,13 @@ REM 1. Compiles the code (requires g++ in PATH)
 REM 2. Runs the dipole simulation
 REM 3. Compares output against golden data
 
+pushd %~dp0..\..
+
 echo [1/3] Compiling PFFDTD...
-g++ -std=c++11 -O3 src/pffdtd.cpp -o pffdtd.exe
+g++ -std=c++11 -O3 src/pffdtd.cpp src/utils/memallocate.cpp src/io/file_handler.cpp src/io/output.cpp src/source/source.cpp src/fields/field_calculator.cpp src/physics/plasma.cpp -o pffdtd.exe
 if %ERRORLEVEL% NEQ 0 (
     echo Compilation failed! Make sure g++ is in your PATH.
+    popd
     exit /b 1
 )
 
@@ -16,10 +19,11 @@ if not exist tests\regression\output mkdir tests\regression\output
 
 REM Run with dipole input
 REM Usage: pffdtd <input_file> <output_prefix>
-pffdtd.exe dipole.str tests\regression\output\dipole_test
+pffdtd.exe dipole tests\regression\output\dipole_test
 
 if %ERRORLEVEL% NEQ 0 (
     echo Simulation failed!
+    popd
     exit /b 1
 )
 
@@ -28,7 +32,9 @@ python tests/regression/compare_results.py --golden_dir tests/regression/golden 
 
 if %ERRORLEVEL% NEQ 0 (
     echo TESTS FAILED
+    popd
     exit /b 1
 ) else (
     echo ALL TESTS PASSED
+    popd
 )
