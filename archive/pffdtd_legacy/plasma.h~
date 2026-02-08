@@ -1,14 +1,19 @@
-#include "plasma.h"
-#include <omp.h>
-#include <stdio.h>
-#include <math.h>
-#include "../utils/constants.h"
-#include "../utils/memallocate.h"
+// Plasma Subroutine (Multi Fluid Model)
+// Use with version 1.8.1+
 
-// Variable Definitions
-double FREQ_PLASMA = 5.3e6;			// Plasma Frequency (Hz)
-double FREQ_COL = 0.27;		                // Frequency of collision (% of fp)
-double FREQ_CYC = 18.7;		                // Cyclotron Frequency (Hz)
+// Author: Jeff Ward
+// Last Modified 6/8/05
+
+/*****************************************************************************/
+//Defaults
+#define ME 9.1066e-31                           // Mass of electron
+#define QE -1.6021917e-19                       // Charge of electron
+#define AMU 1.6605e-27                          // AMU -> kg
+#define K 1.380622e-23                          // Boltzmans Constant
+
+double FREQ_PLASMA = 10e6;			// Plasma Freuicy (Hz)
+double FREQ_COL = 0.1;		                // Frequency of collision (% of fp)
+double FREQ_CYC = 1.5*FREQ_PLASMA;		// Cyclotron Frequency (Hz)
 double ANGLE_E_CYC = 0.0;			// Elevation angle of Cyclotron Frequency (DEGREES)
 double ANGLE_A_CYC = 0.0;			// Azimuth angle of Cyclotron Frequency (DEGREES)
 double UX_0 = 1.0;				// Average drift velocity (including Neutrals)
@@ -16,20 +21,26 @@ double UY_0 = 1.0;
 double UZ_0 = 1.0;
 double T = 0.0;					// Temparature in Kelvin
 double Charge = 1;                              // Delta for charging BC on Antenna (effects electrons only)
-
+#define NS 3                                    // Number of species (NS=1 is only electrons)
 double N_0[NS];                                 // initial density of species 
 double M[NS];                                   // Array of masses for species
 double Q[NS];                                   // Array of charges for species
+
+// Define the mass of the species (0->electron,...) in the PLASMAclear() funtion
 
 double *****UX, *****UY, *****UZ;	        // Partical Movement NOTE: [x][y][z][time][species:0=electron,1+=ions] 1/26/05
 double *****N;					// Density (same as UX)
 double ***SIG;					// Conductivity (used to define plasma field)
 double ***QF;                                   // Charging Factor (for electrons only
 
-// Externs for Field Arrays (defined in pffdtd.cpp or field modules, declared in plasma.h used here)
-// They are included via plasma.h -> which likely should include field header or declare them? 
-// Current plasma.h has them as externs.
+void Ninital();
+void UBCcalc();
+void NBCcalc();
 
+/*****************************************************************************/
+/////////////////////////////
+// Initialize Arrays for BC /
+/////////////////////////////
 int PLASMAallocate(int allocate)
 {
   int size;
@@ -113,6 +124,11 @@ void PLASMAfree()
 
 }
 
+/*****************************************************************************/
+///////////////////////////////////////////////////////////
+// Caculate the Average Velocity for the next time sample /
+//     Only calculated at points where data is available  /
+///////////////////////////////////////////////////////////
 void Ucalc()
 {
   int i, j, k, m;
@@ -129,7 +145,6 @@ void Ucalc()
   double EeY = UZ_0 * BX_0 - UX_0 * BZ_0;
   double EeZ = UX_0 * BY_0 - UY_0 * BX_0;
 
-  #pragma omp parallel for private(j,k,m,ABX,ABY,ABZ,EeX,EeY,EeZ)
   for (i=4;i<sx-3;i++)
     for (j=4;j<sy-3;j++)
       for (k=4;k<sz-3;k++)
@@ -175,8 +190,14 @@ void Ucalc()
 						  - C_U_TZ * ( N[i][j][k+1][2][m] - N[i][j][k-1][2][m] ) / N_0[m] ) / M[m]
 	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UZ[i][j][k][1][m] - UZ_0 );
 	}
+
+
 }
 
+/*****************************************************************************/
+///////////////////////////////////////////////////
+// Calculate the density for the next time sample /
+///////////////////////////////////////////////////
 void Ncalc()
 {
   int i, j, k, m;
@@ -184,7 +205,6 @@ void Ncalc()
   double C_N_ty = dt/dy;
   double C_N_tz = dt/dz;
 	
-  #pragma omp parallel for private(j,k,m)
   for (i=5;i<sx-4;i++)
     for (j=5;j<sy-4;j++)
       for(k=5;k<sz-4;k++)
@@ -207,6 +227,11 @@ void Ncalc()
 	}
 }
 
+/*****************************************************************************/
+/////////////////////////////////////////////////
+// Calculatest the Eletric Field at every point /
+// Calculated at every possible point (MODIFIED)/
+/////////////////////////////////////////////////
 void Ecalcmod()
 {
   int i, j, k, m;
@@ -216,7 +241,6 @@ void Ecalcmod()
   double C_MU = dt/(2*EPSILON_0);
   double JX, JY, JZ;
 
-  #pragma omp parallel for private(j,k,m,JX,JY,JZ)
   for (i=2;i<sx;i++)
     for (j=2;j<sy;j++)
       for (k=2;k<sz;k++)
@@ -256,6 +280,10 @@ void Ecalcmod()
 	}
 }
 
+/*****************************************************************************/
+////////////////////////////////
+// Caculate Routine for Plasma /
+////////////////////////////////
 void Pcalc()
 {
   // U

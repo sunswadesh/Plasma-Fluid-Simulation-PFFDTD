@@ -1,5 +1,7 @@
 #include "field_calculator.h"
 #include <math.h>
+#include <omp.h>
+#include <stdio.h>
 
 // Global variables from pffdtd.cpp (Externs)
 extern double dt, dx, dy, dz;
@@ -18,6 +20,8 @@ void Ecalc()
 
   // Calculate the body (NOTE: One additional cell is added to eliminate the need for seperate loops for Ex, Ey, and EZ)
   // Also ERX is actually 1/Er see setup2
+  
+  #pragma omp parallel for private(j,k)
   for (i=2;i<sx;i++)
     for (j=2;j<sy;j++)
       for (k=2;k<sz;k++)
@@ -50,6 +54,7 @@ void Bcalc()
   double C_dz = dt/dz;
 
   // Calculate the body
+  #pragma omp parallel for private(j,k)
   for (i=2;i<sx;i++)
     for (j=2;j<sy;j++)
       for (k=2;k<sz;k++)

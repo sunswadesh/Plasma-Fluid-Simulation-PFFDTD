@@ -1,0 +1,116 @@
+Plasma Fluid - Finite Difference Time Domain model (PF-FDTD)
+version 1.8+
+------------------------------------------------------------------------------------
+
+************************************************************************************
+COMPILE:
+ Verify that the following files are in a common directroy
+	pffdtd.cpp	- main program
+	plasma.h	- extension of fdtd to plasma equation 
+	memallocate.h	- memory allocating subroutines (see 
+			  Numerical Recipes in C)
+	output.h	- output subroutines
+	source.h	- source subroutines
+	Retard.h	- Retarded Time Absorbing Boundary Conditions
+			  (only applied to E)
+	TubeBC.h	- Retard.h in a plasma tube along the z-axis
+			  (must recompile in order to change BC)
+ Compile: g++ pffdtd.cpp.
+ Change name to pffdtd: mv pffdtd.cpp pffdtd
+
+************************************************************************************
+RUN:
+ PFFDTD <input file> <output file> <plasma frequency> <collision frequency>
+	<gyro frequency> <elevation angle of DC B> <azmith angle of DC B>
+	<plasma tempurature>
+All files will have the appropriate sufixes added to them by the program (i.e.
+	input.str - Input file
+	output.vc - Voltage / Current output file
+	output.fd - Field Data output file 
+If only the first two arguments are given, PFFDTD assumes a free space model
+(i.e. no plasma).
+
+************************************************************************************
+INPUT FILE FORMAT
+Grid Parameter is self explanitory
+
+Source Parameter starts with the number of wanted sources.  Then each source 
+starts with the grid corodinates followed by the field to be effected (1=x,2=y,3=z).
+The source type and parameter are then specified (1=sine par=frequency, 2=pulse 
+par=freq, 3=rased cosine par=freq, 4=gausinan par=spread, 5=gausinan direvitive
+par=spread, 6=DC par=value, 7=Sinc par=cutoff frequency)
+
+Dielectric perimitivity is then specified. Currently PF-FDTD can only take 2.
+
+Antenna Structure starts with the number of cells. Then each cell is specifid by
+it's location followed by the desired material (0=free space/plasma, 1=metal, 2=Er1,
+3=Er2).
+
+Output field info is used to specify the locations where the electric, magnetic,
+velocity, and density values will be saved to <output file.fd>.  First the outputing
+of fields must be turned on (1=on, 0=off).  Due to the possibility to create LARGE
+output files, the number of iterations between outputs must be specitifed (the
+larger this is the smaller the output file). The last two lines are then used to
+specify the upper and lower limits of the area of intrest (All locations between
+these two limits will be outputed)
+
+//Name of File
+//Grid Parameters
+sx	sy	sz
+dx	dy	dz
+//Source Parameters
+# of sources
+x	y	z	field	type	par
+.	.	.	.	.	.
+.	.	.	.	.	.
+.	.	.	.	.	.
+//Dielectric Parameters
+Er1
+Er2
+//Antenna Structure
+# of cells
+x	y	z	Erx	Ery	Erz	
+.	.	.	.	.	.
+.	.	.	.	.	.
+.	.	.	.	.	.
+//Output Field Info
+#of iterations between outputs	E(0/1)	B	Ue	Ne	Ui	Ni
+lower_x	lower_y	lower_z
+upper_x	upper_y	upper_z
+
+************************************************************************************
+OUTPUT FILE FORMAT	
+<*.vc> Specifies the voltage and current of each source listed in <input file>. The
+first line is a reference line that can be used in data analysis. It specifies the 
+source number and whether its voltage (X1) or current (X2).
+
+Time	Source Number(voltage)	Source Number(current)	Source Number(Voltage) 	...
+0	11			12			21			...
+<VALUES BEGIN ON SECOND LINE>
+
+<*.fd> Specifies the desired fields (Specified in <input file>). The first four
+lines are use to aid in data analysis. The first identifies the type of field that
+makes up the column (1X=Electric, 2X=Magnetic, 3X=Velocity, 4X=Density, X1=x-axis,
+X2=y-axis, X3=z-axis). The second, third, and fourth lines are the location of the
+value, (x,y,z) respecfully.
+
+Time	Field Value 1	Field Value 2	...	Field Value N	...
+0	11 (EX)		12 (EY)		...	32 (UY)		...
+0	x		x		...	x		...
+0	y		y		...	y		...
+0	z		z		...	z		...
+.	.		.		.	.		.
+.	.		.		.	.		.
+.	.		.		.	.		.
+
+************************************************************************************
+See dipole.str for sample input file.
+See dipole.vc for sample voltage/current output file
+See dipole.fd for sample field data output file
+
+************************************************************************************
+
+Jeffrey Ward
+Utah State University
+Logan, Ut. 84321
+jward@cc.usu.edu

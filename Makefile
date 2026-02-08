@@ -1,11 +1,10 @@
 # Makefile for PF-FDTD Project
 # 
 # Usage:
-#   make              - Build optimized version
+#   make              - Build optimized parallel version (default)
+#   make serial       - Build optimized serial version
 #   make debug        - Build debug version
 #   make clean        - Remove compiled binaries
-#   make test         - Run tests (when available)
-#   make parallel     - Build with OpenMP (future)
 #
 # Compiler settings
 CXX = g++
@@ -19,31 +18,50 @@ BIN_DIR = .
 TEST_DIR = tests
 
 # Source files
-SOURCES = $(SRC_DIR)/pffdtd.cpp
-HEADERS = $(SRC_DIR)/plasma.h $(SRC_DIR)/output.h $(SRC_DIR)/source.h \
-          $(SRC_DIR)/Retard.h $(SRC_DIR)/memallocate.h
+SOURCES = $(SRC_DIR)/pffdtd.cpp \
+          $(SRC_DIR)/utils/memallocate.cpp \
+          $(SRC_DIR)/io/file_handler.cpp \
+          $(SRC_DIR)/io/output.cpp \
+          $(SRC_DIR)/source/source.cpp \
+          $(SRC_DIR)/fields/field_calculator.cpp \
+          $(SRC_DIR)/physics/plasma.cpp
+
+HEADERS = $(SRC_DIR)/physics/plasma.h $(SRC_DIR)/io/output.h $(SRC_DIR)/source/source.h \
+          $(SRC_DIR)/utils/memallocate.h
 
 # Output
-TARGET = $(BIN_DIR)/pffdtd
+TARGET_SERIAL = $(BIN_DIR)/pffdtd_serial
+TARGET_PARALLEL = $(BIN_DIR)/pffdtd_parallel
 TARGET_DEBUG = $(BIN_DIR)/pffdtd_debug
 
 # Default target
 .PHONY: all
-all: release
+all: parallel
 
-# Release build (optimized)
-.PHONY: release
-release: CXXFLAGS = $(CXXFLAGS_RELEASE)
-release: $(TARGET)
+# Parallel build (OpenMP) - Default
+.PHONY: parallel
+parallel: CXXFLAGS = $(CXXFLAGS_RELEASE) -fopenmp
+parallel: $(TARGET_PARALLEL)
+
+# Serial build
+.PHONY: serial
+serial: CXXFLAGS = $(CXXFLAGS_RELEASE)
+serial: $(TARGET_SERIAL)
 
 # Debug build
 .PHONY: debug
 debug: CXXFLAGS = $(CXXFLAGS_DEBUG)
 debug: $(TARGET_DEBUG)
 
-# Compile main executable
-$(TARGET): $(SOURCES) $(HEADERS)
-	@echo "Building optimized release version..."
+# Compile main executable (Parallel)
+$(TARGET_PARALLEL): $(SOURCES) $(HEADERS)
+	@echo "Building optimized parallel version..."
+	$(CXX) $(CXXFLAGS) -o $@ $(SOURCES)
+	@echo "Build complete: $@"
+
+# Compile main executable (Serial)
+$(TARGET_SERIAL): $(SOURCES) $(HEADERS)
+	@echo "Building optimized serial version..."
 	$(CXX) $(CXXFLAGS) -o $@ $(SOURCES)
 	@echo "Build complete: $@"
 
@@ -56,26 +74,15 @@ $(TARGET_DEBUG): $(SOURCES) $(HEADERS)
 .PHONY: clean
 clean:
 	@echo "Cleaning build artifacts..."
-	rm -f $(TARGET) $(TARGET_DEBUG)
+	rm -f $(TARGET_SERIAL) $(TARGET_PARALLEL) $(TARGET_DEBUG)
 	rm -f *.o *.a
 	rm -f gmon.out
 	@echo "Clean complete"
 
-# Run basic test (when test suite is available)
-.PHONY: test
-test: $(TARGET)
-	@echo "Running basic test (dipole antenna)..."
-	@if [ -f "$(TEST_DIR)/data/dipole.str" ]; then \
-		./$(TARGET) $(TEST_DIR)/data/dipole.str $(TEST_DIR)/output/dipole; \
-		echo "Test complete - check $(TEST_DIR)/output/dipole.vc and .fd"; \
-	else \
-		echo "Test input file not found at $(TEST_DIR)/data/dipole.str"; \
-	fi
-
 # Profile with gprof
 .PHONY: profile
 profile: CXXFLAGS = $(CXXFLAGS_BASE) -O2 -g -pg
-profile: $(TARGET)
+profile: $(TARGET_SERIAL)
 	@echo "Compiled for profiling with gprof"
 
 # Help
@@ -83,10 +90,9 @@ profile: $(TARGET)
 help:
 	@echo "PF-FDTD Makefile Targets:"
 	@echo ""
-	@echo "  make release     - Build optimized release version (default)"
+	@echo "  make             - Build optimized parallel version (default)"
+	@echo "  make serial      - Build optimized serial version"
 	@echo "  make debug       - Build debug version with symbols"
-	@echo "  make test        - Run basic test case"
-	@echo "  make profile     - Build for profiling with gprof"
 	@echo "  make clean       - Remove compiled binaries"
 	@echo "  make help        - Show this help message"
 	@echo ""
@@ -94,34 +100,3 @@ help:
 	@echo "  CXX              - C++ compiler (default: g++)"
 	@echo "  CXXFLAGS         - C++ compiler flags"
 	@echo ""
-	@echo "Examples:"
-	@echo "  make                    # Build optimized version"
-	@echo "  make debug              # Build debug version"
-	@echo "  make test               # Run test case"
-	@echo "  CXX=clang++ make        # Build with Clang"
-
-# Phony targets
-.PHONY: install uninstall
-
-# Future targets (not implemented yet)
-install:
-	@echo "Install target not yet implemented"
-
-uninstall:
-	@echo "Uninstall target not yet implemented"
-
-# Parallel builds (future)
-.PHONY: parallel
-parallel:
-	@echo "Parallel build not yet available"
-	@echo "Planned for v2.0 with OpenMP support"
-
-# GPU builds (future)
-.PHONY: gpu
-gpu:
-	@echo "GPU build not yet available"
-	@echo "Planned for v2.0 with CUDA support"
-
-# Silence make warnings
-SHELL := /bin/bash
-.SILENT: help

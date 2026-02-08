@@ -452,13 +452,14 @@ upper_x  upper_y  upper_z
 ### With Plasma Parameters
 
 ```bash
-./pffdtd input.str output_prefix plasma_freq collision_freq gyro_freq \
+./pffdtd input.str output_prefix plasma_freq collision_ratio gyro_freq \
   elev_angle azimuth_angle temperature
 ```
 
 **Parameters (in order):**
 1. `plasma_freq` - Plasma frequency (Hz) [e.g., 5.3e6]
-2. `collision_freq` - Collision frequency ratio [e.g., 0.27]
+2. `collision_ratio` - Ratio of collision freq to plasma freq ($\nu / f_p$). **Range: 0.0 - 1.0**. [e.g., 0.27]
+   > **Note:** Do NOT enter a value in Hz (like 1.0e6). Enter the ratio (e.g., 0.2).
 3. `gyro_freq` - Cyclotron frequency (Hz) [e.g., 18.7]
 4. `elev_angle` - Elevation angle of B field (degrees) [e.g., 22.0]
 5. `azimuth_angle` - Azimuth angle of B field (degrees) [e.g., 0.0]
