@@ -12,7 +12,7 @@ void Esource(double timev, int a)
   
   // Sine
   if (Sloc[a][4] == 1)
-    value = 5*sin(2 * PI * Spar[a] * timev) - 0.0;
+    value = cos(2 * PI * Spar[a] * timev) ;
   
   // Pulse
   if (Sloc[a][4] == 2)

@@ -1,4 +1,5 @@
-// EM Retarted Boundary conditions
+
+// EM Retarded Boundary conditions
 // Use with version 1.4+
 //
 // Author: Jeff Ward

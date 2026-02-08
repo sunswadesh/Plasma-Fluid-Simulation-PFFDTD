@@ -11,10 +11,10 @@
 #define AMU 1.6605e-27                          // AMU -> kg
 #define K 1.380622e-23                          // Boltzmans Constant
 
-double FREQ_PLASMA = 5.3e6;			// Plasma Frequency (Hz)
-double FREQ_COL = 0.27;		                // Frequency of collision (% of fp)
-double FREQ_CYC = 18.7;		                // Cyclotron Frequency (Hz)
-double ANGLE_E_CYC = 22.0;			// Elevation angle of Cyclotron Frequency (DEGREES)
+double FREQ_PLASMA = 10e6;			// Plasma Freuicy (Hz)
+double FREQ_COL = 0.1;		                // Frequency of collision (% of fp)
+double FREQ_CYC = 1.5*FREQ_PLASMA;		// Cyclotron Frequency (Hz)
+double ANGLE_E_CYC = 0.0;			// Elevation angle of Cyclotron Frequency (DEGREES)
 double ANGLE_A_CYC = 0.0;			// Azimuth angle of Cyclotron Frequency (DEGREES)
 double UX_0 = 1.0;				// Average drift velocity (including Neutrals)
 double UY_0 = 1.0;
@@ -26,7 +26,7 @@ double N_0[NS];                                 // initial density of species
 double M[NS];                                   // Array of masses for species
 double Q[NS];                                   // Array of charges for species
 
-// Define the mass of the species (0->electron,...) in the PLASMAclear() function
+// Define the mass of the species (0->electron,...) in the PLASMAclear() funtion
 
 double *****UX, *****UY, *****UZ;	        // Partical Movement NOTE: [x][y][z][time][species:0=electron,1+=ions] 1/26/05
 double *****N;					// Density (same as UX)
@@ -282,7 +282,7 @@ void Ecalcmod()
 
 /*****************************************************************************/
 ////////////////////////////////
-// Calculate Routine for Plasma /
+// Caculate Routine for Plasma /
 ////////////////////////////////
 void Pcalc()
 {

@@ -1,0 +1,78 @@
+#include "field_calculator.h"
+#include <math.h>
+#include <omp.h>
+#include <stdio.h>
+#include "../utils/constants.h"
+
+// Global variables from pffdtd.cpp (Externs)
+extern double dt, dx, dy, dz;
+extern int sx, sy, sz;
+extern double *EX, *EY, *EZ;
+extern double *BX, *BY, *BZ;
+extern double *ERX, *ERY, *ERZ;
+
+void Ecalc()
+{
+  int i, j, k;
+  double C_dx = dt/(MU_0*EPSILON_0*dx);
+  double C_dy = dt/(MU_0*EPSILON_0*dy);
+  double C_dz = dt/(MU_0*EPSILON_0*dz);
+
+
+  // Calculate the body (NOTE: One additional cell is added to eliminate the need for seperate loops for Ex, Ey, and EZ)
+  // Also ERX is actually 1/Er see setup2
+  
+  #pragma omp parallel for private(j,k)
+  for (i=2;i<sx;i++)
+    for (j=2;j<sy;j++)
+      for (k=2;k<sz;k++)
+	{
+	  // Save Old Values
+	  EX[IDX4(i,j,k,0)] = EX[IDX4(i,j,k,1)];
+	  EY[IDX4(i,j,k,0)] = EY[IDX4(i,j,k,1)];
+	  EZ[IDX4(i,j,k,0)] = EZ[IDX4(i,j,k,1)];
+
+	  // Calculate Ex
+ 	  EX[IDX4(i,j,k,1)] = EX[IDX4(i,j,k,0)] + ( ( BZ[IDX4(i,j+1,k,1)] - BZ[IDX4(i,j,k,1)] ) * C_dy
+					    - ( BY[IDX4(i,j,k+1,1)] - BY[IDX4(i,j,k,1)] ) * C_dz ) * ERX[IDX3(i,j,k)];
+ 		
+	  // Calculate Ey
+ 	  EY[IDX4(i,j,k,1)] = EY[IDX4(i,j,k,0)] + ( ( BX[IDX4(i,j,k+1,1)] - BX[IDX4(i,j,k,1)] ) * C_dz
+					    - ( BZ[IDX4(i+1,j,k,1)] - BZ[IDX4(i,j,k,1)] ) * C_dx ) * ERY[IDX3(i,j,k)];
+		
+	  // Calculate Ez
+ 	  EZ[IDX4(i,j,k,1)] = EZ[IDX4(i,j,k,0)] + ( ( BY[IDX4(i+1,j,k,1)] - BY[IDX4(i,j,k,1)] ) * C_dx
+					    - ( BX[IDX4(i,j+1,k,1)] - BX[IDX4(i,j,k,1)] ) * C_dy ) * ERZ[IDX3(i,j,k)];
+	}
+
+}
+
+void Bcalc()
+{
+  int i,j,k;
+  double C_dx = dt/dx;
+  double C_dy = dt/dy;
+  double C_dz = dt/dz;
+
+  // Calculate the body
+  #pragma omp parallel for private(j,k)
+  for (i=2;i<sx;i++)
+    for (j=2;j<sy;j++)
+      for (k=2;k<sz;k++)
+	{
+	  // Save Old Values
+	  BX[IDX4(i,j,k,0)] = BX[IDX4(i,j,k,1)];
+	  BY[IDX4(i,j,k,0)] = BY[IDX4(i,j,k,1)];
+	  BZ[IDX4(i,j,k,0)] = BZ[IDX4(i,j,k,1)];
+
+	  // Calculate Bx
+	  BX[IDX4(i,j,k,1)] = BX[IDX4(i,j,k,0)] + ( ( EY[IDX4(i,j,k,1)] - EY[IDX4(i,j,k-1,1)] ) * C_dz
+				          - ( EZ[IDX4(i,j,k,1)] - EZ[IDX4(i,j-1,k,1)] ) * C_dy );
+	  // Calculate By
+	  BY[IDX4(i,j,k,1)] = BY[IDX4(i,j,k,0)] + ( ( EZ[IDX4(i,j,k,1)] - EZ[IDX4(i-1,j,k,1)] ) * C_dx
+				          - ( EX[IDX4(i,j,k,1)] - EX[IDX4(i,j,k-1,1)] ) * C_dz );
+	  // Calculate Bz
+	  BZ[IDX4(i,j,k,1)] = BZ[IDX4(i,j,k,0)] + ( ( EX[IDX4(i,j,k,1)] - EX[IDX4(i,j-1,k,1)] ) * C_dy
+				          - ( EY[IDX4(i,j,k,1)] - EY[IDX4(i-1,j,k,1)] ) * C_dx );
+	}
+}
