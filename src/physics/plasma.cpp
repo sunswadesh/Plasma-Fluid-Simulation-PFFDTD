@@ -21,31 +21,35 @@ double N_0[NS];                                 // initial density of species
 double M[NS];                                   // Array of masses for species
 double Q[NS];                                   // Array of charges for species
 
-double *****UX, *****UY, *****UZ;	        // Partical Movement NOTE: [x][y][z][time][species:0=electron,1+=ions] 1/26/05
-double *****N;					// Density (same as UX)
-double ***SIG;					// Conductivity (used to define plasma field)
-double ***QF;                                   // Charging Factor (for electrons only
+double *UX, *UY, *UZ;	        // Partical Movement (Flat 1D)
+double *N;					// Density (Flat 1D)
+double *SIG;					// Conductivity (Flat 1D)
+double *QF;                                   // Charging Factor (Flat 1D)
 
 // Externs for Field Arrays (defined in pffdtd.cpp or field modules, declared in plasma.h used here)
-// They are included via plasma.h -> which likely should include field header or declare them? 
-// Current plasma.h has them as externs.
+// They are included via plasma.h
 
 int PLASMAallocate(int allocate)
 {
-  int size;
+  int total_grid = (sx+1)*(sy+1)*(sz+1);
+  int total_5d = total_grid * 3 * NS;
   
-  size =  sx*sy*sz*6*sizeof(double) + sy*sz*6*sizeof(double) + sz*6*sizeof(double) + 6*sizeof(double) + sizeof(double);
-  UX = darray5(1, sx, 1, sy, 1, sz, 0, 2, 0, NS-1);
-  UY = darray5(1, sx, 1, sy, 1, sz, 0, 2, 0, NS-1);
-  UZ = darray5(1, sx, 1, sy, 1, sz, 0, 2, 0, NS-1);
-  N = darray5(1, sx, 1, sy, 1, sz, 0, 2, 0, NS-1);
-  allocate = allocate + 8*size;
-  SIG = darray3(1, sx, 1, sy, 1, sz);
-  allocate = allocate + 1*size;
-  QF = darray3(1, sx, 1, sy, 1, sz);
-  allocate = allocate + size;
+  UX = darray1(0, total_5d);
+  UY = darray1(0, total_5d);
+  UZ = darray1(0, total_5d);
+  N = darray1(0, total_5d);
+  allocate = allocate + 4 * total_5d * sizeof(double);
+  
+  SIG = darray1(0, total_grid);
+  allocate = allocate + total_grid * sizeof(double);
+  QF = darray1(0, total_grid);
+  allocate = allocate + total_grid * sizeof(double);
 
-  // array in routines (AB)
+  // array in routines (AB) - Legacy? Kept for consistency if needed by forgotten routines?
+  // The original code calculated allocate but didn't actually allocate AB arrays here? 
+  // It said "// array in routines (AB) allocate = ...". 
+  // But those AB variables are local to Ucalc loop.
+  // So we just ignore it or keep the calculation.
   allocate = allocate+3*(sx-2)*(sy-2)*(sz-2)*sizeof(double);
 
   return allocate;
@@ -74,43 +78,41 @@ void PLASMAclear()
       for (m=1;m<NS;m++)
 	  N_0[m] = N_0[0]*pop[m];
  
-  for (i=1;i<=sx;i++)
-    for (j=1;j<=sy;j++)
-      for (k=1;k<=sz;k++)
-	  {
-	    for (l=0;l<=2;l++)
-	    {
-		for (m=0;m<NS;m++)
-		{
-		    UX[i][j][k][l][m] = 0.0;
-		    UY[i][j][k][l][m] = 0.0;
-		    UZ[i][j][k][l][m] = 0.0;
-		    N[i][j][k][l][m] = 0.0;
-		}
-	      SIG[i][j][k] = 0;
-	    }
-	    QF[i][j][k] = 1;
-	  }
-	
+  // Initialize Arrays to 0
+  int total_grid = (sx+1)*(sy+1)*(sz+1);
+  int total_5d = total_grid * 3 * NS;
+  
+  for(int idx = 0; idx < total_5d; idx++) {
+      UX[idx] = 0.0;
+      UY[idx] = 0.0;
+      UZ[idx] = 0.0;
+      N[idx] = 0.0;
+  }
+  for(int idx = 0; idx < total_grid; idx++) {
+      SIG[idx] = 0.0;
+      QF[idx] = 1.0;
+  }
+
   // Turns Plasma On
   for (i=6;i<sx-4;i++)
     for (j=6;j<sy-4;j++)
       for (k=6;k<sz-4;k++)
-	if ((ERX[i][j][k]==1) || (ERY[i][j][k]==1) || (ERZ[i][j][k]==1))
-	  SIG[i][j][k] = 1.0;
+	if ((ERX[IDX3(i,j,k)]==1) || (ERY[IDX3(i,j,k)]==1) || (ERZ[IDX3(i,j,k)]==1))
+	  SIG[IDX3(i,j,k)] = 1.0;
 
  
 }
 
 void PLASMAfree()
 {
-  freedarray5(UX, 1, sx, 1, sy, 1, sz, 0, 2, 0, 2);
-  freedarray5(UY, 1, sx, 1, sy, 1, sz, 0, 2, 0, 2);
-  freedarray5(UZ, 1, sx, 1, sy, 1, sz, 0, 2, 0, 2);
-  freedarray5(N, 1, sx, 1, sy, 1, sz, 0, 2, 0, 2);
-  freedarray3(SIG, 1, sx, 1, sy, 1, sz);
-  freedarray3(QF, 1, sx, 1, sy, 1, sz);
-
+   int total_grid = (sx+1)*(sy+1)*(sz+1);
+   int total_5d = total_grid * 3 * NS;
+   freedarray1(UX, 0, total_5d);
+   freedarray1(UY, 0, total_5d);
+   freedarray1(UZ, 0, total_5d);
+   freedarray1(N, 0, total_5d);
+   freedarray1(SIG, 0, total_grid);
+   freedarray1(QF, 0, total_grid);
 }
 
 void Ucalc()
@@ -136,44 +138,44 @@ void Ucalc()
 	for (m=0;m<NS;m++)
 	{
 	  // Save Old Values
-	  UX[i][j][k][0][m] = UX[i][j][k][1][m];
-	  UX[i][j][k][1][m] = UX[i][j][k][2][m];
-	  UY[i][j][k][0][m] = UY[i][j][k][1][m];
-	  UY[i][j][k][1][m] = UY[i][j][k][2][m];
-	  UZ[i][j][k][0][m] = UZ[i][j][k][1][m];
-	  UZ[i][j][k][1][m] = UZ[i][j][k][2][m];
+	  UX[IDX5(i,j,k,0,m)] = UX[IDX5(i,j,k,1,m)];
+	  UX[IDX5(i,j,k,1,m)] = UX[IDX5(i,j,k,2,m)];
+	  UY[IDX5(i,j,k,0,m)] = UY[IDX5(i,j,k,1,m)];
+	  UY[IDX5(i,j,k,1,m)] = UY[IDX5(i,j,k,2,m)];
+	  UZ[IDX5(i,j,k,0,m)] = UZ[IDX5(i,j,k,1,m)];
+	  UZ[IDX5(i,j,k,1,m)] = UZ[IDX5(i,j,k,2,m)];
 	  
 	  // Calculate averages(using linear techniques set B1=0)
-	  ABX = (BX[i][j][k][0] + BX[i][j+1][k][0] + BX[i][j+1][k+1][0] + BX[i][j][k+1][0]
-	        + BX[i][j][k][1] + BX[i][j+1][k][1] + BX[i][j+1][k+1][1] + BX[i][j][k+1][1])/8;
-	  ABY = (BY[i][j][k][0] + BY[i+1][j][k][0] + BY[i+1][j][k+1][0] + BY[i][j][k+1][0]
-	        + BY[i][j][k][1] + BY[i+1][j][k][1] + BY[i+1][j][k+1][1] + BY[i][j][k+1][1])/8;
-	  ABZ = (BZ[i][j][k][0] + BZ[i+1][j][k][0] + BZ[i+1][j+1][k][0] + BZ[i][j+1][k][0]
-	        + BZ[i][j][k][1] + BZ[i+1][j][k][1] + BZ[i+1][j+1][k][1] + BZ[i][j+1][k][1])/8;
+	  ABX = (BX[IDX4(i,j,k,0)] + BX[IDX4(i,j+1,k,0)] + BX[IDX4(i,j+1,k+1,0)] + BX[IDX4(i,j,k+1,0)]
+	        + BX[IDX4(i,j,k,1)] + BX[IDX4(i,j+1,k,1)] + BX[IDX4(i,j+1,k+1,1)] + BX[IDX4(i,j,k+1,1)])/8;
+	  ABY = (BY[IDX4(i,j,k,0)] + BY[IDX4(i+1,j,k,0)] + BY[IDX4(i+1,j,k+1,0)] + BY[IDX4(i,j,k+1,0)]
+	        + BY[IDX4(i,j,k,1)] + BY[IDX4(i+1,j,k,1)] + BY[IDX4(i+1,j,k+1,1)] + BY[IDX4(i,j,k+1,1)])/8;
+	  ABZ = (BZ[IDX4(i,j,k,0)] + BZ[IDX4(i+1,j,k,0)] + BZ[IDX4(i+1,j+1,k,0)] + BZ[IDX4(i,j+1,k,0)]
+	        + BZ[IDX4(i,j,k,1)] + BZ[IDX4(i+1,j,k,1)] + BZ[IDX4(i+1,j+1,k,1)] + BZ[IDX4(i,j+1,k,1)])/8;
 
 	  // Assuming plasma remains consant at boundary (i.e. delta n = 0) so warm plasma equaitions can be used throughout
 	  // Note:NE is at time [2] since density has not been calculated yet
 	  // Calculate UX
-	  UX[i][j][k][2][m] = UX[i][j][k][0][m] + (QF[i][j][k] * (Q[m]*dt * ( EX[i][j][k][1] + EX[i+1][j][k][1] )
-							         + Q[m]*C_U_1 * ( UY[i][j][k][1][m] * BZ_0 + UY_0 * ABZ
-										- UZ[i][j][k][1][m] * BY_0 - UZ_0 * ABY
+	  UX[IDX5(i,j,k,2,m)] = UX[IDX5(i,j,k,0,m)] + (QF[IDX3(i,j,k)] * (Q[m]*dt * ( EX[IDX4(i,j,k,1)] + EX[IDX4(i+1,j,k,1)] )
+							         + Q[m]*C_U_1 * ( UY[IDX5(i,j,k,1,m)] * BZ_0 + UY_0 * ABZ
+										- UZ[IDX5(i,j,k,1,m)] * BY_0 - UZ_0 * ABY
 										+ EeX) )
-						  - C_U_TX * ( N[i+1][j][k][2][m] - N[i-1][j][k][2][m] ) / N_0[m] ) / M[m]
-	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UX[i][j][k][1][m] - UX_0 );
+						  - C_U_TX * ( N[IDX5(i+1,j,k,2,m)] - N[IDX5(i-1,j,k,2,m)] ) / N_0[m] ) / M[m]
+	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UX[IDX5(i,j,k,1,m)] - UX_0 );
 	  // Calculate UY
-	  UY[i][j][k][2][m] = UY[i][j][k][0][m] + (QF[i][j][k] * (Q[m]*dt * ( EY[i][j][k][1] + EY[i][j+1][k][1] )
-								 + Q[m]*C_U_1 * ( UZ[i][j][k][1][m] * BX_0 + UZ_0 * ABX
-										- UX[i][j][k][1][m] * BZ_0 - UX_0 * ABZ
+	  UY[IDX5(i,j,k,2,m)] = UY[IDX5(i,j,k,0,m)] + (QF[IDX3(i,j,k)] * (Q[m]*dt * ( EY[IDX4(i,j,k,1)] + EY[IDX4(i,j+1,k,1)] )
+								 + Q[m]*C_U_1 * ( UZ[IDX5(i,j,k,1,m)] * BX_0 + UZ_0 * ABX
+										- UX[IDX5(i,j,k,1,m)] * BZ_0 - UX_0 * ABZ
 								                + EeY) )
-						  - C_U_TY * ( N[i][j+1][k][2][m] - N[i][j-1][k][2][m] ) / N_0[m] ) / M[m]
-	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UY[i][j][k][1][m] - UY_0 );
+						  - C_U_TY * ( N[IDX5(i,j+1,k,2,m)] - N[IDX5(i,j-1,k,2,m)] ) / N_0[m] ) / M[m]
+	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UY[IDX5(i,j,k,1,m)] - UY_0 );
 	  // Calculate UZ
-	  UZ[i][j][k][2][m] = UZ[i][j][k][0][m] + (QF[i][j][k] * (Q[m]*dt * ( EZ[i][j][k][1] + EZ[i][j][k+1][1] )
-								 + Q[m]*C_U_1 * ( UX[i][j][k][1][m] * BY_0 + UX_0 * ABY
-										- UY[i][j][k][1][m] * BX_0 - UY_0 * ABX
+	  UZ[IDX5(i,j,k,2,m)] = UZ[IDX5(i,j,k,0,m)] + (QF[IDX3(i,j,k)] * (Q[m]*dt * ( EZ[IDX4(i,j,k,1)] + EZ[IDX4(i,j,k+1,1)] )
+								 + Q[m]*C_U_1 * ( UX[IDX5(i,j,k,1,m)] * BY_0 + UX_0 * ABY
+										- UY[IDX5(i,j,k,1,m)] * BX_0 - UY_0 * ABX
 										+ EeZ ) )
-						  - C_U_TZ * ( N[i][j][k+1][2][m] - N[i][j][k-1][2][m] ) / N_0[m] ) / M[m]
-	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UZ[i][j][k][1][m] - UZ_0 );
+						  - C_U_TZ * ( N[IDX5(i,j,k+1,2,m)] - N[IDX5(i,j,k-1,2,m)] ) / N_0[m] ) / M[m]
+	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UZ[IDX5(i,j,k,1,m)] - UZ_0 );
 	}
 }
 
@@ -191,18 +193,18 @@ void Ncalc()
 	  for(m=0;m<NS;m++)
 	  {
 	      // Save Old Values
-	      N[i][j][k][0][m] = N[i][j][k][1][m];
-	      N[i][j][k][1][m] = N[i][j][k][2][m];
+	      N[IDX5(i,j,k,0,m)] = N[IDX5(i,j,k,1,m)];
+	      N[IDX5(i,j,k,1,m)] = N[IDX5(i,j,k,2,m)];
 
 	      // Calculate Body (Expanded 1st order terms)
 	      // Note: the Time difference in the density (last half of the equation) is due to the fact that the cells
 	      // "ahead" of the current calculation have not been updated in time
-	      N[i][j][k][2][m] = N[i][j][k][0][m] - ( N_0[m] * ( ( UX[i+1][j][k][1][m] - UX[i-1][j][k][1][m] ) * C_N_tx
-								 + ( UY[i][j+1][k][1][m] - UY[i][j-1][k][1][m] ) * C_N_ty
-								 + ( UZ[i][j][k+1][1][m] - UZ[i][j][k-1][1][m] ) * C_N_tz )
-						      + UX_0 * ( N[i+1][j][k][1][m] - N[i-1][j][k][1][m] ) * C_N_tx
-						      + UY_0 * ( N[i][j+1][k][1][m] - N[i][j-1][k][1][m] ) * C_N_ty
-						      + UZ_0 * ( N[i][j][k+1][1][m] - N[i][j][k-1][1][m] ) * C_N_tz );
+	      N[IDX5(i,j,k,2,m)] = N[IDX5(i,j,k,0,m)] - ( N_0[m] * ( ( UX[IDX5(i+1,j,k,1,m)] - UX[IDX5(i-1,j,k,1,m)] ) * C_N_tx
+								 + ( UY[IDX5(i,j+1,k,1,m)] - UY[IDX5(i,j-1,k,1,m)] ) * C_N_ty
+								 + ( UZ[IDX5(i,j,k+1,1,m)] - UZ[IDX5(i,j,k-1,1,m)] ) * C_N_tz )
+						      + UX_0 * ( N[IDX5(i+1,j,k,1,m)] - N[IDX5(i-1,j,k,1,m)] ) * C_N_tx
+						      + UY_0 * ( N[IDX5(i,j+1,k,1,m)] - N[IDX5(i,j-1,k,1,m)] ) * C_N_ty
+						      + UZ_0 * ( N[IDX5(i,j,k+1,1,m)] - N[IDX5(i,j,k-1,1,m)] ) * C_N_tz );
 	      
 	}
 }
@@ -222,9 +224,9 @@ void Ecalcmod()
       for (k=2;k<sz;k++)
 	{
 	  // Save old E
-	  EX[i][j][k][0] = EX[i][j][k][1];
-	  EY[i][j][k][0] = EY[i][j][k][1];
-	  EZ[i][j][k][0] = EZ[i][j][k][1];
+	  EX[IDX4(i,j,k,0)] = EX[IDX4(i,j,k,1)];
+	  EY[IDX4(i,j,k,0)] = EY[IDX4(i,j,k,1)];
+	  EZ[IDX4(i,j,k,0)] = EZ[IDX4(i,j,k,1)];
 
 	  // Calculate current from plasma
 	  JX = 0.0;
@@ -232,27 +234,27 @@ void Ecalcmod()
 	  JZ = 0.0;
 	  for (m=0;m<NS;m++)
 	  {
-	      JX = JX + Q[m] * ( N_0[m] * (UX[i][j][k][2][m] + UX[i-1][j][k][2][m]) +  UX_0 * ( N[i][j][k][2][m] + N[i-1][j][k][2][m]) + 2 * N_0[m] * UX_0 );
-	      JY = JY + Q[m] * ( N_0[m] * (UY[i][j][k][2][m] + UY[i][j-1][k][2][m]) +  UY_0 * ( N[i][j][k][2][m] + N[i][j-1][k][2][m]) + 2 * N_0[m] * UY_0 );
-	      JZ = JZ + Q[m] * ( N_0[m] * (UZ[i][j][k][2][m] + UZ[i][j][k-1][2][m]) +  UZ_0 * ( N[i][j][k][2][m] + N[i][j][k-1][2][m]) + 2 * N_0[m] * UZ_0 );
+	      JX = JX + Q[m] * ( N_0[m] * (UX[IDX5(i,j,k,2,m)] + UX[IDX5(i-1,j,k,2,m)]) +  UX_0 * ( N[IDX5(i,j,k,2,m)] + N[IDX5(i-1,j,k,2,m)]) + 2 * N_0[m] * UX_0 );
+	      JY = JY + Q[m] * ( N_0[m] * (UY[IDX5(i,j,k,2,m)] + UY[IDX5(i,j-1,k,2,m)]) +  UY_0 * ( N[IDX5(i,j,k,2,m)] + N[IDX5(i,j-1,k,2,m)]) + 2 * N_0[m] * UY_0 );
+	      JZ = JZ + Q[m] * ( N_0[m] * (UZ[IDX5(i,j,k,2,m)] + UZ[IDX5(i,j,k-1,2,m)]) +  UZ_0 * ( N[IDX5(i,j,k,2,m)] + N[IDX5(i,j,k-1,2,m)]) + 2 * N_0[m] * UZ_0 );
 	  }
 
 
 	  // Calculate the body
 	  // Calculate Ex
-	  EX[i][j][k][1] = EX[i][j][k][0] + ( ( BZ[i][j+1][k][1] - BZ[i][j][k][1] ) * C_dy
-					    - ( BY[i][j][k+1][1] - BY[i][j][k][1] ) * C_dz
-					    - C_MU * SIG[i][j][k] * JX ) * ERX[i][j][k];
+	  EX[IDX4(i,j,k,1)] = EX[IDX4(i,j,k,0)] + ( ( BZ[IDX4(i,j+1,k,1)] - BZ[IDX4(i,j,k,1)] ) * C_dy
+					    - ( BY[IDX4(i,j,k+1,1)] - BY[IDX4(i,j,k,1)] ) * C_dz
+					    - C_MU * SIG[IDX3(i,j,k)] * JX ) * ERX[IDX3(i,j,k)];
 		
 	  // Calculate Ey
-	  EY[i][j][k][1] = EY[i][j][k][0] + ( ( BX[i][j][k+1][1] - BX[i][j][k][1] ) * C_dz
-					    - ( BZ[i+1][j][k][1] - BZ[i][j][k][1] ) * C_dx
-					    - C_MU * SIG[i][j][k] * JY ) * ERY[i][j][k];
+	  EY[IDX4(i,j,k,1)] = EY[IDX4(i,j,k,0)] + ( ( BX[IDX4(i,j,k+1,1)] - BX[IDX4(i,j,k,1)] ) * C_dz
+					    - ( BZ[IDX4(i+1,j,k,1)] - BZ[IDX4(i,j,k,1)] ) * C_dx
+					    - C_MU * SIG[IDX3(i,j,k)] * JY ) * ERY[IDX3(i,j,k)];
 		
 	  // Calculate Ez
-	  EZ[i][j][k][1] = EZ[i][j][k][0] + ( ( BY[i+1][j][k][1] - BY[i][j][k][1] ) * C_dx
-					    - ( BX[i][j+1][k][1] - BX[i][j][k][1] ) * C_dy
-					    - C_MU * SIG[i][j][k] * JZ ) * ERZ[i][j][k];
+	  EZ[IDX4(i,j,k,1)] = EZ[IDX4(i,j,k,0)] + ( ( BY[IDX4(i+1,j,k,1)] - BY[IDX4(i,j,k,1)] ) * C_dx
+					    - ( BX[IDX4(i,j+1,k,1)] - BX[IDX4(i,j,k,1)] ) * C_dy
+					    - C_MU * SIG[IDX3(i,j,k)] * JZ ) * ERZ[IDX3(i,j,k)];
 	}
 }
 

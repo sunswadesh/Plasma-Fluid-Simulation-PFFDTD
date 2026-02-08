@@ -4,7 +4,7 @@ pushd %~dp0..
 
 if "%~1"=="" (
     echo Usage: run_simulation.bat [RunName] [F_plasma] [F_collision] [F_cyclotron] ...
-    echo Example: run_simulation.bat run_test 5.3 0.0 1.43
+    echo Example: run_simulation.bat run_test 5.3 0.1 1.43
     popd
     exit /b 1
 )
@@ -21,14 +21,24 @@ echo Output Directory: %OUT_DIR%
 echo Logging to: %OUT_DIR%\simulation.log
 echo ==========================================
 
-REM Check if parallel exe exists, else use serial
-if exist "pffdtd_parallel.exe" (
-    set EXE=pffdtd_parallel.exe
-    echo Using Parallel Executable
-) else (
-    set EXE=pffdtd_serial.exe
-    echo Using Serial Executable
-)
+REM Check prioritized executables
+ if exist "pffdtd_parallel.exe" (
+     set EXE=pffdtd_parallel.exe
+     echo Using Parallel Executable
+ ) else if exist "pffdtd_parallel_0.exe" (
+     set EXE=pffdtd_parallel_0.exe
+     echo Using Legacy Parallel Executable
+ ) else if exist "pffdtd_serial.exe" (
+     set EXE=pffdtd_serial.exe
+     echo Using Serial Executable
+ ) else if exist "pffdtd_serial_0.exe" (
+     set EXE=pffdtd_serial_0.exe
+     echo Using Legacy Serial Executable
+ ) else (
+     echo Error: No executable found.
+     popd
+     exit /b 1
+ )
 
 echo Start Time: %TIME% > "%OUT_DIR%\simulation.log"
 REM Pass all additional arguments (%2, %3...) to the executable

@@ -67,9 +67,10 @@ int Q_flag;				// Flag to quit
 int plasma;				// Flags (1 = present, 0 = not present)
 int fields;                             // Flags (1 = output fields, 0 = no output)
 // Define pointers to field values
-double ****EX, ****EY, ****EZ;		// Electric Field
-double ****BX, ****BY, ****BZ;		// Magntic Desplacement
-double ***ERX, ***ERY, ***ERZ;		// 1/Relitive Pervitvity
+// Define pointers to field values
+double *EX, *EY, *EZ;		// Electric Field (Flat 1D: IDX4)
+double *BX, *BY, *BZ;		// Mainetic Desplacement (Flat 1D: IDX4)
+double *ERX, *ERY, *ERZ;		// 1/Relative Permittivity (Flat 1D: IDX3)
 // Grid difinitions
 int sx, sy, sz;				// Grid Size
 double dx, dy, dz, dt, df;		// Grid Spacing
@@ -222,19 +223,21 @@ int main(int argc, char*argv[])
     }
   // Allocate arrays
   size = sx*sy*sz*sizeof(double) + sx*sy*sizeof(double) + sx*sizeof(double) + sizeof(double);
-  EX = darray4(1, sx, 1, sy, 1, sz, 0, 1);
-  EY = darray4(1, sx, 1, sy, 1, sz, 0, 1);
-  EZ = darray4(1, sx, 1, sy, 1, sz, 0, 1);
-  allocate = allocate + 3*(size + 2*sx*sy*sz*sizeof(double));
+  EX = darray1(0, (sx+1)*(sy+1)*(sz+1)*2);
+  EY = darray1(0, (sx+1)*(sy+1)*(sz+1)*2);
+  EZ = darray1(0, (sx+1)*(sy+1)*(sz+1)*2);
+  allocate = allocate + 3*((sx+1)*(sy+1)*(sz+1)*2*sizeof(double));
+  
   allocate = EMBCallocate(allocate);
-  BX = darray4(1, sx, 1, sy, 1, sz, 0, 1);
-  BY = darray4(1, sx, 1, sy, 1, sz, 0, 1);
-  BZ = darray4(1, sx, 1, sy, 1, sz, 0, 1);
-  allocate = allocate + 3*(size + 2*sx*sy*sz*sizeof(double));
-  ERX = darray3(1, sx, 1, sy, 1, sz);
-  ERY = darray3(1, sx, 1, sy, 1, sz);
-  ERZ = darray3(1, sx, 1, sy, 1, sz);
-  allocate = allocate + 3*size;
+  BX = darray1(0, (sx+1)*(sy+1)*(sz+1)*2);
+  BY = darray1(0, (sx+1)*(sy+1)*(sz+1)*2);
+  BZ = darray1(0, (sx+1)*(sy+1)*(sz+1)*2);
+  allocate = allocate + 3*((sx+1)*(sy+1)*(sz+1)*2*sizeof(double));
+  
+  ERX = darray1(0, (sx+1)*(sy+1)*(sz+1));
+  ERY = darray1(0, (sx+1)*(sy+1)*(sz+1));
+  ERZ = darray1(0, (sx+1)*(sy+1)*(sz+1));
+  allocate = allocate + 3*((sx+1)*(sy+1)*(sz+1)*sizeof(double));
   Sloc = iarray2(1, Snum, 0, 5);
   allocate = allocate + Snum*6*sizeof(double) + 6*sizeof(double); 
   Spar = darray1(1, Snum);
@@ -314,8 +317,8 @@ int main(int argc, char*argv[])
       // Output Results
       printf("\n%s It=%d(%5.3fP.C.):%fmV %fuA", fileout, i, (i*df), VOLT[1]*1e3, CURRENT[1]*1e6);
       //if (plasma == 1)
-	//  for(m=0;m<NS;m++)
-	  //    printf(" %f ",UX[sx/2][sy/2][sz/2][2][m]*1e3);
+ 	//  for(m=0;m<NS;m++)
+ 	  //    printf(" %f ",UX[IDX5(sx/2,sy/2,sz/2,2,m)]*1e3);
       if (((i-1)%frate==0) & (fields==1) )
       	{
       	  //printf(" Writing Data");
@@ -338,7 +341,7 @@ int main(int argc, char*argv[])
 
       // Check for Stability
        // Only checks main soucres
-      //if ( ( CURRENT[1][i] > 1e3 ) | ( CURRENT[1][i] < -1e3 ) )
+      //if ( ( CURRENT[1] > 1e3 ) | ( CURRENT[1] < -1e3 ) )
 //	{
 //	  printf("\n");
 //	  printf("***************************\n");
@@ -368,16 +371,16 @@ int main(int argc, char*argv[])
   
   // clear memory
   printf("Clearing  Memory \n");
-  freedarray4(EX, 1, sx, 1, sy, 1, sz, 0, 1);
-  freedarray4(EY, 1, sx, 1, sy, 1, sz, 0, 1);
-  freedarray4(EZ, 1, sx, 1, sy, 1, sz, 0, 1);
+  freedarray1(EX, 0, (sx+1)*(sy+1)*(sz+1)*2);
+  freedarray1(EY, 0, (sx+1)*(sy+1)*(sz+1)*2);
+  freedarray1(EZ, 0, (sx+1)*(sy+1)*(sz+1)*2);
   EMBCfree();
-  freedarray4(BX, 1, sx, 1, sy, 1, sz, 0, 1);
-  freedarray4(BY, 1, sx, 1, sy, 1, sz, 0, 1);
-  freedarray4(BZ, 1, sx, 1, sy, 1, sz, 0, 1);
-  freedarray3(ERX, 1, sx, 1, sy, 1, sz);
-  freedarray3(ERY, 1, sx, 1, sy, 1, sz);
-  freedarray3(ERZ, 1, sx, 1, sy, 1, sz);
+  freedarray1(BX, 0, (sx+1)*(sy+1)*(sz+1)*2);
+  freedarray1(BY, 0, (sx+1)*(sy+1)*(sz+1)*2);
+  freedarray1(BZ, 0, (sx+1)*(sy+1)*(sz+1)*2);
+  freedarray1(ERX, 0, (sx+1)*(sy+1)*(sz+1));
+  freedarray1(ERY, 0, (sx+1)*(sy+1)*(sz+1));
+  freedarray1(ERZ, 0, (sx+1)*(sy+1)*(sz+1));
   if (plasma == 1)
     PLASMAfree();
   freeiarray2(Sloc, 1, Snum, 0, 5);

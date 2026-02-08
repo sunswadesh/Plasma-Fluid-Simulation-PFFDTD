@@ -8,8 +8,9 @@
 extern int **Sloc;
 extern double *Spar;
 extern double dt, dx, dy, dz, df;
-extern double ****EX, ****EY, ****EZ;
-extern double ****BX, ****BY, ****BZ;
+extern int sx, sy, sz;
+extern double *EX, *EY, *EZ;
+extern double *BX, *BY, *BZ;
 extern double *VOLT, *CURRENT;
 
 void Esource(double timev, int a)
@@ -75,11 +76,11 @@ void Esource(double timev, int a)
 
   // orentation of source
   if (Sloc[a][3] == 1)
-    EX[Sloc[a][0]][Sloc[a][1]][Sloc[a][2]][1] = value / dx;
+    EX[IDX4(Sloc[a][0],Sloc[a][1],Sloc[a][2],1)] = value / dx;
   if (Sloc[a][3] == 2)
-    EY[Sloc[a][0]][Sloc[a][1]][Sloc[a][2]][1] = value / dy;
+    EY[IDX4(Sloc[a][0],Sloc[a][1],Sloc[a][2],1)] = value / dy;
   if (Sloc[a][3] == 3)
-    EZ[Sloc[a][0]][Sloc[a][1]][Sloc[a][2]][1] = value / dz;
+    EZ[IDX4(Sloc[a][0],Sloc[a][1],Sloc[a][2],1)] = value / dz;
 
 }
 
@@ -94,24 +95,24 @@ void Rcalc( int a)
 	
   if (Sloc[a][3] == 1)
     {
-      CURRENT[a] = ( ( BY[x][y][z][1] - BY[x][y][z+1][1] ) * dx
-		    + ( BZ[x][y+1][z][1] - BZ[x][y][z][1] ) * dy ) / MU_0;
+      CURRENT[a] = ( ( BY[IDX4(x,y,z,1)] - BY[IDX4(x,y,z+1,1)] ) * dx
+		    + ( BZ[IDX4(x,y+1,z,1)] - BZ[IDX4(x,y,z,1)] ) * dy ) / MU_0;
       // ASSUMING THE CURRENT / VOLTAGE VARIES SLOWLY COMPARD TO dt
-      VOLT[a] = - EX[x][y][z][1] * dx;
+      VOLT[a] = - EX[IDX4(x,y,z,1)] * dx;
     }
   if (Sloc[a][3] == 2)
     {
-      CURRENT[a] = ( ( BX[x][y][z+1][1] - BX[x][y][z][1] ) * dx
-		    + ( BZ[x][y][z][1] - BZ[x+1][y][z][1] ) * dy ) / MU_0;
+      CURRENT[a] = ( ( BX[IDX4(x,y,z+1,1)] - BX[IDX4(x,y,z,1)] ) * dx
+		    + ( BZ[IDX4(x,y,z,1)] - BZ[IDX4(x+1,y,z,1)] ) * dy ) / MU_0;
       // ASSUMING THE CURRENT / VOLTAGE VARIES SLOWLY COMPARD TO dt
-      VOLT[a] = - EY[x][y][z][1] * dy;
+      VOLT[a] = - EY[IDX4(x,y,z,1)] * dy;
     }
   if (Sloc[a][3] == 3)
     {
-      CURRENT[a] = ( ( BX[x][y][z][1] - BX[x][y+1][z][1] ) * dx
-		    + ( BY[x+1][y][z][1] - BY[x][y][z][1] ) * dy ) / MU_0;
+      CURRENT[a] = ( ( BX[IDX4(x,y,z,1)] - BX[IDX4(x,y+1,z,1)] ) * dx
+		    + ( BY[IDX4(x+1,y,z,1)] - BY[IDX4(x,y,z,1)] ) * dy ) / MU_0;
       // ASSUMING THE CURRENT / VOLTAGE VARIES SLOWLY COMPARD TO dt
-      VOLT[a] = - EZ[x][y][z][1] * dz;
+      VOLT[a] = - EZ[IDX4(x,y,z,1)] * dz;
     }
 
 }

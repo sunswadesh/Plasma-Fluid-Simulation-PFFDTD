@@ -115,14 +115,14 @@ void EBCcalc()
     for (k=1;k<=sz;k++)
       {
 	// Left NOTE: EP is taken at center since the wave must travel thru it, Not at the point of the wave.
-	EY[1][j][k][1] = EYLEFT[2][j][k][1] + 0.5 * ( EYLEFT[1][j][k][1] - EYLEFT[3][j][k][1] )
+	EY[IDX4(1,j,k,1)] = EYLEFT[2][j][k][1] + 0.5 * ( EYLEFT[1][j][k][1] - EYLEFT[3][j][k][1] )
 	               + ( EYLEFT[2][j][k][2] - EYLEFT[2][j][k][0] );
-	EZ[1][j][k][1] = EZLEFT[2][j][k][1] + 0.5 * ( EZLEFT[1][j][k][1] - EZLEFT[3][j][k][1] )
+	EZ[IDX4(1,j,k,1)] = EZLEFT[2][j][k][1] + 0.5 * ( EZLEFT[1][j][k][1] - EZLEFT[3][j][k][1] )
 	               + ( EZLEFT[2][j][k][2] - EZLEFT[2][j][k][0] );
 	// Right NOTE: EYRIGTH[0][.][.][.] = edge
-	EY[sx][j][k][1] = EYRIGHT[2][j][k][1] + 0.5 * ( EYRIGHT[1][j][k][1] - EYRIGHT[3][j][k][1] )
+	EY[IDX4(sx,j,k,1)] = EYRIGHT[2][j][k][1] + 0.5 * ( EYRIGHT[1][j][k][1] - EYRIGHT[3][j][k][1] )
 	                + ( EYRIGHT[2][j][k][2] - EYRIGHT[2][j][k][0] );
-	EZ[sx][j][k][1] = EZRIGHT[2][j][k][1] + 0.5 * ( EZRIGHT[1][j][k][1] - EZRIGHT[3][j][k][1] )
+	EZ[IDX4(sx,j,k,1)] = EZRIGHT[2][j][k][1] + 0.5 * ( EZRIGHT[1][j][k][1] - EZRIGHT[3][j][k][1] )
 	                + ( EZRIGHT[2][j][k][2] - EZRIGHT[2][j][k][0] );
       }
 
@@ -131,14 +131,14 @@ void EBCcalc()
       for (k=1;k<=sz;k++)
 	{
 	  // Front
-	  EX[i][1][k][1] = EXFRONT[i][2][k][1] + 0.5 * ( EXFRONT[i][1][k][1] - EXFRONT[i][3][k][1] )
+	  EX[IDX4(i,1,k,1)] = EXFRONT[i][2][k][1] + 0.5 * ( EXFRONT[i][1][k][1] - EXFRONT[i][3][k][1] )
 	                 + ( EXFRONT[i][2][k][2] - EXFRONT[i][2][k][0] );
-	  EZ[i][1][k][1] = EZFRONT[i][2][k][1] + 0.5 * ( EZFRONT[i][1][k][1] - EZFRONT[i][3][k][1] )
+	  EZ[IDX4(i,1,k,1)] = EZFRONT[i][2][k][1] + 0.5 * ( EZFRONT[i][1][k][1] - EZFRONT[i][3][k][1] )
 	                 + ( EZFRONT[i][2][k][2] - EZFRONT[i][2][k][0] );
 	  // Back
-	  EX[i][sy][k][1] = EXBACK[i][2][k][1] + 0.5 * ( EXBACK[i][1][k][1] - EXBACK[i][3][k][1] )
+	  EX[IDX4(i,sy,k,1)] = EXBACK[i][2][k][1] + 0.5 * ( EXBACK[i][1][k][1] - EXBACK[i][3][k][1] )
 	                  + ( EXBACK[i][2][k][2] - EXBACK[i][2][k][0] );
-	  EZ[i][sy][k][1] = EZBACK[i][2][k][1] + 0.5 * ( EZBACK[i][1][k][1] - EZBACK[i][3][k][1] )
+	  EZ[IDX4(i,sy,k,1)] = EZBACK[i][2][k][1] + 0.5 * ( EZBACK[i][1][k][1] - EZBACK[i][3][k][1] )
 	                  + ( EZBACK[i][2][k][2] - EZBACK[i][2][k][0] );
 	}
 
@@ -146,14 +146,14 @@ void EBCcalc()
       for(j=1;j<=sy;j++)
 	{
 	  // Bottom
-	  EX[i][j][1][1] = EXBOTTOM[i][j][2][1] + 0.5 * ( EXBOTTOM[i][j][1][1] - EXBOTTOM[i][j][3][1] )
+	  EX[IDX4(i,j,1,1)] = EXBOTTOM[i][j][2][1] + 0.5 * ( EXBOTTOM[i][j][1][1] - EXBOTTOM[i][j][3][1] )
 	                 + ( EXBOTTOM[i][j][2][2] - EXBOTTOM[i][j][2][0] );
-	  EY[i][j][1][1] = EYBOTTOM[i][j][2][1] + 0.5 * ( EYBOTTOM[i][j][1][1] - EYBOTTOM[i][j][3][1] )
+	  EY[IDX4(i,j,1,1)] = EYBOTTOM[i][j][2][1] + 0.5 * ( EYBOTTOM[i][j][1][1] - EYBOTTOM[i][j][3][1] )
 	                 + ( EYBOTTOM[i][j][2][2] - EYBOTTOM[i][j][2][0] );
 	  // Top
-	  EX[i][j][sz][1] = EXTOP[i][j][2][1] + 0.5 * ( EXTOP[i][j][1][1] - EXTOP[i][j][3][1] )
+	  EX[IDX4(i,j,sz,1)] = EXTOP[i][j][2][1] + 0.5 * ( EXTOP[i][j][1][1] - EXTOP[i][j][3][1] )
 	                  + ( EXTOP[i][j][2][2] - EXTOP[i][j][2][0] );
-	  EY[i][j][sz][1] = EYTOP[i][j][2][1] + 0.5 * ( EYTOP[i][j][1][1] - EYTOP[i][j][3][1] )
+	  EY[IDX4(i,j,sz,1)] = EYTOP[i][j][2][1] + 0.5 * ( EYTOP[i][j][1][1] - EYTOP[i][j][3][1] )
 	                  + ( EYTOP[i][j][2][2] - EYTOP[i][j][2][0] );
 	}
     }
@@ -170,16 +170,16 @@ void EBCcalc()
 	  EZLEFT[i][j][k][0] = EZLEFT[i][j][k][1];
 	  EYLEFT[i][j][k][1] = EYLEFT[i][j][k][2];
 	  EZLEFT[i][j][k][1] = EZLEFT[i][j][k][2];
-	  EYLEFT[i][j][k][2] = EY[i][j][k][1];
-	  EZLEFT[i][j][k][2] = EZ[i][j][k][1];
+	  EYLEFT[i][j][k][2] = EY[IDX4(i,j,k,1)];
+	  EZLEFT[i][j][k][2] = EZ[IDX4(i,j,k,1)];
 
 	  // Rigth B.C.
 	  EYRIGHT[i][j][k][0] = EYRIGHT[i][j][k][1];
 	  EZRIGHT[i][j][k][0] = EZRIGHT[i][j][k][1];
 	  EYRIGHT[i][j][k][1] = EYRIGHT[i][j][k][2];
 	  EZRIGHT[i][j][k][1] = EZRIGHT[i][j][k][2];
-	  EYRIGHT[i][j][k][2] = EY[sx + 1 - i][j][k][1];
-	  EZRIGHT[i][j][k][2] = EZ[sx + 1 - i][j][k][1];
+	  EYRIGHT[i][j][k][2] = EY[IDX4(sx + 1 - i,j,k,1)];
+	  EZRIGHT[i][j][k][2] = EZ[IDX4(sx + 1 - i,j,k,1)];
 	}
 	
   for (i=1;i<=sx;i++)
@@ -192,16 +192,16 @@ void EBCcalc()
 	    EZFRONT[i][j][k][0] = EZFRONT[i][j][k][1];
 	    EXFRONT[i][j][k][1] = EXFRONT[i][j][k][2];
 	    EZFRONT[i][j][k][1] = EZFRONT[i][j][k][2];
-	    EXFRONT[i][j][k][2] = EX[i][j][k][1];
-	    EZFRONT[i][j][k][2] = EZ[i][j][k][1];
+	    EXFRONT[i][j][k][2] = EX[IDX4(i,j,k,1)];
+	    EZFRONT[i][j][k][2] = EZ[IDX4(i,j,k,1)];
 
 	    // BACK B.C.
 	    EXBACK[i][j][k][0] = EXBACK[i][j][k][1];
 	    EZBACK[i][j][k][0] = EZBACK[i][j][k][1];
 	    EXBACK[i][j][k][1] = EXBACK[i][j][k][2];
 	    EZBACK[i][j][k][1] = EZBACK[i][j][k][2];
-	    EXBACK[i][j][k][2] = EX[i][sy + 1 - j][k][1];
-	    EZBACK[i][j][k][2] = EZ[i][sy + 1 - j][k][1];
+	    EXBACK[i][j][k][2] = EX[IDX4(i,sy + 1 - j,k,1)];
+	    EZBACK[i][j][k][2] = EZ[IDX4(i,sy + 1 - j,k,1)];
 	  }
 
       //  for (i=1;i<=sx;i++) // Commented out to increase speed
@@ -213,15 +213,15 @@ void EBCcalc()
 	    EYBOTTOM[i][j][k][0] = EYBOTTOM[i][j][k][1];
 	    EXBOTTOM[i][j][k][1] = EXBOTTOM[i][j][k][2];
 	    EYBOTTOM[i][j][k][1] = EYBOTTOM[i][j][k][2];
-	    EXBOTTOM[i][j][k][2] = EX[i][j][k][1];
-	    EYBOTTOM[i][j][k][2] = EY[i][j][k][1];
+	    EXBOTTOM[i][j][k][2] = EX[IDX4(i,j,k,1)];
+	    EYBOTTOM[i][j][k][2] = EY[IDX4(i,j,k,1)];
 	    // Top B.C.
 	    EXTOP[i][j][k][0] = EXTOP[i][j][k][1];
 	    EYTOP[i][j][k][0] = EYTOP[i][j][k][1];
 	    EXTOP[i][j][k][1] = EXTOP[i][j][k][2];
 	    EYTOP[i][j][k][1] = EYTOP[i][j][k][2];
-	    EXTOP[i][j][k][2] = EX[i][j][sz + 1 - k][1];
-	    EYTOP[i][j][k][2] = EY[i][j][sz + 1 - k][1];
+	    EXTOP[i][j][k][2] = EX[IDX4(i,j,sz + 1 - k,1)];
+	    EYTOP[i][j][k][2] = EY[IDX4(i,j,sz + 1 - k,1)];
 	  }
     }
 }
