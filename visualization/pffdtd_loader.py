@@ -47,6 +47,10 @@ def load_voltage_current(filepath, source_number=1):
              raise ValueError(f"File does not contain enough columns for source number {source_number}")
 
         time = values[:, time_col]
+        voltage = values[:, voltage_col]
+        current = values[:, current_col]
+        
+        return time, voltage, current
 
     except Exception as e:
         raise RuntimeError(f"Failed to parse {filepath}: {e}")

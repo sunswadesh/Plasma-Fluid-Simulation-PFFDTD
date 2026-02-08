@@ -20,11 +20,11 @@ extern int fields;
 extern int frate;
 extern int fout[6];
 extern int floc[2][3];
-extern double ****EX, ****EY, ****EZ;
-extern double ****BX, ****BY, ****BZ;
-extern double ***ERX, ***ERY, ***ERZ;
+extern double *EX, *EY, *EZ;
+extern double *BX, *BY, *BZ;
+extern double *ERX, *ERY, *ERZ;
 extern double *VOLT, *CURRENT;
-extern double ***QF, ***SIG; // From plasma?
+extern double *QF, *SIG; // From plasma?
 extern double Charge;
 // Need constants C, MU_0, EPSILON_0?
 
@@ -34,7 +34,7 @@ extern void EMBCclear();
 extern void EMBCfree();
 // PLASMAallocate is in plasma.h which is included
 
-FILE *openfile(char filepre[81], char filesuf[3])
+FILE *openfile(const char filepre[81], const char filesuf[3])
 {
   char temp[81];
   FILE *filevar;
@@ -50,7 +50,7 @@ FILE *openfile(char filepre[81], char filesuf[3])
   return filevar;
 }
 
-FILE *openfile2(char filepre[81], char filesuf[3])
+FILE *openfile2(const char filepre[81], const char filesuf[3])
 {
   char temp[81];
   FILE *filevar;
@@ -162,58 +162,58 @@ int setup2(FILE *fp1)
       switch (l)
 	{
 	case 1:
-          ERX[i][j][k] = 0;
+          ERX[IDX3(i,j,k)] = 0;
 	  if (plasma == 1)
-	      QF[i][j][k] = Charge;
+	      QF[IDX3(i,j,k)] = Charge;
           break;
         case 2:
-	  ERX[i][j][k] = 1/ER[0];
+	  ERX[IDX3(i,j,k)] = 1/ER[0];
 	  break;
         case 3:
-	  ERX[i][j][k] = 1/ER[1];
+	  ERX[IDX3(i,j,k)] = 1/ER[1];
           break;
         default:
-	  ERX[i][j][k] = 1;
+	  ERX[IDX3(i,j,k)] = 1;
 	  break;
 	}
       switch (m)
 	{
 	case 1:
-          ERY[i][j][k] = 0;
+          ERY[IDX3(i,j,k)] = 0;
 	  if (plasma == 1)
-	      QF[i][j][k] = Charge;
+	      QF[IDX3(i,j,k)] = Charge;
           break;
         case 2:
-	  ERY[i][j][k] = 1/ER[0];
+	  ERY[IDX3(i,j,k)] = 1/ER[0];
 	  break;
         case 3:
-	  ERY[i][j][k] = 1/ER[1];
+	  ERY[IDX3(i,j,k)] = 1/ER[1];
           break;
         default:
-	  ERY[i][j][k] = 1;
+	  ERY[IDX3(i,j,k)] = 1;
 	  break;
 	}
       switch (n)
 	{
 	case 1:
-          ERZ[i][j][k] = 0;
+          ERZ[IDX3(i,j,k)] = 0;
 	  if (plasma == 1)
-	      QF[i][j][k] = Charge;
+	      QF[IDX3(i,j,k)] = Charge;
           break;
         case 2:
-	  ERZ[i][j][k] = 1/ER[0];
+	  ERZ[IDX3(i,j,k)] = 1/ER[0];
 	  break;
         case 3:
-	  ERZ[i][j][k] = 1/ER[1];
+	  ERZ[IDX3(i,j,k)] = 1/ER[1];
           break;
         default:
-	  ERZ[i][j][k] = 1;
+	  ERZ[IDX3(i,j,k)] = 1;
 	  break;
 	}
       if ((plasma ==1) & (l>1) & (m>1) & (n>1))
-	SIG[i][j][k] = 0;                             // Turns off Plasma inside dielectrics
+	SIG[IDX3(i,j,k)] = 0;                             // Turns off Plasma inside dielectrics
       if ( (a==1) | (a==b) )
-	printf("\t(%d,%d,%d) 1/Erx->%5.3f 1/Ery->%5.3f 1/Erz->%5.3f \n",i,j,k,ERX[i][j][k],ERY[i][j][k],ERZ[i][j][k]);
+	printf("\t(%d,%d,%d) 1/Erx->%5.3f 1/Ery->%5.3f 1/Erz->%5.3f \n",i,j,k,ERX[IDX3(i,j,k)],ERY[IDX3(i,j,k)],ERZ[IDX3(i,j,k)]);
       if ( (a==2) & (a!=b) )
 	printf("\t\t.\n\t\t.\n\t\t.\n");
 
@@ -256,23 +256,29 @@ void ClearArrays()
 {
   int i, j, k, l;
 
-  for (i=1;i<=sx;i++)
-    for (j=1;j<=sy;j++)
-      for (k=1;k<=sz;k++)
-	{
-	  for (l=0;l<=1;l++)
-	    {
-	      EX[i][j][k][l] = 0;
-	      EY[i][j][k][l] = 0;
-	      EZ[i][j][k][l] = 0;
-	      BX[i][j][k][l] = 0;
-	      BY[i][j][k][l] = 0;
-	      BZ[i][j][k][l] = 0;
-	    }
-	  ERX[i][j][k] = 1;
-	  ERY[i][j][k] = 1;
-	  ERZ[i][j][k] = 1;
-	}
+  // Clear Arrays
+   // Use flat loops for speed? Or IDX? 
+   // Since i,j,k are needed for logic flow in some places, we stick to nested loops with IDX macros for safety,
+   // or just flat loops if we iterate over the whole thing.
+   // But ClearArrays iterates i,j,k loop. Let's use IDX macros.
+   
+   for (i=1;i<=sx;i++)
+     for (j=1;j<=sy;j++)
+       for (k=1;k<=sz;k++)
+ 	{
+ 	  for (l=0;l<=1;l++)
+ 	    {
+ 	      EX[IDX4(i,j,k,l)] = 0;
+ 	      EY[IDX4(i,j,k,l)] = 0;
+ 	      EZ[IDX4(i,j,k,l)] = 0;
+ 	      BX[IDX4(i,j,k,l)] = 0;
+ 	      BY[IDX4(i,j,k,l)] = 0;
+ 	      BZ[IDX4(i,j,k,l)] = 0;
+ 	    }
+ 	  ERX[IDX3(i,j,k)] = 1;
+ 	  ERY[IDX3(i,j,k)] = 1;
+ 	  ERZ[IDX3(i,j,k)] = 1;
+ 	}
 
   for (j=1;j<=Snum;j++)
   {

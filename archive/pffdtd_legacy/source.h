@@ -1,18 +1,10 @@
-#include "source.h"
-#include <stdio.h> // For printf if needed
-
-// Access to global variables defined in pffdtd.cpp
-// In a full modularization, these should be passed as arguments or part of a class.
-// For Phase 2, we use extern to link to them.
-
-extern int **Sloc;
-extern double *Spar;
-extern double dt, dx, dy, dz, df;
-extern int sx, sy, sz;
-extern double *EX, *EY, *EZ;
-extern double *BX, *BY, *BZ;
-extern double *VOLT, *CURRENT;
-
+// Source Sub routine
+// Use with version 1.8+
+//
+// Author: Jeff Ward
+// Last Modified 2/14/05
+//
+/*****************************************************************************/
 void Esource(double timev, int a)
 {
   double value;
@@ -20,7 +12,7 @@ void Esource(double timev, int a)
   
   // Sine
   if (Sloc[a][4] == 1)
-    value = 5*sin(2 * PI * Spar[a] * timev) - 0.0;
+    value = cos(2 * PI * Spar[a] * timev) ;
   
   // Pulse
   if (Sloc[a][4] == 2)
@@ -76,14 +68,18 @@ void Esource(double timev, int a)
 
   // orentation of source
   if (Sloc[a][3] == 1)
-    EX[IDX4(Sloc[a][0],Sloc[a][1],Sloc[a][2],1)] = value / dx;
+    EX[Sloc[a][0]][Sloc[a][1]][Sloc[a][2]][1] = value / dx;
   if (Sloc[a][3] == 2)
-    EY[IDX4(Sloc[a][0],Sloc[a][1],Sloc[a][2],1)] = value / dy;
+    EY[Sloc[a][0]][Sloc[a][1]][Sloc[a][2]][1] = value / dy;
   if (Sloc[a][3] == 3)
-    EZ[IDX4(Sloc[a][0],Sloc[a][1],Sloc[a][2],1)] = value / dz;
+    EZ[Sloc[a][0]][Sloc[a][1]][Sloc[a][2]][1] = value / dz;
 
 }
 
+/*****************************************************************************/
+//////////////////////////////////////////
+// Calculate the Input Voltage / Current /
+//////////////////////////////////////////
 void Rcalc( int a)
 {
   int x, y, z;
@@ -95,24 +91,27 @@ void Rcalc( int a)
 	
   if (Sloc[a][3] == 1)
     {
-      CURRENT[a] = ( ( BY[IDX4(x,y,z,1)] - BY[IDX4(x,y,z+1,1)] ) * dx
-		    + ( BZ[IDX4(x,y+1,z,1)] - BZ[IDX4(x,y,z,1)] ) * dy ) / MU_0;
+      CURRENT[a] = ( ( BY[x][y][z][1] - BY[x][y][z+1][1] ) * dx
+		    + ( BZ[x][y+1][z][1] - BZ[x][y][z][1] ) * dy ) / MU_0;
       // ASSUMING THE CURRENT / VOLTAGE VARIES SLOWLY COMPARD TO dt
-      VOLT[a] = - EX[IDX4(x,y,z,1)] * dx;
+      VOLT[a] = - EX[x][y][z][1] * dx;
     }
   if (Sloc[a][3] == 2)
     {
-      CURRENT[a] = ( ( BX[IDX4(x,y,z+1,1)] - BX[IDX4(x,y,z,1)] ) * dx
-		    + ( BZ[IDX4(x,y,z,1)] - BZ[IDX4(x+1,y,z,1)] ) * dy ) / MU_0;
+      CURRENT[a] = ( ( BX[x][y][z+1][1] - BX[x][y][z][1] ) * dx
+		    + ( BZ[x][y][z][1] - BZ[x+1][y][z][1] ) * dy ) / MU_0;
       // ASSUMING THE CURRENT / VOLTAGE VARIES SLOWLY COMPARD TO dt
-      VOLT[a] = - EY[IDX4(x,y,z,1)] * dy;
+      VOLT[a] = - EY[x][y][z][1] * dy;
     }
   if (Sloc[a][3] == 3)
     {
-      CURRENT[a] = ( ( BX[IDX4(x,y,z,1)] - BX[IDX4(x,y+1,z,1)] ) * dx
-		    + ( BY[IDX4(x+1,y,z,1)] - BY[IDX4(x,y,z,1)] ) * dy ) / MU_0;
+      CURRENT[a] = ( ( BX[x][y][z][1] - BX[x][y+1][z][1] ) * dx
+		    + ( BY[x+1][y][z][1] - BY[x][y][z][1] ) * dy ) / MU_0;
       // ASSUMING THE CURRENT / VOLTAGE VARIES SLOWLY COMPARD TO dt
-      VOLT[a] = - EZ[IDX4(x,y,z,1)] * dz;
+      VOLT[a] = - EZ[x][y][z][1] * dz;
     }
 
 }
+
+
+

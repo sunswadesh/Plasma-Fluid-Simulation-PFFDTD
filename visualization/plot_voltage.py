@@ -9,7 +9,7 @@ def main():
     parser = argparse.ArgumentParser(description="Visualize PFFDTD Voltage/Current data.")
     parser.add_argument("filepath", help="Path to the .vc file")
     parser.add_argument("--source", type=int, default=1, help="Source number to extract (default: 1)")
-    parser.add_argument("--save", action="store_true", help="Save plots to individual files instead of showing")
+    parser.add_argument("--save", help="Path to save the impedance plot")
     args = parser.parse_args()
 
     if not os.path.exists(args.filepath):
@@ -31,6 +31,12 @@ def main():
     _, i_f = compute_dtft(t, i_curr, freq_range_hz=(0.5e6, 15e6, 0.01e6))
     
     z_f = compute_impedance(v_f, i_f)
+    z_mag = np.abs(z_f)
+    
+    # Normalized Impedance (if needed, otherwise just |Z|)
+    # User's image shows normalized |Z/Z0|.  Z0 ~ 1000? 
+    # Or maybe it's normalized to free space? 
+    # For now, let's plot Magnitude.
     
     # Theoretical Capacitor Reactance for comparison (from legacy)
     # Cap = 1e-12
@@ -41,48 +47,49 @@ def main():
 
     # 3. Plotting
     
-    # Figure 1: Time Domain
-    fig1, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
-    ax1.plot(t * 1e9, v) # Scale to ns
-    ax1.set_ylabel("Voltage (V)")
-    ax1.set_title("Time Domain Signals")
-    ax1.grid(True)
+    # Figure 1: Voltage and Current (Time Domain)
+    fig1, ax1 = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
     
-    ax2.plot(t * 1e9, i_curr)
-    ax2.set_ylabel("Current (A)")
-    ax2.set_xlabel("Time (ns)")
-    ax2.grid(True)
+    ax1[0].plot(t * 1e9, v) # Scale to ns
+    ax1[0].set_ylabel("Voltage (V)")
+    ax1[0].set_title("Time Domain Signals")
+    ax1[0].grid(True)
     
-    # Figure 2: Frequency Domain (Magnitude)
-    fig2, (ax3, ax4) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
-    freqs_mhz = freqs / 1e6
+    ax1[1].plot(t * 1e9, i_curr)
+    ax1[1].set_ylabel("Current (A)")
+    ax1[1].set_xlabel("Time (ns)")
+    ax1[1].grid(True)
+
+    # Figure 2: Impedance (Magnitude and Phase)
+    fig2, ax2 = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
     
-    ax3.plot(freqs_mhz, 20 * np.log10(np.abs(v_f)))
-    ax3.set_ylabel("FFT V (dB)")
-    ax3.set_title("Frequency Domain (Magnitude)")
-    ax3.grid(True)
+    # Magnitude
+    ax2[0].plot(freqs / 1e6, np.abs(z_f), label='|Z|')
+    ax2[0].set_ylabel("|Z| (Ohms)")
+    ax2[0].set_title("Impedance Analysis")
+    ax2[0].grid(True)
+    ax2[0].legend()
     
-    ax4.plot(freqs_mhz, 20 * np.log10(np.abs(i_f)))
-    ax4.set_ylabel("FFT I (dB)")
-    ax4.set_xlabel("Frequency (MHz)")
-    ax4.grid(True)
-    
-    # Figure 3: Impedance
-    fig3, ax5 = plt.subplots(1, 1, figsize=(10, 6))
-    ax5.plot(freqs_mhz, 20 * np.log10(np.abs(z_f)), label='Measured Z')
-    ax5.plot(freqs_mhz, 20 * np.log10(np.abs(xc_f)), '--', label='Theoretical C (1pF)')
-    ax5.set_ylabel("Impedance Magnitude (dB)")
-    ax5.set_xlabel("Frequency (MHz)")
-    ax5.set_title("Impedance Analysis")
-    ax5.legend()
-    ax5.grid(True)
+    # Phase
+    ax2[1].plot(freqs / 1e6, np.angle(z_f, deg=True), label='Phase(Z)', color='orange')
+    ax2[1].set_ylabel("Phase (Degrees)")
+    ax2[1].set_xlabel("Frequency (MHz)")
+    ax2[1].grid(True)
+    ax2[1].legend()
 
     if args.save:
-        base = os.path.splitext(os.path.basename(args.filepath))[0]
-        fig1.savefig(f"{base}_time.png")
-        fig2.savefig(f"{base}_freq.png")
-        fig3.savefig(f"{base}_impedance.png")
-        print(f"Plots saved as {base}_*.png")
+        # If save path is a directory/prefix, adapt. 
+        # But args.save is likely a filename like "impedance_plot.png".
+        # We need to split it to save two files.
+        dir_name = os.path.dirname(args.save)
+        base_name = os.path.splitext(os.path.basename(args.save))[0]
+        
+        save_path_vi = os.path.join(dir_name, f"{base_name}_vi.png")
+        save_path_z = os.path.join(dir_name, f"{base_name}_impedance.png")
+        
+        fig1.savefig(save_path_vi)
+        fig2.savefig(save_path_z)
+        print(f"Plots saved to:\n  {save_path_vi}\n  {save_path_z}")
     else:
         plt.show()
 

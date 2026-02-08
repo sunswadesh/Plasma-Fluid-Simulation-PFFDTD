@@ -1,5 +1,6 @@
 @echo off
 echo Running PFFDTD Tests...
+ pushd %~dp0..
 
 if not exist build (
     mkdir build
@@ -16,4 +17,4 @@ ctest -C Debug --output-on-failure
 if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 
 echo All tests passed!
-cd ..
+popd
