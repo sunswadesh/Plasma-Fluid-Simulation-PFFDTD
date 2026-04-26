@@ -176,6 +176,18 @@ void Ucalc()
 										+ EeZ ) )
 						  - C_U_TZ * ( N[IDX5(i,j,k+1,2,m)] - N[IDX5(i,j,k-1,2,m)] ) / N_0[m] ) / M[m]
 	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UZ[IDX5(i,j,k,1,m)] - UZ_0 );
+	
+	  // Velocity Clamping (Relativistic stability)
+	  double v2 = UX[IDX5(i,j,k,2,m)]*UX[IDX5(i,j,k,2,m)] + 
+                  UY[IDX5(i,j,k,2,m)]*UY[IDX5(i,j,k,2,m)] + 
+                  UZ[IDX5(i,j,k,2,m)]*UZ[IDX5(i,j,k,2,m)];
+      double vmax = C * V_MAX_RATIO;
+      if (v2 > vmax*vmax) {
+          double scale = vmax / sqrt(v2);
+          UX[IDX5(i,j,k,2,m)] *= scale;
+          UY[IDX5(i,j,k,2,m)] *= scale;
+          UZ[IDX5(i,j,k,2,m)] *= scale;
+      }
 	}
 }
 
@@ -205,6 +217,11 @@ void Ncalc()
 						      + UX_0 * ( N[IDX5(i+1,j,k,1,m)] - N[IDX5(i-1,j,k,1,m)] ) * C_N_tx
 						      + UY_0 * ( N[IDX5(i,j+1,k,1,m)] - N[IDX5(i,j-1,k,1,m)] ) * C_N_ty
 						      + UZ_0 * ( N[IDX5(i,j,k+1,1,m)] - N[IDX5(i,j,k-1,1,m)] ) * C_N_tz );
+	      
+	      // Density Floor (Vacuum Catastrophe prevention)
+	      if (N[IDX5(i,j,k,2,m)] < N_0[m] * N_MIN_RATIO) {
+	          N[IDX5(i,j,k,2,m)] = N_0[m] * N_MIN_RATIO;
+	      }
 	      
 	}
 }
@@ -266,4 +283,34 @@ void Pcalc()
   // N
   Ncalc();
   NBCcalc();
+}
+
+void NBCcalc()
+{
+  // Absorbing Sink at Antenna Surface
+  // If SIG == 1.0 (set in PLASMAclear for ERX/ERY/ERZ==1), treat as antenna
+  // Force density to floor to simulate absorption
+  int i, j, k, m;
+
+  #pragma omp parallel for private(j,k,m)
+  for (i=0; i<=sx; i++) 
+    for (j=0; j<=sy; j++)
+      for (k=0; k<=sz; k++)
+      {
+          // Check if this cell is part of the antenna (Conductivity turned on)
+          // SIG is flat 1D array IDX3
+          if (SIG[IDX3(i,j,k)] > 0.5) 
+          {
+              for (m=0; m<NS; m++) 
+              {
+                  // Force density to minimum (Sink)
+                  N[IDX5(i,j,k,2,m)] = N_0[m] * N_MIN_RATIO;
+                  
+                  // Optionally kill velocity too? 
+                  // UX[IDX5(i,j,k,2,m)] = 0.0;
+                  // UY[IDX5(i,j,k,2,m)] = 0.0;
+                  // UZ[IDX5(i,j,k,2,m)] = 0.0;
+              }
+          }
+      }
 }

@@ -6,6 +6,8 @@
 #define QE -1.6021917e-19                       // Charge of electron
 #define AMU 1.6605e-27                          // AMU -> kg
 #define K 1.380622e-23                          // Boltzmans Constant
+#define N_MIN_RATIO 1.0e-6                      // Density Floor Ratio (relative to N0)
+#define V_MAX_RATIO 0.1                         // Velocity Clamp Ratio (relative to C)
 
 #define NS 3                                    // Number of species (NS=1 is only electrons)
 

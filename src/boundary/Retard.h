@@ -231,10 +231,13 @@ void UBCcalc()
 
 }
 
+// Void NBCcalc() definition removed to allow implementation in plasma.cpp
+/*
 void NBCcalc()
 {
 
 }
+*/
 
 void Ninital()
 {
