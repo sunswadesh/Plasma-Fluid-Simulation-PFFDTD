@@ -125,9 +125,9 @@ git remote add upstream https://github.com/sunswadesh/Plasma-Fluid-Simulation-PF
 #### 2. Create Feature Branch
 
 ```bash
-# Always branch from develop
+# Branch from main unless maintainers request a different base
 git fetch upstream
-git checkout upstream/develop
+git checkout upstream/main
 git checkout -b feature/descriptive-name
 
 # Naming conventions:
@@ -137,6 +137,21 @@ git checkout -b feature/descriptive-name
 # docs/api-documentation
 # test/validation-suite
 ```
+
+### Documentation Ownership and Update Policy
+
+Documentation is a required part of every behavior-changing contribution.
+
+Minimum policy:
+
+1. If runtime behavior changes, update user-facing docs in the same PR.
+2. If input format or parameters change, update `docs/INPUT_FORMAT.md`.
+3. If physics equations/models change, update `docs/PHYSICS.md`.
+4. If module responsibilities or flow changes, update `docs/ARCHITECTURE.md`.
+5. If build/test workflow changes, update `README.md` and `docs/DEVELOPERS.md`.
+6. Track notable changes in `CHANGELOG.md`.
+
+PRs may be delayed if required documentation updates are missing.
 
 #### 3. Make Changes
 

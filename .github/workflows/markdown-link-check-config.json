@@ -1,0 +1,21 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^mailto:"
+    }
+  ],
+  "httpHeaders": [
+    {
+      "urls": [
+        "https://github.com"
+      ],
+      "headers": {
+        "User-Agent": "github-action-markdown-link-check"
+      }
+    }
+  ],
+  "retryOn429": true,
+  "retryCount": 3,
+  "fallbackRetryDelay": "5s",
+  "aliveStatusCodes": [200, 206, 301, 302]
+}

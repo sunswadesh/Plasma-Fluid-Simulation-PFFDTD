@@ -1,5 +1,8 @@
 # Documentation Setup Complete - Summary Report
 
+> Historical report: this document reflects documentation/setup intent at the time it was written (2026-01-26).
+> For current repository state and active cleanup priorities, use `docs/SETUP_SUMMARY.md`, `docs/INDEX.md`, and `docs/DOCS_REMEDIATION_CHECKLIST.md`.
+
 **Date:** January 26, 2026  
 **Project:** Plasma Fluid - Finite Difference Time Domain (PF-FDTD) Model  
 **Status:** ✅ Comprehensive Documentation Framework Established
