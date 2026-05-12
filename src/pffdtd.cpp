@@ -197,6 +197,8 @@ int main(int argc, char*argv[])
 	ANGLE_A_CYC = atof(argv[7]);
       if (argc >8)
 	T = atof(argv[8]);
+      if (argc > 9)
+	Sd = atoi(argv[9]);
     }
   else      	
     {
@@ -269,6 +271,8 @@ int main(int argc, char*argv[])
       printf("\t\\\\Plasma Parameters\n\tfp->%5.3f(MHz)\tfc->%5.3f(MHz)\tfg->%5.3f(MHz)\n\t@%5.3f elevation & %5.3f azimuth\n",(FREQ_PLASMA/1e6),(FREQ_PLASMA*FREQ_COL/1e6),(FREQ_CYC/1e6),ANGLE_E_CYC,ANGLE_A_CYC);
       df = dt*FREQ_PLASMA; 
       printf("\t N_0 -> %5.3f, %5.3f, %5.3f 1/cc\n",N_0[0]*1e-6,N_0[1]*1e-6,N_0[2]*1e-6);
+      if (Sd > 0)
+        printf("\t Sheath: Sd=%d cells (step profile)\n", Sd);
     }
 
   // Write header line for output files

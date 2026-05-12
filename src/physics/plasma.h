@@ -16,6 +16,10 @@
  // Last dim m runs 0..NS-1. Next dim l runs 0..2 (time).
  #define IDX5(i,j,k,l,m) ( ((((i)*(sy+1) + (j))*(sz+1) + (k))*3 + (l))*NS + (m) )
 
+ // Spatial density index: (i, j, k, m) — no time dimension
+ // Size: (sx+1)*(sy+1)*(sz+1)*NS
+ #define IDX_N0(i,j,k,m) ( (((i)*(sy+1) + (j))*(sz+1) + (k))*NS + (m) )
+
 // Global Variables (Extern)
 extern double FREQ_PLASMA;
 extern double FREQ_COL;
@@ -34,8 +38,12 @@ extern double Q[NS];                                   // Array of charges for s
 
 extern double *UX, *UY, *UZ;	        // Partical Movement (Flat 1D: IDX5)
 extern double *N;					// Density (Flat 1D: IDX5)
+extern double *N0_SPATIAL;			// Spatially-varying ambient density (Flat 1D: IDX3*NS)
 extern double *SIG;					// Conductivity (Flat 1D: IDX3)
 extern double *QF;                                   // Charging Factor (Flat 1D: IDX3)
+
+// Sheath parameters
+extern int Sd;                                  // Sheath width in cells (0 = no sheath)
 
 // Externs for Field Arrays used in plasma.cpp
 extern double *EX, *EY, *EZ;

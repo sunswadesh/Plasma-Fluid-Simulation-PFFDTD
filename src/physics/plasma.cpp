@@ -1,6 +1,7 @@
 #include "plasma.h"
 #include <omp.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "../utils/constants.h"
 #include "../utils/memallocate.h"
@@ -23,8 +24,12 @@ double Q[NS];                                   // Array of charges for species
 
 double *UX, *UY, *UZ;	        // Partical Movement (Flat 1D)
 double *N;					// Density (Flat 1D)
+double *N0_SPATIAL;			// Spatially-varying ambient density (Flat 1D: IDX_N0)
 double *SIG;					// Conductivity (Flat 1D)
 double *QF;                                   // Charging Factor (Flat 1D)
+
+// Sheath parameters
+int Sd = 0;                             // Sheath width in cells (0 = no sheath)
 
 // Externs for Field Arrays (defined in pffdtd.cpp or field modules, declared in plasma.h used here)
 // They are included via plasma.h
@@ -33,6 +38,7 @@ int PLASMAallocate(int allocate)
 {
   int total_grid = (sx+1)*(sy+1)*(sz+1);
   int total_5d = total_grid * 3 * NS;
+  int total_n0 = total_grid * NS;
   
   UX = darray1(0, total_5d);
   UY = darray1(0, total_5d);
@@ -40,6 +46,9 @@ int PLASMAallocate(int allocate)
   N = darray1(0, total_5d);
   allocate = allocate + 4 * total_5d * sizeof(double);
   
+  N0_SPATIAL = darray1(0, total_n0);
+  allocate = allocate + total_n0 * sizeof(double);
+
   SIG = darray1(0, total_grid);
   allocate = allocate + total_grid * sizeof(double);
   QF = darray1(0, total_grid);
@@ -81,6 +90,7 @@ void PLASMAclear()
   // Initialize Arrays to 0
   int total_grid = (sx+1)*(sy+1)*(sz+1);
   int total_5d = total_grid * 3 * NS;
+  int total_n0 = total_grid * NS;
   
   for(int idx = 0; idx < total_5d; idx++) {
       UX[idx] = 0.0;
@@ -93,12 +103,70 @@ void PLASMAclear()
       QF[idx] = 1.0;
   }
 
-  // Turns Plasma On
+  // Initialize N0_SPATIAL to uniform bulk density
+  for(int idx = 0; idx < total_n0; idx++) {
+      N0_SPATIAL[idx] = N_0[idx % NS];
+  }
+
+  // Turns Plasma On and marks antenna cells
   for (i=6;i<sx-4;i++)
     for (j=6;j<sy-4;j++)
       for (k=6;k<sz-4;k++)
 	if ((ERX[IDX3(i,j,k)]==1) || (ERY[IDX3(i,j,k)]==1) || (ERZ[IDX3(i,j,k)]==1))
 	  SIG[IDX3(i,j,k)] = 1.0;
+
+  // Apply sheath density profile: deplete plasma within Sd cells of antenna
+  if (Sd > 0) {
+      // Build distance field from antenna surface
+      // Use iterative dilation: for each layer d=1..Sd, find cells adjacent to antenna/previous layer
+      // Mark sheath region in N0_SPATIAL
+      
+      // Temporary array to store distance from antenna (0 = antenna, 1..Sd = sheath, >Sd = bulk)
+      int *dist = (int*)malloc(total_grid * sizeof(int));
+      for(int idx = 0; idx < total_grid; idx++)
+          dist[idx] = Sd + 1;  // Initialize to "far away"
+      
+      // Seed: antenna cells have distance 0
+      for (i=0;i<=sx;i++)
+        for (j=0;j<=sy;j++)
+          for (k=0;k<=sz;k++)
+            if (SIG[IDX3(i,j,k)] > 0.5)
+              dist[IDX3(i,j,k)] = 0;
+      
+      // Iterative dilation for Sd layers (Manhattan/Chebyshev distance)
+      for (int d=1; d<=Sd; d++) {
+          for (i=1;i<sx;i++)
+            for (j=1;j<sy;j++)
+              for (k=1;k<sz;k++) {
+                  if (dist[IDX3(i,j,k)] <= d) continue;  // already closer
+                  // Check 6-connected neighbors
+                  if (dist[IDX3(i-1,j,k)] < d ||
+                      dist[IDX3(i+1,j,k)] < d ||
+                      dist[IDX3(i,j-1,k)] < d ||
+                      dist[IDX3(i,j+1,k)] < d ||
+                      dist[IDX3(i,j,k-1)] < d ||
+                      dist[IDX3(i,j,k+1)] < d) {
+                      dist[IDX3(i,j,k)] = d;
+                  }
+              }
+      }
+      
+      // Apply sheath: cells with 0 < dist <= Sd get depleted density
+      for (i=0;i<=sx;i++)
+        for (j=0;j<=sy;j++)
+          for (k=0;k<=sz;k++) {
+              int d = dist[IDX3(i,j,k)];
+              if (d > 0 && d <= Sd) {
+                  // Step profile: density = 0 (use floor for numerical safety)
+                  for (m=0; m<NS; m++)
+                      N0_SPATIAL[IDX_N0(i,j,k,m)] = N_0[m] * N_MIN_RATIO;
+              }
+          }
+      
+      free(dist);
+      
+      printf("\tSheath: Sd=%d cells, step profile applied\n", Sd);
+  }
 
  
 }
@@ -107,10 +175,12 @@ void PLASMAfree()
 {
    int total_grid = (sx+1)*(sy+1)*(sz+1);
    int total_5d = total_grid * 3 * NS;
+   int total_n0 = total_grid * NS;
    freedarray1(UX, 0, total_5d);
    freedarray1(UY, 0, total_5d);
    freedarray1(UZ, 0, total_5d);
    freedarray1(N, 0, total_5d);
+   freedarray1(N0_SPATIAL, 0, total_n0);
    freedarray1(SIG, 0, total_grid);
    freedarray1(QF, 0, total_grid);
 }
@@ -160,21 +230,21 @@ void Ucalc()
 							         + Q[m]*C_U_1 * ( UY[IDX5(i,j,k,1,m)] * BZ_0 + UY_0 * ABZ
 										- UZ[IDX5(i,j,k,1,m)] * BY_0 - UZ_0 * ABY
 										+ EeX) )
-						  - C_U_TX * ( N[IDX5(i+1,j,k,2,m)] - N[IDX5(i-1,j,k,2,m)] ) / N_0[m] ) / M[m]
+						  - C_U_TX * ( N[IDX5(i+1,j,k,2,m)] - N[IDX5(i-1,j,k,2,m)] ) / N0_SPATIAL[IDX_N0(i,j,k,m)] ) / M[m]
 	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UX[IDX5(i,j,k,1,m)] - UX_0 );
 	  // Calculate UY
 	  UY[IDX5(i,j,k,2,m)] = UY[IDX5(i,j,k,0,m)] + (QF[IDX3(i,j,k)] * (Q[m]*dt * ( EY[IDX4(i,j,k,1)] + EY[IDX4(i,j+1,k,1)] )
 								 + Q[m]*C_U_1 * ( UZ[IDX5(i,j,k,1,m)] * BX_0 + UZ_0 * ABX
 										- UX[IDX5(i,j,k,1,m)] * BZ_0 - UX_0 * ABZ
 								                + EeY) )
-						  - C_U_TY * ( N[IDX5(i,j+1,k,2,m)] - N[IDX5(i,j-1,k,2,m)] ) / N_0[m] ) / M[m]
+						  - C_U_TY * ( N[IDX5(i,j+1,k,2,m)] - N[IDX5(i,j-1,k,2,m)] ) / N0_SPATIAL[IDX_N0(i,j,k,m)] ) / M[m]
 	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UY[IDX5(i,j,k,1,m)] - UY_0 );
 	  // Calculate UZ
 	  UZ[IDX5(i,j,k,2,m)] = UZ[IDX5(i,j,k,0,m)] + (QF[IDX3(i,j,k)] * (Q[m]*dt * ( EZ[IDX4(i,j,k,1)] + EZ[IDX4(i,j,k+1,1)] )
 								 + Q[m]*C_U_1 * ( UX[IDX5(i,j,k,1,m)] * BY_0 + UX_0 * ABY
 										- UY[IDX5(i,j,k,1,m)] * BX_0 - UY_0 * ABX
 										+ EeZ ) )
-						  - C_U_TZ * ( N[IDX5(i,j,k+1,2,m)] - N[IDX5(i,j,k-1,2,m)] ) / N_0[m] ) / M[m]
+						  - C_U_TZ * ( N[IDX5(i,j,k+1,2,m)] - N[IDX5(i,j,k-1,2,m)] ) / N0_SPATIAL[IDX_N0(i,j,k,m)] ) / M[m]
 	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UZ[IDX5(i,j,k,1,m)] - UZ_0 );
 	
 	  // Velocity Clamping (Relativistic stability)
@@ -211,7 +281,7 @@ void Ncalc()
 	      // Calculate Body (Expanded 1st order terms)
 	      // Note: the Time difference in the density (last half of the equation) is due to the fact that the cells
 	      // "ahead" of the current calculation have not been updated in time
-	      N[IDX5(i,j,k,2,m)] = N[IDX5(i,j,k,0,m)] - ( N_0[m] * ( ( UX[IDX5(i+1,j,k,1,m)] - UX[IDX5(i-1,j,k,1,m)] ) * C_N_tx
+	      N[IDX5(i,j,k,2,m)] = N[IDX5(i,j,k,0,m)] - ( N0_SPATIAL[IDX_N0(i,j,k,m)] * ( ( UX[IDX5(i+1,j,k,1,m)] - UX[IDX5(i-1,j,k,1,m)] ) * C_N_tx
 								 + ( UY[IDX5(i,j+1,k,1,m)] - UY[IDX5(i,j-1,k,1,m)] ) * C_N_ty
 								 + ( UZ[IDX5(i,j,k+1,1,m)] - UZ[IDX5(i,j,k-1,1,m)] ) * C_N_tz )
 						      + UX_0 * ( N[IDX5(i+1,j,k,1,m)] - N[IDX5(i-1,j,k,1,m)] ) * C_N_tx
@@ -219,8 +289,8 @@ void Ncalc()
 						      + UZ_0 * ( N[IDX5(i,j,k+1,1,m)] - N[IDX5(i,j,k-1,1,m)] ) * C_N_tz );
 	      
 	      // Density Floor (Vacuum Catastrophe prevention)
-	      if (N[IDX5(i,j,k,2,m)] < N_0[m] * N_MIN_RATIO) {
-	          N[IDX5(i,j,k,2,m)] = N_0[m] * N_MIN_RATIO;
+	      if (N[IDX5(i,j,k,2,m)] < N0_SPATIAL[IDX_N0(i,j,k,m)] * N_MIN_RATIO) {
+	          N[IDX5(i,j,k,2,m)] = N0_SPATIAL[IDX_N0(i,j,k,m)] * N_MIN_RATIO;
 	      }
 	      
 	}
@@ -251,9 +321,9 @@ void Ecalcmod()
 	  JZ = 0.0;
 	  for (m=0;m<NS;m++)
 	  {
-	      JX = JX + Q[m] * ( N_0[m] * (UX[IDX5(i,j,k,2,m)] + UX[IDX5(i-1,j,k,2,m)]) +  UX_0 * ( N[IDX5(i,j,k,2,m)] + N[IDX5(i-1,j,k,2,m)]) + 2 * N_0[m] * UX_0 );
-	      JY = JY + Q[m] * ( N_0[m] * (UY[IDX5(i,j,k,2,m)] + UY[IDX5(i,j-1,k,2,m)]) +  UY_0 * ( N[IDX5(i,j,k,2,m)] + N[IDX5(i,j-1,k,2,m)]) + 2 * N_0[m] * UY_0 );
-	      JZ = JZ + Q[m] * ( N_0[m] * (UZ[IDX5(i,j,k,2,m)] + UZ[IDX5(i,j,k-1,2,m)]) +  UZ_0 * ( N[IDX5(i,j,k,2,m)] + N[IDX5(i,j,k-1,2,m)]) + 2 * N_0[m] * UZ_0 );
+	      JX = JX + Q[m] * ( N0_SPATIAL[IDX_N0(i,j,k,m)] * (UX[IDX5(i,j,k,2,m)] + UX[IDX5(i-1,j,k,2,m)]) +  UX_0 * ( N[IDX5(i,j,k,2,m)] + N[IDX5(i-1,j,k,2,m)]) + 2 * N0_SPATIAL[IDX_N0(i,j,k,m)] * UX_0 );
+	      JY = JY + Q[m] * ( N0_SPATIAL[IDX_N0(i,j,k,m)] * (UY[IDX5(i,j,k,2,m)] + UY[IDX5(i,j-1,k,2,m)]) +  UY_0 * ( N[IDX5(i,j,k,2,m)] + N[IDX5(i,j-1,k,2,m)]) + 2 * N0_SPATIAL[IDX_N0(i,j,k,m)] * UY_0 );
+	      JZ = JZ + Q[m] * ( N0_SPATIAL[IDX_N0(i,j,k,m)] * (UZ[IDX5(i,j,k,2,m)] + UZ[IDX5(i,j,k-1,2,m)]) +  UZ_0 * ( N[IDX5(i,j,k,2,m)] + N[IDX5(i,j,k-1,2,m)]) + 2 * N0_SPATIAL[IDX_N0(i,j,k,m)] * UZ_0 );
 	  }
 
 
@@ -304,7 +374,7 @@ void NBCcalc()
               for (m=0; m<NS; m++) 
               {
                   // Force density to minimum (Sink)
-                  N[IDX5(i,j,k,2,m)] = N_0[m] * N_MIN_RATIO;
+                  N[IDX5(i,j,k,2,m)] = N0_SPATIAL[IDX_N0(i,j,k,m)] * N_MIN_RATIO;
                   
                   // Optionally kill velocity too? 
                   // UX[IDX5(i,j,k,2,m)] = 0.0;
