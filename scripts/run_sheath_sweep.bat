@@ -1,11 +1,12 @@
 @echo off
-setlocal
+setlocal EnableDelayedExpansion
 pushd %~dp0..
 
 REM Sheath Width Sweep: Sd = 0, 2, 4, 6, 8, 10 cells
 REM Fixed params: fp=200kHz, fcol=0.1, fcyc=0, angles=0, T=2000K
 
 if not exist "results\sheath_sweep" mkdir "results\sheath_sweep"
+set "FAILED=0"
 
 echo ============================================
 echo  Sheath Width Sweep (Sd = 0,2,4,6,8,10)
@@ -14,12 +15,32 @@ echo ============================================
 for %%S in (0 2 4 6 8 10) do (
     echo.
     echo --- Running Sd=%%S ---
-    if not exist "results\sheath_sweep\sd%%S" mkdir "results\sheath_sweep\sd%%S"
-    pffdtd_parallel.exe sheath "results\sheath_sweep\sd%%S\data" 200000 0.1 0 0 0 2000 %%S
-    if errorlevel 1 (
-        echo ERROR: Sd=%%S failed!
+    set "OUTDIR=results\sheath_sweep\sd%%S"
+    set "OUTBASE=!OUTDIR!\data"
+    set "LOGFILE=!OUTDIR!\simulation.log"
+    if not exist "!OUTDIR!" mkdir "!OUTDIR!"
+    if exist "!OUTBASE!.vc" del /q "!OUTBASE!.vc"
+    if exist "!OUTBASE!.fd" del /q "!OUTBASE!.fd"
+
+    pffdtd_parallel.exe sheath "!OUTBASE!" 200000 0.1 0 0 0 2000 %%S > "!LOGFILE!" 2>&1
+    set "RC=!ERRORLEVEL!"
+
+    if not "!RC!"=="0" (
+        echo ERROR: Sd=%%S exited with code !RC!.
+        set /a FAILED+=1
     ) else (
-        echo OK: Sd=%%S completed.
+        if not exist "!OUTBASE!.vc" (
+            echo ERROR: Sd=%%S produced no .vc output.
+            set /a FAILED+=1
+        ) else (
+            for %%F in ("!OUTBASE!.vc") do set "VCSIZE=%%~zF"
+            if "!VCSIZE!"=="0" (
+                echo ERROR: Sd=%%S produced empty .vc output.
+                set /a FAILED+=1
+            ) else (
+                echo OK: Sd=%%S completed. Output: !OUTBASE!.vc
+            )
+        )
     )
 )
 
@@ -28,5 +49,9 @@ echo ============================================
 echo  Sweep Complete. Results in results\sheath_sweep\
 echo ============================================
 
+set "EXITCODE=0"
+if not "!FAILED!"=="0" set "EXITCODE=1"
+if not "!FAILED!"=="0" echo Sweep finished with !FAILED! failure(s).
+
 popd
-endlocal
+endlocal & exit /b %EXITCODE%

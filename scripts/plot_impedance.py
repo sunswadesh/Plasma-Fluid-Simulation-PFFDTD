@@ -70,16 +70,26 @@ def find_resonance(freq, Z):
 
 def discover_vc_files(path):
     """Auto-discover .vc files in a sweep directory."""
-    if os.path.isfile(path):
+    if os.path.isfile(path) and path.lower().endswith(".vc"):
         return [path]
-    
-    # Look for sd*/data.vc pattern
+
+    # Accept direct .vc glob patterns or recursive sweep folders.
+    files = []
+
+    # Look for historical sd*/data.vc pattern first.
     pattern = os.path.join(path, "sd*", "data.vc")
-    files = sorted(glob.glob(pattern))
+    files.extend(glob.glob(pattern))
+
+    # Broader fallback: any .vc inside sd* folders.
+    pattern = os.path.join(path, "sd*", "*.vc")
+    files.extend(glob.glob(pattern))
+
+    # Final fallback: any .vc directly under the provided path.
     if not files:
-        # Try direct *.vc
-        files = sorted(glob.glob(os.path.join(path, "*.vc")))
-    return files
+        files.extend(glob.glob(os.path.join(path, "*.vc")))
+
+    # Deduplicate and sort for stable plotting order.
+    return sorted(set(files))
 
 
 def extract_sd_from_path(filepath):
