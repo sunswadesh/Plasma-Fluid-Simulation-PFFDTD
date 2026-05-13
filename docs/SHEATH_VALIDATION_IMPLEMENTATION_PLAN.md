@@ -120,4 +120,42 @@ for Sd in 0 2 4 6 8 10:
 
 ## 9. Implementation Status
 
-_To be updated after implementation completes._
+This file tracks progress and findings to date. See the companion analysis document `docs/SHEATH_VALIDATION_ANALYSIS.md` for measured results and plots.
+
+### 9.1 Work Completed
+- Executables relocated into `build/` for consistent invocation on Windows.
+- Sweep driver created and executed: `scripts/run_sheath_sweep.ps1` / `scripts/run_sheath_sweep.bat` produced results under `results/sheath_sweep/sd{Sd}` for Sd = 0,2,4,6,8,10.
+- Robust post-processing script added: `scripts/analyze_sheath_results.py` which parses `.vc` files, computes DFTs and `Z(f)` and saves `sheath_impedance.png`, `sheath_resonance_shift.png`, and `sheath_resonance_summary.txt`.
+
+### 9.2 Issues Encountered
+- Some `.vc` outputs contained non-numeric or irregular rows which broke simple `numpy.loadtxt` parsing; analyzer now filters non-numeric lines.
+- The DFT frequency axis for the current recorded traces places significant energy in very high-frequency bins (due to sampling cadence and length), so the expected physical resonance in the kHz band was not detected as an Im{Z} zero-crossing within the original analysis band (f ≤ 1 MHz).
+
+### 9.3 Short Summary of Findings
+- All sweep runs completed and produced `data.vc` and `data.fd` files for Sd = 0,2,4,6,8,10.
+- No clear Im{Z} zero-crossing (series resonance) was found within f ≤ 1 MHz for any Sd using the present time-series data.
+- As a fallback the analyzer reports the frequency bin of maximum |Z| (peak magnitude) for each run in `sheath_resonance_summary.txt`. These peak bins currently fall at very high-frequency bins and are likely sampling/DFT artifacts rather than the physical resonance reported by Tu (2008).
+
+### 9.4 Next Steps (recommended)
+1. Re-run analysis focusing on a lower-frequency band (e.g., `fmax = 200e3`) and/or decimate the time-series to reduce Nyquist frequency and better resolve kHz-range features.
+2. Ensure V(t)/I(t) recordings contain steady-state data (extend recording duration and/or trim initial transient) before computing DFT.
+3. If frequency-domain identification remains ambiguous, perform a narrow-band excitation sweep to map resonance more directly.
+
+Files of interest (workspace):
+- [scripts/analyze_sheath_results.py](scripts/analyze_sheath_results.py#L1)
+- [sheath_impedance.png](sheath_impedance.png)
+- [sheath_resonance_summary.txt](sheath_resonance_summary.txt#L1-L20)
+- Output directories: `results/sheath_sweep/sd*/`
+
+This plan file will be revisited after the recommended next steps are executed.
+
+### 9.5 Recent Changes Committed
+
+The following artifacts were added during the current work and are now part of the branch `PffdtdSheath`:
+
+- `scripts/analyze_sheath_results.py` — improved analyzer with CLI options `--fmax`, `--decimate`, and `--trim_seconds` for focused analysis of the impedance and steady-state trimming/decimation.
+- `docs/SHEATH_VALIDATION_ANALYSIS.md` — analysis summary document with measured results and recommendations.
+- `docs/NARROW_BAND_EXCITATION_PLAN.md` — plan for obtaining high-resolution resonance measurements using long-recording and/or narrow-band sweeps.
+- `scripts/run_sheath_long_trace.ps1` — helper PowerShell script template to run long-recording simulations for a single `Sd`.
+
+All changes have been committed to the local repository and pushed to the remote branch `PffdtdSheath` (see repository history for commit details).
