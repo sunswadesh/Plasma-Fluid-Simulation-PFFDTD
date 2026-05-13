@@ -111,6 +111,8 @@ void ctrlc_handler(int);
 
 // Fields
 #include "fields/field_calculator.h"
+// Probe API
+#include "fields/probe.h"
 
 // Plasma routines
 // If included set plasma = 1 in main
@@ -265,6 +267,9 @@ int main(int argc, char*argv[])
       Q_flag = 3;
     }
 
+  // Initialize probes (no-op if none registered)
+  init_probes();
+
   // Verify plasma parameters (if any)
   if (plasma == 1)
     {
@@ -332,6 +337,8 @@ int main(int argc, char*argv[])
       for (j = 1; j <= Snum; j++)
 	fprintf(file_vc,"\t%e\t%e", VOLT[j], CURRENT[j]);
       fprintf(file_vc,"\n");
+  // Sample probes (writes CSV per probe)
+  probe_sample_all(i, timev);
  
       // Convergance
 
@@ -372,6 +379,8 @@ int main(int argc, char*argv[])
   fclose(file_str);
   fclose(file_vc);
   fclose(file_fd);
+  // Close probes
+  close_probes();
   
   // clear memory
   printf("Clearing  Memory \n");
