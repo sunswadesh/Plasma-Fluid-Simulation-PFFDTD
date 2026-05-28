@@ -25,8 +25,8 @@ REM I need to update dipole.str or create sheath.str for 30 kHz source.
 
 if not exist "results\sheath_test" mkdir "results\sheath_test"
 
-REM Create sheath.str from dipole.str with 30 kHz source
-powershell -Command "(Get-Content dipole.str) -replace '100000000', '30000' | Set-Content sheath.str"
+REM Create sheath.str from dipole.str with 30 kHz source and no field output
+powershell -Command "$c = Get-Content 'dipole.str'; for ($i = 0; $i -lt $c.Length; $i++) { if ($c[$i] -match '^//Output Field Info') { $c = $c[0..($i-1)]; break } }; $c = $c -replace '100000000','30000'; Set-Content 'sheath.str' $c"
 
 echo Running Sheath Test...
 REM Args: 
@@ -39,6 +39,7 @@ REM 6: 0 (Ang E)
 REM 7: 0 (Ang A)
 REM 8: 2000 (T Kelvin)
 
+if exist "results\sheath_test\data.fd" del /q "results\sheath_test\data.fd"
 pffdtd_parallel.exe sheath "results\sheath_test\data" 200000 0.1 0 0 0 2000 > "results\sheath_test\simulation.log" 2>&1
 
 echo Done.

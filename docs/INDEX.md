@@ -41,6 +41,8 @@ This page is the primary navigation hub for project documentation.
 - [README_STRUCTURE.md](README_STRUCTURE.md)
 - [SETUP_SUMMARY.md](SETUP_SUMMARY.md)
 - [COMPLETION_REPORT.md](COMPLETION_REPORT.md)
+- [Sheath validation plan](sheath/SHEATH_VALIDATION_IMPLEMENTATION_PLAN.md)
+- [Sheath validation analysis](sheath/SHEATH_VALIDATION_ANALYSIS.md)
 
 ## Build, Test, And Run References
 

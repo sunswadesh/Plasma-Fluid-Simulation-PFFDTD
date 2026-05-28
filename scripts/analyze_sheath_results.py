@@ -87,11 +87,11 @@ def compute_impedance(time, voltage, current, window=True):
     mask = np.abs(I_f) > np.max(np.abs(I_f)) * 1e-10
     Z = np.zeros_like(V_f, dtype=np.complex128)
     Z[mask] = V_f[mask] / I_f[mask]
-    return freq, Z
+    return freq, Z, dt
 
 
-def find_resonance(freq, Z, fmax=1e6):
-    mask = freq <= fmax
+def find_resonance(freq, Z, fmin=0.0, fmax=1e6):
+    mask = (freq >= fmin) & (freq <= fmax)
     freq = freq[mask]
     Z = Z[mask]
     imag_z = np.imag(Z)
@@ -101,6 +101,18 @@ def find_resonance(freq, Z, fmax=1e6):
             f_cross = freq[i-1] + (freq[i] - freq[i-1]) * (-imag_z[i-1]) / (imag_z[i] - imag_z[i-1])
             crossings.append(f_cross)
     return crossings
+
+
+def find_peak(freq, Z, fmin=0.0, fmax=None):
+    mask = freq >= fmin
+    if fmax is not None:
+        mask &= freq <= fmax
+    freq = freq[mask]
+    Z = Z[mask]
+    if len(Z) == 0:
+        return None
+    idx = np.argmax(np.abs(Z))
+    return freq[idx]
 
 
 def discover_vc_files(path):
@@ -121,14 +133,20 @@ def extract_sd_from_path(filepath):
 def main():
     parser = argparse.ArgumentParser(description='Analyze sheath sweep results')
     parser.add_argument('sweep_dir', help='Path to results/sheath_sweep')
-    parser.add_argument('--fmax', type=float, default=1e6, help='Maximum frequency (Hz) to analyze')
+    parser.add_argument('--fmax', type=float, default=2e6, help='Maximum frequency (Hz) to analyze')
+    parser.add_argument('--fmin', type=float, default=0.0, help='Minimum frequency (Hz) to analyze')
     parser.add_argument('--decimate', type=int, default=1, help='Integer decimation factor (block-average)')
     parser.add_argument('--trim_seconds', type=float, default=0.0, help='Keep only the last N seconds of the record')
+    parser.add_argument('--source_freq', type=float, default=0.0, help='Optional source frequency for cycle diagnostics')
+    parser.add_argument('--peak_fmax', type=float, default=None, help='Maximum frequency (Hz) for fallback peak search')
     args = parser.parse_args()
     sweep_dir = args.sweep_dir
     fmax_arg = float(args.fmax)
+    fmin_arg = float(args.fmin)
     decimate_arg = int(args.decimate)
     trim_seconds_arg = float(args.trim_seconds)
+    source_freq = float(args.source_freq)
+    peak_fmax = float(args.peak_fmax) if args.peak_fmax is not None else None
     files = discover_vc_files(sweep_dir)
     if not files:
         print('No .vc files found under', sweep_dir)
@@ -156,29 +174,39 @@ def main():
         except Exception as e:
             print('  Error during trim/decimate:', e)
             continue
-        freq, Z = compute_impedance(t, v, i)
+        freq, Z, dt = compute_impedance(t, v, i)
         f_max = fmax_arg
-        mask_f = freq <= f_max
+        f_min = fmin_arg
+        fs = 1.0 / dt if dt > 0 else 0.0
+        nyquist = fs / 2.0
+        dfreq = freq[1] - freq[0] if len(freq) > 1 else 0.0
+        duration = t[-1] - t[0] if len(t) > 1 else 0.0
+        cycles = duration * source_freq if source_freq > 0 else None
+
+        print(f'  Samples: {len(t)}, dt={dt:.3e} s, fs={fs:.3e} Hz, nyquist={nyquist:.3e} Hz, df={dfreq:.3e} Hz, duration={duration:.3e} s')
+        if cycles is not None:
+            print(f'  Estimated steady-state cycles captured: {cycles:.3f} at source frequency {source_freq} Hz')
+
+        mask_f = (freq >= f_min) & (freq <= f_max)
         ax_real.plot(freq[mask_f] / 1e3, np.real(Z[mask_f]), label=label)
         ax_imag.plot(freq[mask_f] / 1e3, np.imag(Z[mask_f]), label=label)
+
         # Find zero-crossing series resonance (Im{Z} crossing from - to +)
-        res = find_resonance(freq, Z, fmax=f_max)
+        res = find_resonance(freq, Z, fmin=f_min, fmax=f_max)
         if res:
-            resonances.append((sd, res[0]))
-            summary_lines.append(f"{sd}\t{res[0]:.6f}\tpeak:{0:.6f}")
-            print(f"  Resonance at {res[0]/1e3:.3f} kHz")
+            fres = res[0]
+            resonances.append((sd, fres))
+            peak_freq = find_peak(freq, Z, fmin=f_min, fmax=peak_fmax if peak_fmax else f_max)
+            summary_lines.append(f"{sd}\t{fres:.6f}\t{peak_freq:.6f}\t{dt:.6e}\t{fs:.6e}\t{nyquist:.6e}\t{dfreq:.6e}\t{len(t)}\t{duration:.6e}\t{decimate_arg}\t{trim_seconds_arg}")
+            print(f"  Resonance at {fres/1e3:.3f} kHz")
         else:
-            # If no Im{Z} zero crossing found, report peak magnitude frequency as approximate resonance
-            magZ = np.abs(Z)
-            # ignore DC bin
-            if len(magZ) > 1:
-                idx_peak = np.argmax(magZ[1:]) + 1
-                fpeak = freq[idx_peak]
-                summary_lines.append(f"{sd}\tNaN\tpeak:{fpeak:.6f}")
-                print(f"  No zero-crossing; peak |Z| at {fpeak/1e3:.3f} kHz")
+            peak_upper = peak_fmax if peak_fmax is not None else f_max
+            peak_freq = find_peak(freq, Z, fmin=f_min, fmax=peak_upper)
+            summary_lines.append(f"{sd}\tNaN\t{(peak_freq if peak_freq is not None else float('nan')):.6f}\t{dt:.6e}\t{fs:.6e}\t{nyquist:.6e}\t{dfreq:.6e}\t{len(t)}\t{duration:.6e}\t{decimate_arg}\t{trim_seconds_arg}")
+            if peak_freq is not None:
+                print(f"  No zero-crossing; peak |Z| at {peak_freq/1e3:.3f} kHz")
             else:
-                summary_lines.append(f"{sd}\tNaN\tpeak:NaN")
-                print('  No resonance found and no frequency bins')
+                print('  No resonance found and no valid frequency bins')
 
     ax_real.set_ylabel('Re{Z} (Ohms)')
     ax_real.set_title('Input Impedance vs Frequency (Sheath Sweep)')
@@ -210,7 +238,7 @@ def main():
 
     # Write summary
     with open('sheath_resonance_summary.txt', 'w') as sf:
-        sf.write('Sd\tf_res(Hz)\n')
+        sf.write('Sd\tf_res(Hz)\tpeak_freq(Hz)\tdt(s)\tfs(Hz)\tnyquist(Hz)\tdf(Hz)\tn_samples\tduration(s)\tdecimate\ttrim_seconds\n')
         sf.write('\n'.join(summary_lines))
     print('Wrote sheath_resonance_summary.txt')
 

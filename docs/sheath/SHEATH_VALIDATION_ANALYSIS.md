@@ -46,23 +46,32 @@ Notes:
 
 Tu (2008) reports an upward shift in antenna resonance frequency as sheath width increases (resonance moves toward free-space value). With the present data and analysis:
 
-- We cannot confirm or refute Tu (2008) quantitatively because the physical resonance was not identified as a clean Im{Z} zero-crossing within the analyzed band.
-- Qualitatively, no clear monotonic shift of an identifiable resonance was observed in the extracted peak bins.
+- The current broadband DFT analysis is inconclusive; no physically meaningful resonance was identified within the analyzed band.
+- The reported GHz-scale peaks are almost certainly numerical artifacts and do not represent the expected sheath resonance.
+- Therefore, this dataset does not validate the Tu (2008) sheath resonance behavior.
 
 ## Possible causes for missing/ambiguous resonance
 
 1. Sampling cadence and time-series length produce very high Nyquist frequencies and coarse DFT bins at the kHz scale; low-frequency features may be masked.
 2. Time-series may contain significant transient content — steady-state portion may be too short.
-3. The excitation used may not couple strongly to the resonance mode under current plasma parameters; a narrow-band sweep or different source waveform may be necessary.
+3. The excitation used may not couple strongly to the resonance mode under current plasma parameters; a narrow-band sweep or different source waveform may be necessary. See Section 10 of `docs/sheath/SHEATH_VALIDATION_IMPLEMENTATION_PLAN.md` for the merged execution plan.
 
 ## Recommended next steps
 
-1. Re-run `scripts/analyze_sheath_results.py` with a reduced `fmax` (e.g., 200e3) to force inspection of kHz band and/or decimate the time-series by integer factor before FFT.
-2. Trim the initial transient from the V(t)/I(t) traces and analyze only steady-state windows (e.g., last N seconds of the record).
-3. If resonance remains ambiguous, modify simulation source to perform a controlled frequency sweep (narrowband excitation) to directly measure input impedance vs. frequency.
-4. Add automated checks in `scripts/analyze_sheath_results.py` to report sampling rate, Nyquist frequency and number of cycles captured to help tune future runs.
+1. Enhance the analyzer with:
+   - a reduced kHz-band `--fmax` mode
+   - trace decimation and output down-sampling support
+   - steady-state trimming to exclude initial transient response
+   - frequency resolution diagnostics (Nyquist, df, cycles captured)
+2. Do not execute another long broadband sheath test until the analysis method is validated with existing outputs and narrow-band test planning is confirmed.
+3. The analyzer was validated on existing `results/sheath_long/sd0/data.vc` using `--fmax 200000 --decimate 10 --trim_seconds 0.0001 --peak_fmax 200000` and produced a fallback peak at 46.845 kHz.
+4. If broadband DFT remains inconclusive, perform a narrow-band excitation sweep to directly map input impedance versus frequency. The combined narrow-band and long-record plan is now included in Section 10 of `docs/sheath/SHEATH_VALIDATION_IMPLEMENTATION_PLAN.md`.
+4. Validate the `Sd=0` baseline explicitly against the existing no-sheath plasma regression case.
+5. Document the new results in this analysis summary and in the implementation plan.
 
-## Artifacts & Files produced by current work
+## Conclusion
+
+The current dataset is a useful first pass, but it is not sufficient to complete sheath validation. The next phase must focus on low-frequency signal conditioning and targeted resonance measurement before the sheath plans can be considered complete.
 
 - `scripts/analyze_sheath_results.py` — analyzer (workspace root)
 - `sheath_impedance.png` — combined plots of Re{Z} and Im{Z} vs frequency (workspace root)

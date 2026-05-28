@@ -221,35 +221,55 @@ int setup2(FILE *fp1)
   // Points of Field output (opt.)
   if (fgets(tp1,80,fp1)==NULL)
     return 0;
-  fields = 1;                                         // Turns field output on
-  printf("\t%s",tp1);
-  fgets(tp1,80,fp1);
-  if (sscanf(tp1,"%d\t%d\t%d\t%d\t%d\t%d\t%d",&frate,&fout[0],&fout[1],&fout[2],&fout[3],&fout[4],&fout[5])<2)
-    return 1;
-  printf("\tOutput ->");
-  if (fout[0]==1)
-    printf(" Electric");
-  if (fout[1]==1)
-    printf(" Magnetic");
-  if (fout[2]==1)
-    printf(" eVelocity");
-  if (fout[3]==1)
-    printf(" eDensity");
-  if (fout[4]==1)
-    printf(" ionVelocity");
-  if (fout[5]==1)
-    printf(" ionDensity");
-  printf("\n");
-  fgets(tp1,80,fp1);
-  if (sscanf(tp1,"%d\t%d\t%d",&floc[0][0],&floc[0][1],&floc[0][2])!=3)
-    return 1;
-  printf("\tLower Limit [%d %d %d]\n",floc[0][0],floc[0][1],floc[0][2]);
-  fgets(tp1,80,fp1);
-  if (sscanf(tp1,"%d\t%d\t%d",&floc[1][0],&floc[1][1],&floc[1][2])!=3)
-    return 1;
-  printf("\tUpper Limit [%d %d %d]\n",floc[1][0],floc[1][1],floc[1][2]);
-  
-  return 0;
+
+  {
+    char *p = tp1;
+    while ((*p == ' ') || (*p == '\t'))
+      p++;
+    if ((*p == '/') || (*p == '#') || (*p == '\n') || (*p == '\r') || (*p == '\0'))
+      {
+        if (fgets(tp1,80,fp1)==NULL)
+          return 0;
+        p = tp1;
+        while ((*p == ' ') || (*p == '\t'))
+          p++;
+      }
+  }
+
+  if (sscanf(tp1,"%d\t%d\t%d\t%d\t%d\t%d\t%d",&frate,&fout[0],&fout[1],&fout[2],&fout[3],&fout[4],&fout[5])>=2)
+    {
+      fields = 1;                                         // Turns field output on
+      printf("\t%s",tp1);
+      printf("\tOutput ->");
+      if (fout[0]==1)
+        printf(" Electric");
+      if (fout[1]==1)
+        printf(" Magnetic");
+      if (fout[2]==1)
+        printf(" eVelocity");
+      if (fout[3]==1)
+        printf(" eDensity");
+      if (fout[4]==1)
+        printf(" ionVelocity");
+      if (fout[5]==1)
+        printf(" ionDensity");
+      printf("\n");
+      fgets(tp1,80,fp1);
+      if (sscanf(tp1,"%d\t%d\t%d",&floc[0][0],&floc[0][1],&floc[0][2])!=3)
+        return 1;
+      printf("\tLower Limit [%d %d %d]\n",floc[0][0],floc[0][1],floc[0][2]);
+      fgets(tp1,80,fp1);
+      if (sscanf(tp1,"%d\t%d\t%d",&floc[1][0],&floc[1][1],&floc[1][2])!=3)
+        return 1;
+      printf("\tUpper Limit [%d %d %d]\n",floc[1][0],floc[1][1],floc[1][2]);
+      
+      return 0;
+    }
+  else
+    {
+      fields = 0;
+      return 0;
+    }
 }
 
 void ClearArrays()

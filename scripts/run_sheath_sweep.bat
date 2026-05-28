@@ -4,9 +4,12 @@ pushd %~dp0..
 
 REM Sheath Width Sweep: Sd = 0, 2, 4, 6, 8, 10 cells
 REM Fixed params: fp=200kHz, fcol=0.1, fcyc=0, angles=0, T=2000K
+REM Optional runtime args: VC step (arg 10), max iterations (arg 11)
 
 if not exist "results\sheath_sweep" mkdir "results\sheath_sweep"
 set "FAILED=0"
+set "VC_STEP=10"
+set "MAX_ITER=1000000"
 
 echo ============================================
 echo  Sheath Width Sweep (Sd = 0,2,4,6,8,10)
@@ -22,7 +25,7 @@ for %%S in (0 2 4 6 8 10) do (
     if exist "!OUTBASE!.vc" del /q "!OUTBASE!.vc"
     if exist "!OUTBASE!.fd" del /q "!OUTBASE!.fd"
 
-    pffdtd_parallel.exe sheath "!OUTBASE!" 200000 0.1 0 0 0 2000 %%S > "!LOGFILE!" 2>&1
+    pffdtd_parallel.exe sheath "!OUTBASE!" 200000 0.1 0 0 0 2000 %%S !VC_STEP! !MAX_ITER! > "!LOGFILE!" 2>&1
     set "RC=!ERRORLEVEL!"
 
     if not "!RC!"=="0" (

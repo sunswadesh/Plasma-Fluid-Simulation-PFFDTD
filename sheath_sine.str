@@ -3,11 +3,11 @@
 70	70	65
 0.04	0.04	0.04
 //Fail Safe Parameters
-640000
+100000
 30
 //Source Parameters
 1
-35	35	33	3	5	30000
+35	35	33	3	1	300000
 //Dielectric Parameters
 1.2
 3.2
@@ -39,3 +39,7 @@
 35	35	43	0	0	1
 35	35	44	0	0	1
 35	35	45	0	0	1
+//Output Field Info
+5000	0	0	0	1	0	0
+1	1	1
+70	70	65

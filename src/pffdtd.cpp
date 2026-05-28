@@ -135,12 +135,13 @@ int main(int argc, char*argv[])
 {
   char filein[80], fileout[80];        	// File name
   FILE *file_str;                       // Input file
-  FILE *file_vc, *file_fd;	        // Output files
+  FILE *file_vc, *file_fd = NULL;	        // Output files
   double timev;				// Time variable
   time_t tstart, tstop;                 // Program Starting and Stopping times
   int trem;                             // Used to calculate run time
   int i, ip, j, m;			// Iteration
   int size, allocate=0;			// allocated data size
+  int vc_rate = 1;             // Voltage/current output stride
   
   //Defaults
   FAIL_SAFE=10;        			// Fail Safe (Program will stop at iteration ###)
@@ -199,6 +200,12 @@ int main(int argc, char*argv[])
 	T = atof(argv[8]);
       if (argc > 9)
 	Sd = atoi(argv[9]);
+      if (argc > 10)
+	vc_rate = atoi(argv[10]);
+      if (vc_rate < 1)
+	vc_rate = 1;
+      if (argc > 11)
+	FAIL_SAFE = atoi(argv[11]);
     }
   else      	
     {
@@ -213,7 +220,6 @@ int main(int argc, char*argv[])
   );
   file_str = openfile2(filein,".str");
   file_vc = openfile(fileout,".vc");		// Voltage / Current @ feed
-  file_fd = openfile(fileout,".fd");		// Field Values
 
   // Set up Arrays
   printf("INSALIZING ARRAYS \n");
@@ -275,9 +281,13 @@ int main(int argc, char*argv[])
         printf("\t Sheath: Sd=%d cells (step profile)\n", Sd);
     }
 
+  if (fields == 1)
+    file_fd = openfile(fileout,".fd");		// Field Values
+
   // Write header line for output files
   headvc(file_vc);
-  headfd(file_fd);
+  if (fields == 1)
+    headfd(file_fd);
 
   // Prepare for loops by taking over the Control-C interrupt
   if (signal(SIGINT, ctrlc_handler) == SIG_ERR)
@@ -328,20 +338,13 @@ int main(int argc, char*argv[])
       	  //printf(" Writing Data");
 	  outputfd(file_fd, i, timev);
 	}
-      fprintf(file_vc,"%e", timev);
-      for (j = 1; j <= Snum; j++)
-	fprintf(file_vc,"\t%e\t%e", VOLT[j], CURRENT[j]);
-      fprintf(file_vc,"\n");
- 
-      // Convergance
-
-      // assuming all physics are documented in PLASMA_CYCLE
-      if ((i*df) > PLASMA_CYCLE)
-	Q_flag = 1;
-
-      // Max Iteration Reached
-      if ( i >= FAIL_SAFE )
-	Q_flag = 1;
+      if (((i-1) % vc_rate) == 0)
+        {
+          fprintf(file_vc,"%e", timev);
+          for (j = 1; j <= Snum; j++)
+            fprintf(file_vc,"\t%e\t%e", VOLT[j], CURRENT[j]);
+          fprintf(file_vc,"\n");
+        }
 
       // Check for Stability
        // Only checks main soucres
@@ -360,6 +363,10 @@ int main(int argc, char*argv[])
       i += 1;
       ip += 1;
 
+      // Terminate when the maximum iteration count is reached
+      if (i > FAIL_SAFE)
+        Q_flag = 1;
+
       // Use to exit for testing
       //       Q_flag = 1;
 
@@ -371,7 +378,8 @@ int main(int argc, char*argv[])
   printf("Closing Data Files \n");
   fclose(file_str);
   fclose(file_vc);
-  fclose(file_fd);
+  if (file_fd != NULL)
+    fclose(file_fd);
   
   // clear memory
   printf("Clearing  Memory \n");

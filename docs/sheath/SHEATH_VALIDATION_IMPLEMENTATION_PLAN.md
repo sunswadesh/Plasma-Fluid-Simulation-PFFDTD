@@ -1,8 +1,10 @@
 # Sheath Validation Implementation Plan
 
-## Status: IN PROGRESS
+## Status: VALIDATION IN PROGRESS
 - Branch: `PffdtdSheath`
 - Started: 2026-05-05
+- Current focus: complete validation of sheath resonance behavior using improved low-frequency signal conditioning and/or narrow-band excitation.
+- Policy: do not execute further long broadband sheath runs until the analysis methodology is confirmed with existing data and narrow-band test planning.
 
 ---
 
@@ -95,13 +97,20 @@ for Sd in 0 2 4 6 8 10:
 
 ## 7. Acceptance Criteria
 
-- [ ] All 6 sweep cases (Sd=0..10) run to completion without crash
+- [x] All 6 sweep cases (Sd=0..10) run to completion without crash
 - [ ] Z(f) plots show clear resonance peak for each Sd
-- [ ] Resonance frequency shifts upward with increasing Sd (qualitative match to Tu 2008 Fig. 3)
+- [ ] Resonance frequency shifts upward with increasing Sd (sheath removes dielectric loading → frequency moves toward free-space value)
 - [ ] Sd=0 case matches pre-sheath baseline (no regression)
 - [ ] No NaN/Inf in any `.vc` output file
-- [ ] Implementation uses active-path code only (no legacy header inclusion)
+- [x] Implementation uses active-path code only (no legacy header inclusion)
 - [ ] Build passes on Windows with CMake (Release and Debug configs)
+
+### 7.1 Current validation status
+
+- Sweep execution is complete and outputs exist for Sd = 0,2,4,6,8,10.
+- The current analysis found no clean Im{Z} zero-crossing in the broadband 1 MHz band.
+- Reported peaks are in the multi-GHz range and are likely FFT artifacts, so the physical resonance remains unvalidated.
+- The top remaining work is improved low-frequency analysis and/or a narrow-band measurement plan.
 
 ---
 
@@ -114,7 +123,7 @@ for Sd in 0 2 4 6 8 10:
 
 ### Files to Create
 1. `scripts/run_sheath_sweep.bat` — sweep driver
-2. `scripts/plot_impedance.py` — Z(f) computation and plotting
+2. `scripts/run_sheath_narrow_band.ps1` — narrow-band frequency sweep driver
 
 ---
 
@@ -139,7 +148,58 @@ This file tracks progress and findings to date. See the companion analysis docum
 ### 9.4 Next Steps (recommended)
 1. Re-run analysis focusing on a lower-frequency band (e.g., `fmax = 200e3`) and/or decimate the time-series to reduce Nyquist frequency and better resolve kHz-range features.
 2. Ensure V(t)/I(t) recordings contain steady-state data (extend recording duration and/or trim initial transient) before computing DFT.
-3. If frequency-domain identification remains ambiguous, perform a narrow-band excitation sweep to map resonance more directly.
+3. If frequency-domain identification remains ambiguous, execute the narrow-band / long-record plan in Section 10.
+
+## 10. Narrow-band and long-record plan
+
+Purpose: obtain a robust, low-frequency resonance measurement for sheath validation by improving DFT frequency resolution and/or measuring impedance with a narrow-band source sweep.
+
+### 10.1 Key requirements
+- Frequency resolution: `df = 1 / T`. To target ~1 kHz resolution, record at least `T >= 1 ms` of physical simulation time.
+- Nyquist frequency: `fs = 1/dt` must exceed `2 * f_max_interest`. For `f_max_interest = 200 kHz`, `fs >= 400 kHz`.
+- Practical approach: reduce output frequency by recording every `vc_rate` iterations while increasing the total number of iterations.
+
+### 10.2 Recommended execution modes
+
+#### Option A — Broadband long-record run (preferred first pass)
+- Keep broadband excitation.
+- Run long enough to capture many cycles of the expected resonance.
+- Record V/I less often using the new output-stride parameter.
+- Trim the initial transient before FFT in the analyzer.
+
+#### Option B — Narrow-band sweep (fallback or confirmation)
+- Run a series of single-tone simulations at candidate frequencies.
+- Measure steady-state input voltage/current for each frequency.
+- Assemble `Z(f)` from the frequency-stepped results.
+- This approach is faster for locating a resonance when the broadband DFT is ambiguous.
+
+### 10.3 Runtime parameters
+- The simulator now supports the following extra positional arguments:
+  - argument 10: `vc_rate` — write V/I every `vc_rate` iterations
+  - argument 11: `max_iter` — override the maximum iteration count
+
+Example broadband long-record command:
+```powershell
+$p = Join-Path (Get-Location) 'build\pffdtd_parallel.exe'
+& $p 'sheath' 'results\sheath_long\sd4\data' 200000 0.1 0 0 0 1000000 10 1000000 > 'results\sheath_long\sd4\simulation.log' 2>&1
+```
+
+Example narrow-band sweep loop:
+```powershell
+$exepath = Join-Path (Get-Location) 'build\pffdtd_parallel.exe'
+$freqs = @(20000,25000,30000,35000,40000)
+$Sd = 4
+foreach($f in $freqs) {
+  $outdir = Join-Path 'results\sheath_sweep_narrow' ("sd$Sd\f$f")
+  if(-not (Test-Path $outdir)) { New-Item -ItemType Directory -Path $outdir | Out-Null }
+  & $exepath 'sheath' (Join-Path $outdir 'data') $f 0.1 0 0 0 20000 $Sd 10 200000 > (Join-Path $outdir 'simulation.log') 2>&1
+}
+```
+
+### 10.4 Notes
+- Use `vc_rate` to limit output size while preserving total simulated time.
+- Prefer trimming the initial transient before computing the FFT.
+- Validate the `Sd=0` baseline explicitly during this execution phase.
 
 Files of interest (workspace):
 - [scripts/analyze_sheath_results.py](scripts/analyze_sheath_results.py#L1)
@@ -155,7 +215,6 @@ The following artifacts were added during the current work and are now part of t
 
 - `scripts/analyze_sheath_results.py` — improved analyzer with CLI options `--fmax`, `--decimate`, and `--trim_seconds` for focused analysis of the impedance and steady-state trimming/decimation.
 - `docs/SHEATH_VALIDATION_ANALYSIS.md` — analysis summary document with measured results and recommendations.
-- `docs/NARROW_BAND_EXCITATION_PLAN.md` — plan for obtaining high-resolution resonance measurements using long-recording and/or narrow-band sweeps.
 - `scripts/run_sheath_long_trace.ps1` — helper PowerShell script template to run long-recording simulations for a single `Sd`.
 
 All changes have been committed to the local repository and pushed to the remote branch `PffdtdSheath` (see repository history for commit details).
