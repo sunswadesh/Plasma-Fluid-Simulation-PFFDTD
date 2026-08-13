@@ -133,7 +133,7 @@ void ctrlc_handler(int);
 
 int main(int argc, char*argv[])
 {
-  char filein[80], fileout[80];        	// File name
+  char filein[512], fileout[512];      	// File name (long paths under results/)
   FILE *file_str;                       // Input file
   FILE *file_vc, *file_fd = NULL;	        // Output files
   double timev;				// Time variable
@@ -142,6 +142,7 @@ int main(int argc, char*argv[])
   int i, ip, j, m;			// Iteration
   int size, allocate=0;			// allocated data size
   int vc_rate = 1;             // Voltage/current output stride
+  int cli_fail_safe = -1;      // CLI MaxIter override (applied after setup1)
   
   //Defaults
   FAIL_SAFE=10;        			// Fail Safe (Program will stop at iteration ###)
@@ -205,7 +206,7 @@ int main(int argc, char*argv[])
       if (vc_rate < 1)
 	vc_rate = 1;
       if (argc > 11)
-	FAIL_SAFE = atoi(argv[11]);
+	cli_fail_safe = atoi(argv[11]);
     }
   else      	
     {
@@ -228,6 +229,12 @@ int main(int argc, char*argv[])
     {
       printf("Error Reading %s.str file format\n",filein);
       exit(3);
+    }
+  // CLI MaxIter overrides the .str Fail Safe value when provided
+  if (cli_fail_safe > 0)
+    {
+      FAIL_SAFE = cli_fail_safe;
+      printf("\tMax Iteration overridden by CLI: %d\n", FAIL_SAFE);
     }
   // Allocate arrays
   size = sx*sy*sz*sizeof(double) + sx*sy*sizeof(double) + sx*sizeof(double) + sizeof(double);
@@ -258,18 +265,40 @@ int main(int argc, char*argv[])
   //Clear Arrays
   ClearArrays();
   EMBCclear();			// Inisalize Arrays Used for Boundary Conditions
+
+#ifdef SHEATH_LEGACY_SIG_SEED
+  // Legacy (buggy) order: plasma/sheath before antenna geometry is read.
+  // Used only to reproduce pre-fix N0 line dumps.
   if (plasma == 1)
     {
-      PLASMAclear();		// Inisalize Arrays Used for Plasma
-      Ninital();
+      PLASMAclear();
+      ApplySheathLegacySigSeed();
     }
-
-  // Read secondary Sim. parameters (Boundary Conditions)
   if (setup2(file_str) == 1)
     {
       printf("Error Reading %s.str file format\n",filein);
       Q_flag = 3;
     }
+  if (plasma == 1)
+    {
+      DumpN0Line(fileout);  // after setup2 so PEC flags are visible
+      Ninital();
+    }
+#else
+  // Correct order: antenna PEC geometry first, then plasma mask + PEC-seeded sheath.
+  if (setup2(file_str) == 1)
+    {
+      printf("Error Reading %s.str file format\n",filein);
+      Q_flag = 3;
+    }
+  if (plasma == 1)
+    {
+      PLASMAclear();
+      ApplySheath();
+      DumpN0Line(fileout);
+      Ninital();
+    }
+#endif
 
   // Verify plasma parameters (if any)
   if (plasma == 1)
@@ -328,8 +357,9 @@ int main(int argc, char*argv[])
       for (j=1;j<=Snum;j++)
 	Rcalc(j);
 
-      // Output Results
-      printf("\n%s It=%d(%5.3fP.C.):%fmV %fuA", fileout, i, (i*df), VOLT[1]*1e3, CURRENT[1]*1e6);
+      // Output Results (very sparse console I/O — .vc carries the data)
+      if ((i == 1) || ((i % 10000) == 0) || (i >= FAIL_SAFE))
+        printf("\n%s It=%d(%5.3fP.C.):%fmV %fuA", fileout, i, (i*df), VOLT[1]*1e3, CURRENT[1]*1e6);
       //if (plasma == 1)
  	//  for(m=0;m<NS;m++)
  	  //    printf(" %f ",UX[IDX5(sx/2,sy/2,sz/2,2,m)]*1e3);

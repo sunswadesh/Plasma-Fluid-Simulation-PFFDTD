@@ -56,6 +56,11 @@ extern int sx, sy, sz;
 int PLASMAallocate(int allocate);
 void PLASMAclear();
 void PLASMAfree();
+void ApplySheath();
+void DumpN0Line(const char *fileout);
+#ifdef SHEATH_LEGACY_SIG_SEED
+void ApplySheathLegacySigSeed();
+#endif
 
 void Ninital();
 void Ucalc();

@@ -108,67 +108,162 @@ void PLASMAclear()
       N0_SPATIAL[idx] = N_0[idx % NS];
   }
 
-  // Turns Plasma On and marks antenna cells
+  // Plasma–Maxwell coupling mask: SIG=1 where any E-component is free-space/plasma.
+  // Must run after setup2() so antenna ER* flags are already set.
+  // Sheath seeding is NOT done from SIG (see ApplySheath); SIG is coupling only.
   for (i=6;i<sx-4;i++)
     for (j=6;j<sy-4;j++)
       for (k=6;k<sz-4;k++)
 	if ((ERX[IDX3(i,j,k)]==1) || (ERY[IDX3(i,j,k)]==1) || (ERZ[IDX3(i,j,k)]==1))
 	  SIG[IDX3(i,j,k)] = 1.0;
+}
 
-  // Apply sheath density profile: deplete plasma within Sd cells of antenna
-  if (Sd > 0) {
-      // Build distance field from antenna surface
-      // Use iterative dilation: for each layer d=1..Sd, find cells adjacent to antenna/previous layer
-      // Mark sheath region in N0_SPATIAL
-      
-      // Temporary array to store distance from antenna (0 = antenna, 1..Sd = sheath, >Sd = bulk)
-      int *dist = (int*)malloc(total_grid * sizeof(int));
-      for(int idx = 0; idx < total_grid; idx++)
-          dist[idx] = Sd + 1;  // Initialize to "far away"
-      
-      // Seed: antenna cells have distance 0
-      for (i=0;i<=sx;i++)
-        for (j=0;j<=sy;j++)
-          for (k=0;k<=sz;k++)
-            if (SIG[IDX3(i,j,k)] > 0.5)
-              dist[IDX3(i,j,k)] = 0;
-      
-      // Iterative dilation for Sd layers (Manhattan/Chebyshev distance)
-      for (int d=1; d<=Sd; d++) {
-          for (i=1;i<sx;i++)
-            for (j=1;j<sy;j++)
-              for (k=1;k<sz;k++) {
-                  if (dist[IDX3(i,j,k)] <= d) continue;  // already closer
-                  // Check 6-connected neighbors
-                  if (dist[IDX3(i-1,j,k)] < d ||
-                      dist[IDX3(i+1,j,k)] < d ||
-                      dist[IDX3(i,j-1,k)] < d ||
-                      dist[IDX3(i,j+1,k)] < d ||
-                      dist[IDX3(i,j,k-1)] < d ||
-                      dist[IDX3(i,j,k+1)] < d) {
-                      dist[IDX3(i,j,k)] = d;
-                  }
-              }
-      }
-      
-      // Apply sheath: cells with 0 < dist <= Sd get depleted density
-      for (i=0;i<=sx;i++)
-        for (j=0;j<=sy;j++)
-          for (k=0;k<=sz;k++) {
-              int d = dist[IDX3(i,j,k)];
-              if (d > 0 && d <= Sd) {
-                  // Step profile: density = 0 (use floor for numerical safety)
-                  for (m=0; m<NS; m++)
-                      N0_SPATIAL[IDX_N0(i,j,k,m)] = N_0[m] * N_MIN_RATIO;
+void ApplySheath()
+{
+  int i, j, k, m;
+  int total_grid = (sx+1)*(sy+1)*(sz+1);
+  int pec_seeds = 0;
+
+  if (Sd <= 0)
+    return;
+
+  // Distance field from PEC surface (ER*=0), not from SIG.
+  int *dist = (int*)malloc(total_grid * sizeof(int));
+  if (!dist) {
+      printf("ApplySheath: failed to allocate distance field\n");
+      return;
+  }
+  for (int idx = 0; idx < total_grid; idx++)
+      dist[idx] = Sd + 1;
+
+  for (i=0;i<=sx;i++)
+    for (j=0;j<=sy;j++)
+      for (k=0;k<=sz;k++)
+        if (ERX[IDX3(i,j,k)] == 0 || ERY[IDX3(i,j,k)] == 0 || ERZ[IDX3(i,j,k)] == 0) {
+          dist[IDX3(i,j,k)] = 0;
+          pec_seeds++;
+        }
+
+  for (int d=1; d<=Sd; d++) {
+      for (i=1;i<sx;i++)
+        for (j=1;j<sy;j++)
+          for (k=1;k<sz;k++) {
+              if (dist[IDX3(i,j,k)] <= d) continue;
+              if (dist[IDX3(i-1,j,k)] < d ||
+                  dist[IDX3(i+1,j,k)] < d ||
+                  dist[IDX3(i,j-1,k)] < d ||
+                  dist[IDX3(i,j+1,k)] < d ||
+                  dist[IDX3(i,j,k-1)] < d ||
+                  dist[IDX3(i,j,k+1)] < d) {
+                  dist[IDX3(i,j,k)] = d;
               }
           }
-      
-      free(dist);
-      
-      printf("\tSheath: Sd=%d cells, step profile applied\n", Sd);
   }
 
- 
+  for (i=0;i<=sx;i++)
+    for (j=0;j<=sy;j++)
+      for (k=0;k<=sz;k++) {
+          int d = dist[IDX3(i,j,k)];
+          if (d > 0 && d <= Sd) {
+              for (m=0; m<NS; m++)
+                  N0_SPATIAL[IDX_N0(i,j,k,m)] = N_0[m] * N_MIN_RATIO;
+          }
+      }
+
+  free(dist);
+  printf("\tSheath: Sd=%d cells, step profile applied (PEC-seeded, %d seed cells)\n", Sd, pec_seeds);
+}
+
+/* Legacy SIG-seeded sheath for before-fix diagnostics only.
+ * Reproduce the old bug: when SIG marks the whole plasma box,
+ * depletion forms at the domain edge instead of around the antenna.
+ * Compile with -DSHEATH_LEGACY_SIG_SEED=1 to enable. */
+#ifdef SHEATH_LEGACY_SIG_SEED
+void ApplySheathLegacySigSeed()
+{
+  int i, j, k, m;
+  int total_grid = (sx+1)*(sy+1)*(sz+1);
+
+  if (Sd <= 0)
+    return;
+
+  int *dist = (int*)malloc(total_grid * sizeof(int));
+  if (!dist)
+    return;
+  for (int idx = 0; idx < total_grid; idx++)
+      dist[idx] = Sd + 1;
+
+  for (i=0;i<=sx;i++)
+    for (j=0;j<=sy;j++)
+      for (k=0;k<=sz;k++)
+        if (SIG[IDX3(i,j,k)] > 0.5)
+          dist[IDX3(i,j,k)] = 0;
+
+  for (int d=1; d<=Sd; d++) {
+      for (i=1;i<sx;i++)
+        for (j=1;j<sy;j++)
+          for (k=1;k<sz;k++) {
+              if (dist[IDX3(i,j,k)] <= d) continue;
+              if (dist[IDX3(i-1,j,k)] < d ||
+                  dist[IDX3(i+1,j,k)] < d ||
+                  dist[IDX3(i,j-1,k)] < d ||
+                  dist[IDX3(i,j+1,k)] < d ||
+                  dist[IDX3(i,j,k-1)] < d ||
+                  dist[IDX3(i,j,k+1)] < d) {
+                  dist[IDX3(i,j,k)] = d;
+              }
+          }
+  }
+
+  for (i=0;i<=sx;i++)
+    for (j=0;j<=sy;j++)
+      for (k=0;k<=sz;k++) {
+          int d = dist[IDX3(i,j,k)];
+          if (d > 0 && d <= Sd) {
+              for (m=0; m<NS; m++)
+                  N0_SPATIAL[IDX_N0(i,j,k,m)] = N_0[m] * N_MIN_RATIO;
+          }
+      }
+
+  free(dist);
+  printf("\tSheath: Sd=%d cells, LEGACY SIG-seeded step profile\n", Sd);
+}
+#endif
+
+void DumpN0Line(const char *fileout)
+{
+  // Line normal to z-dipole through feed: j=35, k=33, i=0..sx
+  const int j = 35;
+  const int k = 33;
+  char path[512];
+  FILE *fp;
+
+  if (!fileout || !N0_SPATIAL || !SIG || !ERX || !ERY || !ERZ)
+    return;
+  if (j > sy || k > sz)
+    return;
+
+  snprintf(path, sizeof(path), "%s_n0_line.dat", fileout);
+  fp = fopen(path, "w");
+  if (!fp) {
+      printf("DumpN0Line: could not open %s\n", path);
+      return;
+  }
+
+  fprintf(fp, "# N0_SPATIAL electron line dump (normal to z-dipole through feed)\n");
+  fprintf(fp, "# j=%d k=%d Sd=%d N0_bulk=%e\n", j, k, Sd, N_0[0]);
+  fprintf(fp, "# i\tx\tN0_e\tSIG\tERX\tERY\tERZ\tPEC\n");
+  for (int i = 0; i <= sx; i++) {
+      int pec = (ERX[IDX3(i,j,k)] == 0 || ERY[IDX3(i,j,k)] == 0 || ERZ[IDX3(i,j,k)] == 0) ? 1 : 0;
+      fprintf(fp, "%d\t%e\t%e\t%e\t%e\t%e\t%e\t%d\n",
+              i, i * dx,
+              N0_SPATIAL[IDX_N0(i,j,k,0)],
+              SIG[IDX3(i,j,k)],
+              ERX[IDX3(i,j,k)], ERY[IDX3(i,j,k)], ERZ[IDX3(i,j,k)],
+              pec);
+  }
+  fclose(fp);
+  printf("\tWrote N0 line dump: %s\n", path);
 }
 
 void PLASMAfree()
@@ -357,9 +452,8 @@ void Pcalc()
 
 void NBCcalc()
 {
-  // Absorbing Sink at Antenna Surface
-  // If SIG == 1.0 (set in PLASMAclear for ERX/ERY/ERZ==1), treat as antenna
-  // Force density to floor to simulate absorption
+  // Absorbing sink at antenna PEC surface only (ER*=0).
+  // Do not use SIG here: SIG is the plasma–Maxwell coupling mask.
   int i, j, k, m;
 
   #pragma omp parallel for private(j,k,m)
@@ -367,19 +461,11 @@ void NBCcalc()
     for (j=0; j<=sy; j++)
       for (k=0; k<=sz; k++)
       {
-          // Check if this cell is part of the antenna (Conductivity turned on)
-          // SIG is flat 1D array IDX3
-          if (SIG[IDX3(i,j,k)] > 0.5) 
+          if (ERX[IDX3(i,j,k)] == 0 || ERY[IDX3(i,j,k)] == 0 || ERZ[IDX3(i,j,k)] == 0)
           {
               for (m=0; m<NS; m++) 
               {
-                  // Force density to minimum (Sink)
                   N[IDX5(i,j,k,2,m)] = N0_SPATIAL[IDX_N0(i,j,k,m)] * N_MIN_RATIO;
-                  
-                  // Optionally kill velocity too? 
-                  // UX[IDX5(i,j,k,2,m)] = 0.0;
-                  // UY[IDX5(i,j,k,2,m)] = 0.0;
-                  // UZ[IDX5(i,j,k,2,m)] = 0.0;
               }
           }
       }

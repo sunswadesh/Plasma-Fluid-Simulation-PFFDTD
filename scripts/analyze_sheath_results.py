@@ -14,6 +14,7 @@ Saves a summary to `sheath_resonance_summary.txt`.
 import sys
 import os
 import glob
+import re
 import argparse
 import numpy as np
 import matplotlib
@@ -123,10 +124,16 @@ def discover_vc_files(path):
 
 
 def extract_sd_from_path(filepath):
-    parts = filepath.replace('\\', '/').split('/')
-    for part in parts:
-        if part.startswith('sd') and part[2:].isdigit():
-            return int(part[2:])
+    match = re.search(r'sd(\d+)(?:_|/|$)', filepath.replace('\\', '/'))
+    if match:
+        return int(match.group(1))
+    return None
+
+
+def extract_source_freq_from_path(filepath):
+    match = re.search(r'_f(\d+)(?:_|/|$)', filepath.replace('\\', '/'))
+    if match:
+        return int(match.group(1))
     return None
 
 
@@ -161,7 +168,15 @@ def main():
 
     for fp in files:
         sd = extract_sd_from_path(fp)
-        label = f'Sd={sd}' if sd is not None else os.path.basename(fp)
+        source_freq_path = extract_source_freq_from_path(fp)
+        if sd is not None and source_freq_path is not None:
+            label = f'Sd={sd} f={source_freq_path/1e3:.0f}kHz'
+        elif sd is not None:
+            label = f'Sd={sd}'
+        elif source_freq_path is not None:
+            label = f'f={source_freq_path/1e3:.0f}kHz'
+        else:
+            label = os.path.basename(fp)
         print('Processing', fp, label)
         try:
             t, v, i = robust_load_vc(fp)
@@ -195,7 +210,7 @@ def main():
         res = find_resonance(freq, Z, fmin=f_min, fmax=f_max)
         if res:
             fres = res[0]
-            resonances.append((sd, fres))
+            resonances.append({'sd': sd, 'source_freq': source_freq_path, 'fres': fres})
             peak_freq = find_peak(freq, Z, fmin=f_min, fmax=peak_fmax if peak_fmax else f_max)
             summary_lines.append(f"{sd}\t{fres:.6f}\t{peak_freq:.6f}\t{dt:.6e}\t{fs:.6e}\t{nyquist:.6e}\t{dfreq:.6e}\t{len(t)}\t{duration:.6e}\t{decimate_arg}\t{trim_seconds_arg}")
             print(f"  Resonance at {fres/1e3:.3f} kHz")
@@ -221,20 +236,44 @@ def main():
     plt.savefig('sheath_impedance.png', dpi=150)
     print('Saved sheath_impedance.png')
 
+    if len(resonances) > 0:
+        resonances = [r for r in resonances if r['fres'] is not None]
+        if not resonances:
+            resonances = []
+
     if len(resonances) > 1:
-        resonances = [r for r in resonances if r[1] is not None]
-        resonances.sort(key=lambda x: x[0])
-        sds = [r[0] for r in resonances]
-        fres = [r[1]/1e3 for r in resonances]
-        fig2, ax2 = plt.subplots(figsize=(8,5))
-        ax2.plot(sds, fres, 'o-', markersize=8)
-        ax2.set_xlabel('Sheath Width Sd (cells)')
-        ax2.set_ylabel('Resonance Frequency (kHz)')
-        ax2.set_title('Resonance Shift vs Sheath Width')
-        ax2.grid(True, alpha=0.3)
-        plt.tight_layout()
-        plt.savefig('sheath_resonance_shift.png', dpi=150)
-        print('Saved sheath_resonance_shift.png')
+        unique_sds = sorted({r['sd'] for r in resonances if r['sd'] is not None})
+        if len(unique_sds) > 1:
+            resonances.sort(key=lambda x: x['sd'])
+            sds = [r['sd'] for r in resonances]
+            fres = [r['fres']/1e3 for r in resonances]
+            fig2, ax2 = plt.subplots(figsize=(8,5))
+            ax2.plot(sds, fres, 'o-', markersize=8)
+            ax2.set_xlabel('Sheath Width Sd (cells)')
+            ax2.set_ylabel('Resonance Frequency (kHz)')
+            ax2.set_title('Resonance Shift vs Sheath Width')
+            ax2.grid(True, alpha=0.3)
+            plt.tight_layout()
+            plt.savefig('sheath_resonance_shift.png', dpi=150)
+            print('Saved sheath_resonance_shift.png')
+        else:
+            # If we only have one Sd but multiple source frequencies, plot resonance vs source frequency.
+            resonances = [r for r in resonances if r['source_freq'] is not None]
+            if len(resonances) > 1:
+                resonances.sort(key=lambda x: x['source_freq'])
+                freqs = [r['source_freq']/1e3 for r in resonances]
+                fres = [r['fres']/1e3 for r in resonances]
+                fig2, ax2 = plt.subplots(figsize=(8,5))
+                ax2.plot(freqs, fres, 'o-', markersize=8)
+                ax2.set_xlabel('Source Frequency (kHz)')
+                ax2.set_ylabel('Resonance Frequency (kHz)')
+                ax2.set_title('Resonance Frequency vs Source Frequency')
+                ax2.grid(True, alpha=0.3)
+                plt.tight_layout()
+                plt.savefig('sheath_resonance_vs_source_frequency.png', dpi=150)
+                print('Saved sheath_resonance_vs_source_frequency.png')
+            else:
+                print('Not enough distinct source frequencies to plot resonance variation.')
 
     # Write summary
     with open('sheath_resonance_summary.txt', 'w') as sf:

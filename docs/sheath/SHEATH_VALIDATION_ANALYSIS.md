@@ -69,6 +69,12 @@ Tu (2008) reports an upward shift in antenna resonance frequency as sheath width
 4. Validate the `Sd=0` baseline explicitly against the existing no-sheath plasma regression case.
 5. Document the new results in this analysis summary and in the implementation plan.
 
+## Follow-up (2026-08)
+
+Later CW phasor screening near \(f_p\) resolved a clean resonance (~1.775 MHz) but showed **identical** \(Z(f)\) for Sd=0 and Sd=10 (~0.003% difference). That is a coupling/geometry bug (sheath seeded from the plasma-on mask before antenna PEC exists), not an FFT issue. Full post-mortem, N0 line diagnostics, and the coupling fix are documented in:
+
+- [`analysis/sheath_coupling_findings.md`](../../analysis/sheath_coupling_findings.md)
+
 ## Conclusion
 
 The current dataset is a useful first pass, but it is not sufficient to complete sheath validation. The next phase must focus on low-frequency signal conditioning and targeted resonance measurement before the sheath plans can be considered complete.

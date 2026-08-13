@@ -43,6 +43,7 @@ This page is the primary navigation hub for project documentation.
 - [COMPLETION_REPORT.md](COMPLETION_REPORT.md)
 - [Sheath validation plan](sheath/SHEATH_VALIDATION_IMPLEMENTATION_PLAN.md)
 - [Sheath validation analysis](sheath/SHEATH_VALIDATION_ANALYSIS.md)
+- [Sheath coupling findings (pulse/CW post-mortem + fix)](../analysis/sheath_coupling_findings.md)
 
 ## Build, Test, And Run References
 

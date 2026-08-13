@@ -36,12 +36,13 @@ extern void EMBCfree();
 
 FILE *openfile(const char filepre[81], const char filesuf[3])
 {
-  char temp[81];
+  char temp[560];
   FILE *filevar;
   
   // Open Source File
-  strcpy(temp, filepre);
-  strcat(temp, filesuf);
+  strncpy(temp, filepre, sizeof(temp) - 1);
+  temp[sizeof(temp) - 1] = '\0';
+  strncat(temp, filesuf, sizeof(temp) - strlen(temp) - 1);
   if ((filevar = fopen(temp,"w")) == NULL)
     {
       printf("Error opening file: %s\n", temp);
@@ -52,12 +53,13 @@ FILE *openfile(const char filepre[81], const char filesuf[3])
 
 FILE *openfile2(const char filepre[81], const char filesuf[3])
 {
-  char temp[81];
+  char temp[560];
   FILE *filevar;
   
   // Open Source File
-  strcpy(temp, filepre);
-  strcat(temp, filesuf);
+  strncpy(temp, filepre, sizeof(temp) - 1);
+  temp[sizeof(temp) - 1] = '\0';
+  strncat(temp, filesuf, sizeof(temp) - strlen(temp) - 1);
   if ((filevar = fopen(temp,"r")) == NULL)
     {
       printf("Error opening file: %s\n", temp);
@@ -276,29 +278,26 @@ void ClearArrays()
 {
   int i, j, k, l;
 
-  // Clear Arrays
-   // Use flat loops for speed? Or IDX? 
-   // Since i,j,k are needed for logic flow in some places, we stick to nested loops with IDX macros for safety,
-   // or just flat loops if we iterate over the whole thing.
-   // But ClearArrays iterates i,j,k loop. Let's use IDX macros.
-   
-   for (i=1;i<=sx;i++)
-     for (j=1;j<=sy;j++)
-       for (k=1;k<=sz;k++)
- 	{
- 	  for (l=0;l<=1;l++)
- 	    {
- 	      EX[IDX4(i,j,k,l)] = 0;
- 	      EY[IDX4(i,j,k,l)] = 0;
- 	      EZ[IDX4(i,j,k,l)] = 0;
- 	      BX[IDX4(i,j,k,l)] = 0;
- 	      BY[IDX4(i,j,k,l)] = 0;
- 	      BZ[IDX4(i,j,k,l)] = 0;
- 	    }
- 	  ERX[IDX3(i,j,k)] = 1;
- 	  ERY[IDX3(i,j,k)] = 1;
- 	  ERZ[IDX3(i,j,k)] = 1;
- 	}
+  // Initialize the full allocated index range (0..sx, 0..sy, 0..sz).
+  // Leaving the i/j/k=0 faces uninitialized made ER*=0 look like PEC and
+  // incorrectly seeded the sheath from the domain boundary.
+  for (i=0;i<=sx;i++)
+    for (j=0;j<=sy;j++)
+      for (k=0;k<=sz;k++)
+	{
+	  for (l=0;l<=1;l++)
+	    {
+	      EX[IDX4(i,j,k,l)] = 0;
+	      EY[IDX4(i,j,k,l)] = 0;
+	      EZ[IDX4(i,j,k,l)] = 0;
+	      BX[IDX4(i,j,k,l)] = 0;
+	      BY[IDX4(i,j,k,l)] = 0;
+	      BZ[IDX4(i,j,k,l)] = 0;
+	    }
+	  ERX[IDX3(i,j,k)] = 1;
+	  ERY[IDX3(i,j,k)] = 1;
+	  ERZ[IDX3(i,j,k)] = 1;
+	}
 
   for (j=1;j<=Snum;j++)
   {
