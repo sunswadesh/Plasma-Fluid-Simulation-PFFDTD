@@ -28,7 +28,7 @@ This page is the primary navigation hub for project documentation.
 1. [Physics](PHYSICS.md)
 2. [Input Format](INPUT_FORMAT.md)
 3. [Architecture](ARCHITECTURE.md)
-4. [Sheath validation (Tu 2008)](sheath/README.md) — on branch `PffdtdSheath`; full LaTeX report in collab folder (see sheath README)
+4. Tu (2008) sheath campaign — external project: `D:\Swadesh\Work\Impedance Probe\PiP Alireza\2026 Collab_PFFDTD_Sheath\projects\tu2008-sheath\` (solver on branch `PffdtdSheath`)
 
 ## Core Documents
 
@@ -42,14 +42,14 @@ This page is the primary navigation hub for project documentation.
 - [README_STRUCTURE.md](README_STRUCTURE.md)
 - [SETUP_SUMMARY.md](SETUP_SUMMARY.md)
 - [COMPLETION_REPORT.md](COMPLETION_REPORT.md)
-- [Sheath validation hub](sheath/README.md) (branch `PffdtdSheath`)
-- [Sheath coupling findings](../analysis/sheath_coupling_findings.md)
 
-## Sheath report (external)
+## Tu 2008 sheath project (external)
 
-LaTeX progress report and reference PDFs:
+Campaign docs, scripts, inputs, validation phases, and LaTeX report:
 
-`D:\Swadesh\Work\Impedance Probe\PiP Alireza\2026 Collab_PFFDTD_Sheath\report\`
+`D:\Swadesh\Work\Impedance Probe\PiP Alireza\2026 Collab_PFFDTD_Sheath\projects\tu2008-sheath\`
+
+Sheath physics code remains in this repo: `src/physics/plasma.cpp`, `plasmaNSheath.h`.
 
 ## Build, Test, And Run References
 
@@ -76,6 +76,6 @@ LaTeX progress report and reference PDFs:
 
 ## Documentation Health Notes
 
-- This index reflects repository state as of 2026-05-04.
+- This index reflects repository state as of 2026-08-30.
 - Historical planning documents may still contain outdated "to create" statements.
 - Active cleanup and priorities are tracked in [DOCS_REMEDIATION_CHECKLIST.md](DOCS_REMEDIATION_CHECKLIST.md).

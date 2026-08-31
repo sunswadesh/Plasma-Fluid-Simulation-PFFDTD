@@ -162,4 +162,4 @@ Fix:
 
 - Core simulation workflow is functional and buildable.
 - Some documentation files include forward-looking plans; see `docs/DOCS_REMEDIATION_CHECKLIST.md` for active cleanup priorities.
-- Sheath validation (Tu 2008): working docs on branch `PffdtdSheath` under `docs/sheath/`; LaTeX report at `D:\Swadesh\Work\Impedance Probe\PiP Alireza\2026 Collab_PFFDTD_Sheath\report\`
+- Sheath validation (Tu 2008): campaign project at `D:\Swadesh\Work\Impedance Probe\PiP Alireza\2026 Collab_PFFDTD_Sheath\projects\tu2008-sheath\` (branch `PffdtdSheath`; solver code in this repo)
