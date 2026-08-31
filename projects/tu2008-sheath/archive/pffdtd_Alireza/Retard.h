@@ -1,0 +1,243 @@
+
+// EM Retarded Boundary conditions
+// Use with version 1.4+
+//
+// Author: Jeff Ward
+// Last Modified 11/01/02
+//
+/********************************************************************************************************************/
+
+// Used for all BC except PEC
+double ****EYLEFT, ****EZLEFT;			// E boundary conditions
+double ****EYRIGHT, ****EZRIGHT;
+double ****EXFRONT, ****EZFRONT;
+double ****EXBACK, ****EZBACK;
+double ****EXBOTTOM, ****EYBOTTOM;
+double ****EXTOP, ****EYTOP;
+
+/*****************************************************************************/
+/////////////////////////////
+// Initialize Arrays for BC /
+/////////////////////////////
+int EMBCallocate(int allocate)
+{
+  int size;
+  
+  // initialize boundary condition arrays
+  size = sizeof(double) + 3*sizeof(double) + 3*sy*sizeof(double) + 3*sy*sz*sizeof(double) + 3*sy*sz*3*sizeof(double);
+  EYLEFT = darray4(1, 3, 1, sy, 1, sz, 0, 2);
+  EZLEFT = darray4(1, 3, 1, sy, 1, sz, 0, 2);
+  EYRIGHT = darray4(1, 3, 1, sy, 1, sz, 0, 2);
+  EZRIGHT = darray4(1, 3, 1, sy, 1, sz, 0, 2);
+  allocate = allocate + 4*size;
+  size = sizeof(double) + sx*sizeof(double) + sx*3*sizeof(double) + sx*3*sz*sizeof(double) + sx*3*sz*3*sizeof(double);
+  EXFRONT = darray4(1, sx, 1, 3, 1, sz, 0, 2);
+  EZFRONT = darray4(1, sx, 1, 3, 1, sz, 0, 2);
+  EXBACK = darray4(1, sx, 1, 3, 1, sz, 0, 2);
+  EZBACK = darray4(1, sx, 1, 3, 1, sz, 0, 2);
+  allocate = allocate + 4*size;
+  size = sizeof(double) + sx*sizeof(double) + sx*sy*sizeof(double) + sx*sy*3*sizeof(double) + sx*sy*3*3*sizeof(double);
+  EXBOTTOM = darray4(1, sx, 1, sy, 1, 3, 0, 2);
+  EYBOTTOM = darray4(1, sx, 1, sy, 1, 3, 0, 2);
+  EXTOP = darray4(1, sx, 1, sy, 1, 3, 0, 2);
+  EYTOP = darray4(1, sx, 1, sy, 1, 3, 0, 2);
+  allocate = allocate + 4*size;
+
+  return allocate;
+}
+
+void EMBCclear()
+{
+  int i, j, k, l;
+
+  for (i=1;i<=3;i++)
+    for (j=1;j<=sy;j++)
+      for (k=1;k<=sz;k++)
+	for (l=0;l<=2;l++)
+	  {
+	    EYLEFT[i][j][k][l] = 0;
+	    EZLEFT[i][j][k][l] = 0;
+	    EYRIGHT[i][j][k][l] = 0;
+	    EZRIGHT[i][j][k][l] = 0;
+	  }
+
+  for (i=1;i<=sx;i++)
+    {
+      for (j=1;j<=3;j++)
+	for (k=1;k<=sz;k++)
+	  for (l=0;l<=2;l++)
+	    {
+	      EXFRONT[i][j][k][l] = 0;
+	      EZFRONT[i][j][k][l] = 0;
+	      EXBACK[i][j][k][l] = 0;
+	      EZBACK[i][j][k][l] = 0;
+	    }
+
+      //  for (i=1;i<=sx;i++) // Commented out to increase speed
+      for (j=1;j<=sy;j++)
+	for (k=1;k<=3;k++)
+	  for (l=0;l<=2;l++)
+	    {
+	      EXBOTTOM[i][j][k][l] = 0;
+	      EYBOTTOM[i][j][k][l] = 0;
+	      EXTOP[i][j][k][l] = 0;
+	      EYTOP[i][j][k][l] = 0;
+	    }
+    }
+}
+
+void EMBCfree()
+{
+  freedarray4(EYLEFT, 1, 3, 1, sy, 1, sz, 0, 2);
+  freedarray4(EZLEFT, 1, 3, 1, sy, 1, sz, 0, 2);
+  freedarray4(EYRIGHT, 1, 3, 1, sy, 1, sz, 0, 2);
+  freedarray4(EZRIGHT, 1, 3, 1, sy, 1, sz, 0, 2);
+  freedarray4(EXFRONT, 1, sx, 1, 3, 1, sz, 0, 2);
+  freedarray4(EZFRONT, 1, sx, 1, 3, 1, sz, 0, 2);
+  freedarray4(EXBACK, 1, sx, 1, 3, 1, sz, 0, 2);
+  freedarray4(EZBACK, 1, sx, 1, 3, 1, sz, 0, 2);
+  freedarray4(EXBOTTOM, 1, sx, 1, sy, 1, 3, 0, 2);
+  freedarray4(EYBOTTOM, 1, sx, 1, sy, 1, 3, 0, 2);
+  freedarray4(EXTOP, 1, sx, 1, sy, 1, 3, 0, 2);
+  freedarray4(EYTOP, 1, sx, 1, sy, 1, 3, 0, 2);
+}
+
+/********************************************************************************************************************/
+//////////////////////////////////
+// Calculate Boundary Conditions /
+//////////////////////////////////
+
+void EBCcalc()
+{
+  int i, j, k;
+
+  // Sides 
+  for (j=1;j<=sy;j++)
+    for (k=1;k<=sz;k++)
+      {
+	// Left NOTE: EP is taken at center since the wave must travel thru it, Not at the point of the wave.
+	EY[1][j][k][1] = EYLEFT[2][j][k][1] + 0.5 * ( EYLEFT[1][j][k][1] - EYLEFT[3][j][k][1] )
+	               + ( EYLEFT[2][j][k][2] - EYLEFT[2][j][k][0] );
+	EZ[1][j][k][1] = EZLEFT[2][j][k][1] + 0.5 * ( EZLEFT[1][j][k][1] - EZLEFT[3][j][k][1] )
+	               + ( EZLEFT[2][j][k][2] - EZLEFT[2][j][k][0] );
+	// Right NOTE: EYRIGTH[0][.][.][.] = edge
+	EY[sx][j][k][1] = EYRIGHT[2][j][k][1] + 0.5 * ( EYRIGHT[1][j][k][1] - EYRIGHT[3][j][k][1] )
+	                + ( EYRIGHT[2][j][k][2] - EYRIGHT[2][j][k][0] );
+	EZ[sx][j][k][1] = EZRIGHT[2][j][k][1] + 0.5 * ( EZRIGHT[1][j][k][1] - EZRIGHT[3][j][k][1] )
+	                + ( EZRIGHT[2][j][k][2] - EZRIGHT[2][j][k][0] );
+      }
+
+  for (i=1;i<=sx;i++)
+    {
+      for (k=1;k<=sz;k++)
+	{
+	  // Front
+	  EX[i][1][k][1] = EXFRONT[i][2][k][1] + 0.5 * ( EXFRONT[i][1][k][1] - EXFRONT[i][3][k][1] )
+	                 + ( EXFRONT[i][2][k][2] - EXFRONT[i][2][k][0] );
+	  EZ[i][1][k][1] = EZFRONT[i][2][k][1] + 0.5 * ( EZFRONT[i][1][k][1] - EZFRONT[i][3][k][1] )
+	                 + ( EZFRONT[i][2][k][2] - EZFRONT[i][2][k][0] );
+	  // Back
+	  EX[i][sy][k][1] = EXBACK[i][2][k][1] + 0.5 * ( EXBACK[i][1][k][1] - EXBACK[i][3][k][1] )
+	                  + ( EXBACK[i][2][k][2] - EXBACK[i][2][k][0] );
+	  EZ[i][sy][k][1] = EZBACK[i][2][k][1] + 0.5 * ( EZBACK[i][1][k][1] - EZBACK[i][3][k][1] )
+	                  + ( EZBACK[i][2][k][2] - EZBACK[i][2][k][0] );
+	}
+
+      //  for (i=1;i<=sx;i++) // Commented out to increase speed
+      for(j=1;j<=sy;j++)
+	{
+	  // Bottom
+	  EX[i][j][1][1] = EXBOTTOM[i][j][2][1] + 0.5 * ( EXBOTTOM[i][j][1][1] - EXBOTTOM[i][j][3][1] )
+	                 + ( EXBOTTOM[i][j][2][2] - EXBOTTOM[i][j][2][0] );
+	  EY[i][j][1][1] = EYBOTTOM[i][j][2][1] + 0.5 * ( EYBOTTOM[i][j][1][1] - EYBOTTOM[i][j][3][1] )
+	                 + ( EYBOTTOM[i][j][2][2] - EYBOTTOM[i][j][2][0] );
+	  // Top
+	  EX[i][j][sz][1] = EXTOP[i][j][2][1] + 0.5 * ( EXTOP[i][j][1][1] - EXTOP[i][j][3][1] )
+	                  + ( EXTOP[i][j][2][2] - EXTOP[i][j][2][0] );
+	  EY[i][j][sz][1] = EYTOP[i][j][2][1] + 0.5 * ( EYTOP[i][j][1][1] - EYTOP[i][j][3][1] )
+	                  + ( EYTOP[i][j][2][2] - EYTOP[i][j][2][0] );
+	}
+    }
+
+  // Note With edges and corners there is a DC value that creeps in
+  
+  // Store values for B.C.
+  for (i=1;i<=3;i++)
+    for (j=1;j<=sy;j++)
+      for (k=1;k<=sz;k++)
+	{
+	  // Left B.C.
+	  EYLEFT[i][j][k][0] = EYLEFT[i][j][k][1];
+	  EZLEFT[i][j][k][0] = EZLEFT[i][j][k][1];
+	  EYLEFT[i][j][k][1] = EYLEFT[i][j][k][2];
+	  EZLEFT[i][j][k][1] = EZLEFT[i][j][k][2];
+	  EYLEFT[i][j][k][2] = EY[i][j][k][1];
+	  EZLEFT[i][j][k][2] = EZ[i][j][k][1];
+
+	  // Rigth B.C.
+	  EYRIGHT[i][j][k][0] = EYRIGHT[i][j][k][1];
+	  EZRIGHT[i][j][k][0] = EZRIGHT[i][j][k][1];
+	  EYRIGHT[i][j][k][1] = EYRIGHT[i][j][k][2];
+	  EZRIGHT[i][j][k][1] = EZRIGHT[i][j][k][2];
+	  EYRIGHT[i][j][k][2] = EY[sx + 1 - i][j][k][1];
+	  EZRIGHT[i][j][k][2] = EZ[sx + 1 - i][j][k][1];
+	}
+	
+  for (i=1;i<=sx;i++)
+    {
+      for (j=1;j<=3;j++)
+	for (k=1;k<=sz;k++)
+	  {
+	    // Front B.C.
+	    EXFRONT[i][j][k][0] = EXFRONT[i][j][k][1];
+	    EZFRONT[i][j][k][0] = EZFRONT[i][j][k][1];
+	    EXFRONT[i][j][k][1] = EXFRONT[i][j][k][2];
+	    EZFRONT[i][j][k][1] = EZFRONT[i][j][k][2];
+	    EXFRONT[i][j][k][2] = EX[i][j][k][1];
+	    EZFRONT[i][j][k][2] = EZ[i][j][k][1];
+
+	    // BACK B.C.
+	    EXBACK[i][j][k][0] = EXBACK[i][j][k][1];
+	    EZBACK[i][j][k][0] = EZBACK[i][j][k][1];
+	    EXBACK[i][j][k][1] = EXBACK[i][j][k][2];
+	    EZBACK[i][j][k][1] = EZBACK[i][j][k][2];
+	    EXBACK[i][j][k][2] = EX[i][sy + 1 - j][k][1];
+	    EZBACK[i][j][k][2] = EZ[i][sy + 1 - j][k][1];
+	  }
+
+      //  for (i=1;i<=sx;i++) // Commented out to increase speed
+      for (j=1;j<=sy;j++)
+	for (k=1;k<=3;k++)
+	  {
+	    // Bottom B.C.
+	    EXBOTTOM[i][j][k][0] = EXBOTTOM[i][j][k][1];
+	    EYBOTTOM[i][j][k][0] = EYBOTTOM[i][j][k][1];
+	    EXBOTTOM[i][j][k][1] = EXBOTTOM[i][j][k][2];
+	    EYBOTTOM[i][j][k][1] = EYBOTTOM[i][j][k][2];
+	    EXBOTTOM[i][j][k][2] = EX[i][j][k][1];
+	    EYBOTTOM[i][j][k][2] = EY[i][j][k][1];
+	    // Top B.C.
+	    EXTOP[i][j][k][0] = EXTOP[i][j][k][1];
+	    EYTOP[i][j][k][0] = EYTOP[i][j][k][1];
+	    EXTOP[i][j][k][1] = EXTOP[i][j][k][2];
+	    EYTOP[i][j][k][1] = EYTOP[i][j][k][2];
+	    EXTOP[i][j][k][2] = EX[i][j][sz + 1 - k][1];
+	    EYTOP[i][j][k][2] = EY[i][j][sz + 1 - k][1];
+	  }
+    }
+}
+
+void UBCcalc()
+{
+
+}
+
+void NBCcalc()
+{
+
+}
+
+void Ninital()
+{
+
+}

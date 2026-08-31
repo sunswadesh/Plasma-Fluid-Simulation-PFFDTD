@@ -1,0 +1,40 @@
+\chapter{Project Goal}
+\label{ch:goals}
+
+\section{The solver}
+
+Plasma Fluid Finite-Difference Time-Domain (PF-FDTD) is a three-dimensional electromagnetic solver coupled to multi-species plasma fluid equations. It originated in Jeffrey~D.\ Ward's plasma-frequency-probe work at Utah State University~\cite{ward2006} and has been modernized with a modular \texttt{src/} layout, OpenMP, Python visualization, and scripted experiment drivers.
+
+On a staggered Yee grid the code advances Maxwell's equations
+\begin{align}
+\nabla \times \mathbf{E} &= -\partial_t\mathbf{B}, \\
+\nabla \times \mathbf{B} &= \mu_0\varepsilon_0\,\partial_t\mathbf{E} + \mu_0\mathbf{J},
+\end{align}
+with plasma current \(\mathbf{J}=\sum_s q_s n_s\mathbf{u}_s\) from continuity and momentum updates for each species. Antenna geometry and sources are read from \texttt{.str} input files. The feed observables used throughout this report are the voltage \(V(t)\) and current \(I(t)\) written to \texttt{.vc} files; input impedance is
+\begin{equation}
+Z(f)=\frac{V(f)}{I(f)}.
+\end{equation}
+
+\section{Scientific target: Tu (2008)}
+
+The active research goal is to reproduce the sheath-induced resonance shift reported by Tu~\cite{tu2008}. A conducting antenna in plasma develops a vacuum (or strongly depleted) sheath of width \(\Sd\) cells next to the conductor. Inside that layer the ambient density is essentially zero; outside it recovers to the bulk \(N_0\).
+
+Increasing \(\Sd\) reduces dielectric loading near the antenna, so the series resonance \(\fres\)---the frequency where \(\ImZ=0\) with a \(+\) to \(-\) crossing---should move \emph{upward} toward the free-space value.
+
+An equivalent-circuit picture of the same effect is a sheath capacitance in series with the antenna feed:
+\begin{equation}
+Z_{\mathrm{in}}(f)=Z_{\mathrm{ant}}(f)+\frac{1}{j\omega C_{\mathrm{sh}}},
+\qquad
+C_{\mathrm{sh}}\sim\frac{\varepsilon_0 A}{\Sd\,\Delta x}.
+\end{equation}
+In FDTD this is realized as a volumetric vacuum gap on Yee nodes adjacent to the conductor: depleted \(N_0\) implies \(J\approx 0\), so those cells act as vacuum capacitors loading the feed. Tu's lumped \(C_{\mathrm{sh}}\) is the circuit limit of that gap; it is not implemented as a separate circuit element.
+
+\section{Campaign protocol}
+
+The planned observable is \(\fres(\Sd)\) for \(\Sd\in\{0,2,4,6,8,10\}\) cells on a \(70\times 70\times 65\) dipole grid with \(\Delta x=\SI{0.04}{\meter}\). The same geometry appears in every chapter of this report: a \(z\)-directed thin-wire dipole from \((35,35,20)\) to \((35,35,45)\) with a hard \(E_z\) source at \((35,35,33)\).
+
+What changed between phases is the excitation (broadband pulse versus CW sine), the plasma frequency, and---after August 2026---whether the sheath was actually attached to the conductor. Each subsequent chapter records what was tried, what succeeded, and what failed.
+
+\section{How to read this document}
+
+Chapters are chronological. Chapter~\ref{ch:february} is the February 2026 free-space versus plasma baseline on this dipole; it is a prerequisite, not a detour. Chapters~\ref{ch:pulse}--\ref{ch:fpscreen} are pre-fix sheath campaigns. Chapter~\ref{ch:fix} diagnoses the coupling bug. Chapters~\ref{ch:confirm}--\ref{ch:cwtu} are post-fix confirmation and the dense CW Tu sweep completed 18 August 2026.

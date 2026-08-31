@@ -1,0 +1,8 @@
+# Case status grid (MHz). complete / running / pending / incomplete
+Sd	1.50	1.60	1.70	1.75	1.80	1.85	1.90	2.00	2.10	2.20	2.30
+0	complete	complete	complete	complete	complete	complete	complete	complete	complete	complete	complete
+2	complete	complete	complete	complete	complete	complete	complete	complete	complete	complete	complete
+4	complete	complete	complete	complete	complete	complete	complete	complete	complete	complete	complete
+6	complete	complete	complete	complete	complete	complete	complete	complete	complete	complete	complete
+8	complete	complete	complete	complete	complete	complete	complete	complete	complete	complete	complete
+10	complete	complete	complete	complete	complete	complete	complete	complete	complete	complete	complete

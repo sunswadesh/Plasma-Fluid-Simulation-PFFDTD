@@ -1,0 +1,128 @@
+\chapter{Dense CW Tu Sweep}
+\label{ch:cwtu}
+
+\section{Campaign setup}
+
+The dense CW grid was the post-fix measurement intended to produce a clean \(\fres(\Sd)\) curve. Driver: \texttt{scripts/run\_sheath\_cw\_tu.ps1}. Output: \texttt{results/sheath\_cw\_tu/} (voltage/current only; no field dumps).
+
+\begin{itemize}[leftmargin=1.5em]
+\item \(\Sd\in\{0,2,4,6,8,10\}\).
+\item Drive frequencies: 1.50, 1.60, 1.70, 1.75, 1.80, 1.85, 1.90, 2.00, 2.10, 2.20, 2.30~MHz (66 cases).
+\item \(\fp=\SI{2}{\mega\hertz}\), template \texttt{sheath\_sine\_vc.str}, \(\mathrm{MaxParallel}=3\), \(\mathrm{OMP}=4\).
+\item Started 13 August 2026 12:48; all 66 cases finished by 18 August 2026.
+\end{itemize}
+
+Analyzer: \texttt{scripts/analyze\_cw\_tu\_partial.py} (last-50\% phasor \(Z\), same convention as the \(\fp\)-screen; series resonance is the first \(\ImZ\) \(+\) to \(-\) crossing). Tables and figures: \texttt{analysis/data/cw\_tu\_*.txt}, \texttt{analysis/figures/cw\_tu\_*.png}.
+
+\section{Campaign status}
+
+As of 18 August 2026: \textbf{66 complete, 0 running, 0 pending}, 0 failed. Every planned cell in Table~\ref{tab:cwtu-status} finished with a full \texttt{data.vc} file.
+
+The \(\Sd=0\), 1.50~MHz case was skipped once by the orchestrator on restart; its file is smaller than the others and lacks a \texttt{DONE} line, but the phasor at 1.50~MHz is consistent with the rising inductive branch below the crossing and is included in the plots.
+
+\begin{table}[ht]
+\centering
+\caption{CW Tu case status (18 August 2026). All cells complete.}
+\label{tab:cwtu-status}
+\scriptsize
+\begin{tabular}{@{}rccccccccccc@{}}
+\toprule
+\(\Sd\) & 1.50 & 1.60 & 1.70 & 1.75 & 1.80 & 1.85 & 1.90 & 2.00 & 2.10 & 2.20 & 2.30 \\
+\midrule
+0  & C & C & C & C & C & C & C & C & C & C & C \\
+2  & C & C & C & C & C & C & C & C & C & C & C \\
+4  & C & C & C & C & C & C & C & C & C & C & C \\
+6  & C & C & C & C & C & C & C & C & C & C & C \\
+8  & C & C & C & C & C & C & C & C & C & C & C \\
+10 & C & C & C & C & C & C & C & C & C & C & C \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Impedance versus frequency}
+
+Figure~\ref{fig:cwtu-z} and Table~\ref{tab:cwtu-z} show the full-grid phasor results. Unlike the pre-fix \(\fp\)-screen, curves for different \(\Sd\) are well separated across 1.50--2.30~MHz.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.92\textwidth]{cw_tu_impedance.png}
+\caption{CW Tu sweep, all 66 cases. \(\Sd=0\) crosses \(\ImZ=0\) near 1.85~MHz and is capacitive above \(\sim\SI{2.0}{\mega\hertz}\). Every \(\Sd\ge 2\) curve stays capacitive (\(\ImZ<0\)) across the entire band.}
+\label{fig:cwtu-z}
+\end{figure}
+
+\begin{table}[ht]
+\centering
+\caption{Selected phasor impedances (\(\si{\ohm}\)). Full table: \texttt{analysis/data/cw\_tu\_summary.txt}.}
+\label{tab:cwtu-z}
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+\(f\) (MHz) & \(\Sd\) & \(\ReZ\) & \(\ImZ\) & note \\
+\midrule
+1.50 & 0  & 2130  & $+585$   & inductive shoulder \\
+1.85 & 0  & 62775 & $-640$   & just past crossing \\
+2.00 & 0  & 54406 & $-54920$ & capacitive above \(\fres\) \\
+1.50 & 2  & 15227 & $-9181$  & capacitive at band edge \\
+2.00 & 2  & 21484 & $-40907$ & still capacitive \\
+1.70 & 10 & 6182  & $-20959$ & matches confirm-Z \\
+2.00 & 10 & 2238  & $-22032$ & \(\lvert Z\rvert\) lowest in band \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{\texorpdfstring{Series resonance $\fres(\Sd)$}{Series resonance f\_res(Sd)}}
+
+Linear interpolation of the \(\Sd=0\) \(+\) to \(-\) crossing between 1.80 and 1.85~MHz gives
+\begin{equation}
+\fres(\Sd=0)\approx\SI{1.846}{\mega\hertz}.
+\label{eq:cwtu-fres0}
+\end{equation}
+That matches the post-fix confirm (sign change between 1.7 and 1.9~MHz) and is slightly above the coarse pre-fix 1.7/1.9 interpolation (\(\sim\SI{1.775}{\mega\hertz}\)).
+
+For \(\Sd=2,4,6,8,10\), \(\ImZ<0\) at \emph{every} frequency in 1.50--2.30~MHz. No \(+\) to \(-\) crossing appears anywhere in the grid for \(\Sd>0\). Any series crossing for those cases therefore lies \emph{below} \(\SI{1.50}{\mega\hertz}\)---the opposite direction from Tu~\cite{tu2008}, which predicts \(\fres\) moving \emph{upward} with \(\Sd\) toward the free-space value. Figure~\ref{fig:cwtu-res} contains only the \(\Sd=0\) point.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{cw_tu_resonance.png}
+\caption{\(\fres(\Sd)\) from the full CW grid (\(\ImZ\) \(+\) to \(-\) crossing). Only \(\Sd=0\) has a crossing in 1.50--2.30~MHz.}
+\label{fig:cwtu-res}
+\end{figure}
+
+Table~\ref{tab:cwtu-res} summarizes the resonance extraction. The high-frequency extension (1.90--2.30~MHz) rules out the provisional hypothesis from the partial run that a Tu-like upward crossing might appear above 1.9~MHz for large \(\Sd\): \(\Sd=10\) remains strongly capacitive at 2.0 and 2.3~MHz.
+
+\begin{table}[ht]
+\centering
+\caption{Series resonance from \(\ImZ\) \(+\) to \(-\) crossings.}
+\label{tab:cwtu-res}
+\begin{tabular}{@{}rll@{}}
+\toprule
+\(\Sd\) & \(\fres\) & note \\
+\midrule
+0  & \(\SI{1.846}{\mega\hertz}\) & crossing in 1.50--2.30~MHz band \\
+2  & --- & all \(\ImZ<0\); crossing at or below 1.50~MHz \\
+4  & --- & all \(\ImZ<0\); crossing at or below 1.50~MHz \\
+6  & --- & all \(\ImZ<0\); crossing at or below 1.50~MHz \\
+8  & --- & all \(\ImZ<0\); crossing at or below 1.50~MHz \\
+10 & --- & all \(\ImZ<0\); crossing at or below 1.50~MHz \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{What succeeded}
+
+\begin{itemize}[leftmargin=1.5em]
+\item Coupling is visible in CW at every \(\Sd>0\): \(Z(f)\) is no longer independent of sheath width.
+\item The \(\Sd=0\) plasma-loaded resonance is resolved to \(\sim\SI{50}{\kilo\hertz}\) spacing near \(\fp\).
+\item The full grid confirms the post-fix confirm-Z picture: \(\Sd=0\) is inductive below \(\sim\SI{1.85}{\mega\hertz}\); \(\Sd=10\) is capacitive everywhere in the band.
+\end{itemize}
+
+\section{What did not match Tu (2008)}
+
+The Tu observable is the \emph{upward shift} of \(\fres\) with \(\Sd\). That shift was not reproduced:
+
+\begin{itemize}[leftmargin=1.5em]
+\item Only \(\Sd=0\) yields a measurable in-band series crossing.
+\item Wider sheaths add capacitive loading (\(\lvert Z\rvert\) falls with \(\Sd\) at fixed \(f\)) but do not move a \(+\) to \(-\) crossing upward through 1.50--2.30~MHz.
+\item If the same crossing definition applies to \(\Sd\ge 2\), the feature has moved \emph{downward} relative to \(\Sd=0\), or the feed impedance is dominated by sheath capacitance without a clear in-band LC crossing.
+\end{itemize}
+
+Possible follow-ups (Chapter~\ref{ch:status}): extend the CW grid below 1.50~MHz for \(\Sd\ge 2\); compare against free-space \(\fres\) on the same grid; revisit whether the \(+\) to \(-\) crossing is the right marker when a wide vacuum sheath makes the feed uniformly capacitive in the band.

@@ -1,0 +1,47 @@
+\chapter{CW Plasma-Frequency Screen}
+\label{ch:fpscreen}
+
+\section{What we tried}
+
+On 11--12 August 2026 a CW screen was run at \(\fp=\SI{2}{\mega\hertz}\) for \(\Sd=0\) and \(\Sd=10\) only, with drive frequencies spanning 0.6--3.0~MHz so that the series resonance could not be missed. Driver: \texttt{scripts/run\_sheath\_fp\_screen\_parallel.ps1}. Data: \texttt{results/sheath\_fp\_screen/} (20 cases, 8.65~h, all completed). Analysis again used steady-state phasor \(Z\) on the last 50\% of each trace.
+
+\section{What succeeded as a measurement}
+
+A clean series resonance appears at \(\fres\approx\SI{1.775}{\mega\hertz}\) for \emph{both} sheath widths: \(\ImZ\) is positive at \(\SI{1.7}{\mega\hertz}\) and negative at \(\SI{1.9}{\mega\hertz}\). The CW method works. This is the first time the campaign resolved the observable Tu requires.
+
+\section{What failed as physics}
+
+Impedance agrees to \(\sim 0.003\%\) between \(\Sd=0\) and \(\Sd=10\) at every frequency (Table~\ref{tab:fpscreen}, Figure~\ref{fig:fpscreen}). Tu requires an \emph{upward} shift of \(\fres\) with sheath width. Identical \(Z(f)\) means the sheath never enters the feed. This folder is the pre-fix negative control and should be kept.
+
+\begin{table}[ht]
+\centering
+\caption{Pre-fix CW \(\fp\)-screen. \(\Sd=0\) and \(\Sd=10\) are indistinguishable.}
+\label{tab:fpscreen}
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+\(f\) (MHz) & \(\ReZ\) \(\Sd{=}0\) & \(\ReZ\) \(\Sd{=}10\) & \(\ImZ\) \(\Sd{=}0\) & \(\ImZ\) \(\Sd{=}10\) \\
+\midrule
+0.60 & 13414.2 & 13413.9 & $+9035.6$ & $+9035.4$ \\
+1.00 & 19010.1 & 19009.5 & $+4516.7$ & $+4517.0$ \\
+1.40 & 23192.8 & 23193.0 & $+7124.8$ & $+7125.1$ \\
+1.70 & 39980.4 & 39980.9 & $+9845.3$ & $+9845.2$ \\
+1.90 & 70942.1 & 70942.3 & $-16284.5$ & $-16284.7$ \\
+2.00 & 56193.4 & 56193.0 & $-55242.0$ & $-55242.7$ \\
+2.10 & 21336.2 & 21336.4 & $-53151.9$ & $-53151.6$ \\
+2.20 & 9163.7 & 9163.6 & $-40864.8$ & $-40864.8$ \\
+2.40 & 3312.4 & 3312.5 & $-29552.6$ & $-29552.6$ \\
+3.00 & 566.8 & 566.9 & $-16669.6$ & $-16669.6$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{sheath_2d_sweep_impedance.png}
+\caption{CW \(\fp\)-screen impedance. \(\Sd=0\) and \(\Sd=10\) overlap at every point; \(\fres\approx\SI{1.775}{\mega\hertz}\) for both.}
+\label{fig:fpscreen}
+\end{figure}
+
+\section{Interpretation}
+
+The measurement problem of Chapter~\ref{ch:pulse} is solved. The remaining problem is in the model: a density hole exists somewhere, but not where \(V\) and \(I\) are formed. Chapter~\ref{ch:fix} dumps \(N_0\) along a line through the feed and finds that hole at the domain edge.

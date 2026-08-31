@@ -1,0 +1,43 @@
+\chapter{Narrow-Band and Two-Dimensional CW below \(\fp\)}
+\label{ch:narrow}
+
+\section{What we tried}
+
+Because the pulse FFT did not resolve \(\fres\), the next phase switched to a continuous-wave sine (\texttt{sheath\_sine.str}) and extracted a phasor \(Z=V/I\) from the last half of each trace. Two related campaigns ran from late May through 11 August 2026.
+
+\paragraph{Narrow-band frequency scan.}
+\texttt{results/sheath\_narrow\_band/}, driver \texttt{scripts/run\_sheath\_narrow\_band.ps1}. Sixteen frequencies from \(\SI{10}{\kilo\hertz}\) to \(\SI{400}{\kilo\hertz}\). Folder names are \texttt{sd\{\emph{Hz}\}} (for example \texttt{sd20000}): a PowerShell expansion bug treated \(\Sd\) as empty, so these directories are frequencies, not sheath widths. The default \(\Sd\) was 0.
+
+\paragraph{Two-dimensional \(\Sd\times f\) sweep.}
+\texttt{results/sheath\_2d\_sweep/}. \(\Sd=0\) at 20--400~kHz; \(\Sd=2,4,6,8,10\) at 100, 150, 200, and 300~kHz. Phasor analysis: \texttt{scripts/analyze\_2d\_sweep.py}.
+
+Both campaigns sit well below the \(\sim\SI{1.8}{\mega\hertz}\) resonance later found near \(\fp=\SI{2}{\mega\hertz}\).
+
+\section{What succeeded}
+
+CW phasor impedance is a stable measurement. Traces reach a usable steady state, and \(\ReZ\) and \(\ImZ\) versus drive frequency are smooth enough to plot (Figures~\ref{fig:narrow}--\ref{fig:twod}). This is the measurement method used for all subsequent screens.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{narrow_band_impedance.png}
+\caption{Narrow-band CW impedance, 10--400~kHz. Folders are misnamed \texttt{sd\{Hz\}}; the physical sheath width is the script default \(\Sd=0\).}
+\label{fig:narrow}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{sheath_2d_sweep_lowf.png}
+\caption{Two-dimensional CW sweep at 20--400~kHz. Curves for \(\Sd=2\ldots 10\) overlie one another; sheath width does not enter the feed.}
+\label{fig:twod}
+\end{figure}
+
+\section{What failed}
+
+The physics test failed, for two stacked reasons.
+
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Wrong band.} These frequencies are far below the series feature later located near \(\SI{1.78}{\mega\hertz}\) (Chapter~\ref{ch:fpscreen}). A null result here cannot confirm or refute Tu.
+\item \textbf{No \(\Sd\) dependence even where compared.} Tables for \(\Sd=2,4,6,8,10\) at 100--300~kHz are numerically identical to many digits. Example at \(\SI{200}{\kilo\hertz}\): \(\Sd=0\) gives \(\ReZ\approx\SI{7841}{\ohm}\), \(\ImZ\approx\SI{3046}{\ohm}\); \(\Sd=10\) agrees to the reported precision. The sheath never loaded the feed.
+\end{enumerate}
+
+The overlapping \(\Sd\) curves in Figure~\ref{fig:twod} are the first clear sign that the volumetric sheath was not attached to the antenna. That conclusion is made definitive by the \(\fp\)-screen in the next chapter, which repeats the comparison \emph{on} the resonance.

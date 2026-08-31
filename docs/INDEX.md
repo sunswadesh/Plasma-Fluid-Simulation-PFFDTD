@@ -28,7 +28,7 @@ This page is the primary navigation hub for project documentation.
 1. [Physics](PHYSICS.md)
 2. [Input Format](INPUT_FORMAT.md)
 3. [Architecture](ARCHITECTURE.md)
-4. Tu (2008) sheath campaign — external project: `D:\Swadesh\Work\Impedance Probe\PiP Alireza\2026 Collab_PFFDTD_Sheath\projects\tu2008-sheath\` (solver on branch `PffdtdSheath`)
+4. [Tu (2008) sheath campaign](../projects/tu2008-sheath/README.md) — branch `PffdtdSheath`
 
 ## Core Documents
 
@@ -43,13 +43,13 @@ This page is the primary navigation hub for project documentation.
 - [SETUP_SUMMARY.md](SETUP_SUMMARY.md)
 - [COMPLETION_REPORT.md](COMPLETION_REPORT.md)
 
-## Tu 2008 sheath project (external)
+## Tu 2008 sheath project
 
-Campaign docs, scripts, inputs, validation phases, and LaTeX report:
+Campaign docs, scripts, validation phases, and report:
 
-`D:\Swadesh\Work\Impedance Probe\PiP Alireza\2026 Collab_PFFDTD_Sheath\projects\tu2008-sheath\`
+[projects/tu2008-sheath/](../projects/tu2008-sheath/README.md)
 
-Sheath physics code remains in this repo: `src/physics/plasma.cpp`, `plasmaNSheath.h`.
+Sheath physics: `src/physics/plasma.cpp`, `plasmaNSheath.h`.
 
 ## Build, Test, And Run References
 

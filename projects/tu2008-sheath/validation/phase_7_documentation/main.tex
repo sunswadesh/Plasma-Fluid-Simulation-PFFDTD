@@ -1,0 +1,43 @@
+\documentclass[11pt,letterpaper]{report}
+
+\input{preamble}
+
+\title{PF-FDTD Sheath study Progress and Analysis Report\\[0.4em]
+\large Antenna Impedance in Plasma and Tu (2008) Sheath Validation}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This report records the experimental campaign on the Plasma Fluid Finite-Difference Time-Domain (PF-FDTD) solver from the February 2026 dipole-in-plasma baseline through the August 2026 dense continuous-wave (CW) sheath-width sweep. The scientific goal is to reproduce the Tu (2008) result that a vacuum sheath of increasing width \(\Sd\) around a radio-frequency dipole raises the series resonance \(\fres\) toward the free-space value. Early pulse and low-frequency CW campaigns either failed as measurements or showed \(Z\) independent of \(\Sd\). A coupling bug---sheath depletion seeded from the plasma-on mask before antenna geometry existed---placed the density hole at the domain edge rather than next to the wire. After a PEC-seeded fix, feed impedance depends strongly on sheath width. A dense 66-case CW sweep at \(\fp=\SI{2}{\mega\hertz}\) (1.50--2.30~MHz) completed on 18 August 2026: \(\fres(\Sd=0)\approx\SI{1.846}{\mega\hertz}\), but no \(\ImZ\) \(+\) to \(-\) crossing appears for \(\Sd\ge 2\) in that band, so the Tu upward shift was not reproduced with this observable.
+\end{abstract}
+
+\tableofcontents
+
+\include{chapters/00_goals}
+\include{chapters/01_february_baseline}
+\include{chapters/02_pulse_sd_sweep}
+\include{chapters/03_narrowband_cw}
+\include{chapters/04_fp_screen}
+\include{chapters/05_coupling_fix}
+\include{chapters/06_postfix_confirm}
+\include{chapters/07_cw_tu}
+\include{chapters/08_status}
+
+\begin{thebibliography}{9}
+\bibitem{tu2008}
+W.~Tu, J.-L.~Pathak, and R.~F.~Benson,
+\textit{Plasma sheath structures around a radio frequency antenna},
+J.\ Geophys.\ Res., 2008.
+A local copy is in \texttt{../../data/references/Tu2008\_JGR\_plasma\_sheath.pdf}.
+
+\bibitem{ward2006}
+J.~D.~Ward,
+\textit{Plasma Frequency Probe Design and Implementation},
+Master's thesis, Utah State University, 2006.
+\end{thebibliography}
+
+\end{document}

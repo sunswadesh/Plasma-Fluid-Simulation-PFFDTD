@@ -1,0 +1,71 @@
+\chapter{Post-Fix Confirmation}
+\label{ch:confirm}
+
+\section{CW confirm at the resonance shoulder}
+
+A short CW check at \(\SI{1.7}{\mega\hertz}\) and \(\SI{1.9}{\mega\hertz}\), \(\Sd=0\) versus \(\Sd=10\), \(\fp=\SI{2}{\mega\hertz}\), \(\mathrm{MaxIter}=100000\), is in \texttt{results/sheath\_confirm\_z/}.
+
+\begin{table}[ht]
+\centering
+\caption{Post-fix CW confirm. Relative change \(\lvert\Delta Z\rvert/\lvert Z_0\rvert\) was \(\sim 0.003\%\) before the fix.}
+\label{tab:confirm}
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+\(f\) (MHz) & \(\ReZ\) \(\Sd{=}0\) & \(\ReZ\) \(\Sd{=}10\) & \(\ImZ\) \(\Sd{=}0\) & \(\ImZ\) \(\Sd{=}10\) & \(\lvert\Delta Z\rvert/\lvert Z_0\rvert\) \\
+\midrule
+1.70 & 39564 & 6406 & $+10023$ & $-21936$ & 112.8\% \\
+1.90 & 71059 & 4573 & $-15542$ & $-22129$ & 91.9\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{confirm_z_impedance.png}
+\caption{Post-fix CW impedance at 1.7 and 1.9~MHz. \(\Sd=0\) still crosses \(\ImZ=0\) between the two points; \(\Sd=10\) is capacitive at both.}
+\label{fig:confirm}
+\end{figure}
+
+\paragraph{Succeeded.} Impedance now depends strongly on sheath width. \(\Sd=0\) still shows an \(\ImZ\) sign change between 1.7 and 1.9~MHz (\(\fres\sim\SI{1.78}{\mega\hertz}\)). \(\Sd=10\) is strongly capacitive at both frequencies: the feed sees the vacuum sheath. The coupling bug is resolved.
+
+\paragraph{Still open.} Two frequencies cannot locate the new \(\fres\) for every \(\Sd\). A dense CW grid is required for a Tu shift curve (Chapter~\ref{ch:cwtu}).
+
+\section{Post-fix long pulse FFT}
+
+A full \(\Sd\) grid after the fix is in \texttt{results/sheath\_pulse\_long/} (\(\fp=\SI{2}{\mega\hertz}\), Spar \(\SI{2}{\mega\hertz}\), \(\mathrm{MaxIter}=2\times 10^{5}\), \(\mathrm{VcRate}=50\)). Wall time 6.57~h; all six cases exited 0. Analyzer: \texttt{scripts/analyze\_pulse\_long.py}, using CW-compatible \(+\) to \(-\) crossings in 1.2--3~MHz.
+
+\begin{table}[ht]
+\centering
+\caption{Post-fix pulse FFT. Automatic picks are noisy; \(\mathrm{d}f\sim\SI{75}{\kilo\hertz}\).}
+\label{tab:pulse-long}
+\begin{tabular}{@{}rrrr@{}}
+\toprule
+\(\Sd\) & \(\fres\) (MHz), Im \(+\!\to\!-\) in 1.2--3~MHz & \(\ImZ\) at 1.7~MHz & \(\ImZ\) at 1.9~MHz \\
+\midrule
+0  & 2.09 & $+18325$ & $+22444$ \\
+2  & 1.23 (noisy; also 2.03) & $-536$ & $+1115$ \\
+4  & 2.02 & $-1542$ & $+8541$ \\
+6  & 2.02 & $-4527$ & $+8638$ \\
+8  & 2.00 & $-7910$ & $+3205$ \\
+10 & 2.00 & $-15393$ & $-29243$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{pulse_long_impedance.png}
+\caption{Post-fix pulse FFT impedance. Curves separate with \(\Sd\); \(\Sd=10\) is capacitive through 1.7--1.9~MHz, matching the CW confirm.}
+\label{fig:pulse-long-z}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{pulse_long_resonance_shift.png}
+\caption{Pulse-FFT resonance versus \(\Sd\). Frequency resolution is too coarse for a Tu curve; CW remains the preferred \(\fres\) measurement.}
+\label{fig:pulse-long-shift}
+\end{figure}
+
+\paragraph{Succeeded.} Pulse FFT now \emph{sees} \(\Sd\). \(\Sd=10\) capacitive at 1.7--1.9~MHz matches the CW confirm.
+
+\paragraph{Failed as a precision tool.} Stock \(-\) to \(+\) resonance picks are often spurious. Even with \(+\) to \(-\) crossings, \(\mathrm{d}f\sim\SI{75}{\kilo\hertz}\) is too coarse to map a clean \(\fres(\Sd)\) curve. A denser CW sweep is the remaining measurement.

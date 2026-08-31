@@ -1,0 +1,62 @@
+\chapter{Pulse Sheath-Width Sweep}
+\label{ch:pulse}
+
+\section{What we tried}
+
+The first sheath campaign (13--16 May 2026) added a step-profile vacuum sheath of width \(\Sd\) cells around the February dipole and drove it with a broadband pulse. The protocol is in \texttt{docs/sheath/SHEATH\_VALIDATION\_IMPLEMENTATION\_PLAN.md}.
+
+\begin{itemize}[leftmargin=1.5em]
+\item Input: \texttt{sheath.str} --- source type~5 (differentiated Gaussian) at \(\SI{30}{\kilo\hertz}\).
+\item Plasma: \(\fp=\SI{200}{\kilo\hertz}\), \(T=\SI{2000}{\kelvin}\), no background \(\mathbf{B}\).
+\item Sheath: \(\Sd=0,2,4,6,8,10\).
+\item Analysis: Hanning-window FFT of the full \(V(t)/I(t)\) traces (\texttt{scripts/analyze\_sheath\_results.py}).
+\item Data: \texttt{results/sheath\_sweep/}, plus a longer \(\Sd=0\) attempt in \texttt{results/sheath\_long/}.
+\end{itemize}
+
+The expected signature was a monotonic increase of \(\fres\) with \(\Sd\).
+
+\section{What failed}
+
+No \(\ImZ=0\) crossing was found below \(\SI{1}{\mega\hertz}\). Fallback \(|Z|\) peaks fell in the multi-gigahertz band (Table~\ref{tab:pulse-peaks}) and are sampling/FFT artifacts, not the kHz/MHz antenna resonance discussed by Tu. A long-trace reanalysis of \texttt{sheath\_long/sd0} with a \(\SI{200}{\kilo\hertz}\) cap still found no zero-crossing (fallback peak \(\SI{46.8}{\kilo\hertz}\)).
+
+\begin{table}[ht]
+\centering
+\caption{Pulse-FFT ``resonance'' picks from the May \(\Sd\) sweep. All Im\(\{Z\}\) crossings in the analysis band are missing; GHz peaks are not physical.}
+\label{tab:pulse-peaks}
+\begin{tabular}{@{}rrr@{}}
+\toprule
+\(\Sd\) (cells) & Im\(\{Z\}\) zero-crossing & Fallback \(|Z|\) peak (Hz) \\
+\midrule
+0  & --- & \(6.61\times 10^{9}\) \\
+2  & --- & \(6.16\times 10^{9}\) \\
+4  & --- & \(5.28\times 10^{9}\) \\
+6  & --- & \(5.28\times 10^{9}\) \\
+8  & --- & \(5.28\times 10^{9}\) \\
+10 & --- & \(5.28\times 10^{9}\) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{sheath_impedance.png}
+\caption{Broadband pulse FFT impedance versus frequency for \(\Sd=0\ldots 10\). No usable series resonance in the Tu band.}
+\label{fig:pulse-z}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{sheath_resonance_shift.png}
+\caption{Apparent resonance versus \(\Sd\) from the pulse analyzer. The GHz-scale picks are FFT artifacts; this campaign cannot test Tu (2008).}
+\label{fig:pulse-shift}
+\end{figure}
+
+\section{What succeeded, narrowly}
+
+All six \(\Sd\) runs completed and wrote readable \texttt{data.vc} files. The analyzer and sweep scripts became the template for later campaigns. That is an infrastructure success, not a physics result.
+
+\section{Interpretation}
+
+This campaign \emph{cannot test} Tu (2008): the observable \(\fres\) was never resolved. Possible contributors, recorded at the time, were coarse DFT bins at kHz scales, transient-dominated traces, and a drive that did not sit on the resonance. A later finding (Chapter~\ref{ch:fix}) adds a second, independent failure: even a perfect FFT would have seen no \(\Sd\) dependence, because the sheath was not coupled to the feed.
+
+Policy after this phase: do not spend further wall time on long broadband pulse runs until the measurement method is confirmed with narrow-band or CW excitation.

@@ -1,0 +1,67 @@
+\chapter{Diagnosis and Coupling Fix}
+\label{ch:fix}
+
+\section{How the sheath was supposed to enter the model}
+
+The active path is \texttt{src/physics/plasma.cpp}. Intended sequence:
+
+\begin{enumerate}[leftmargin=1.5em]
+\item Initialize \texttt{N0\_SPATIAL} to uniform bulk \(N_0\).
+\item Set \(\mathrm{SIG}=1\) where plasma couples into Maxwell (\texttt{Ecalcmod}: \(-C_\mu\,\mathrm{SIG}\,J\)).
+\item If \(\Sd>0\), dilate a distance field from a seed and set
+\[
+N_{0,\mathrm{spatial}}=N_0\cdot N_{\mathrm{MIN\_RATIO}}
+\qquad (N_{\mathrm{MIN\_RATIO}}=10^{-6})
+\]
+for \(0<d\le\Sd\).
+\item Fluid updates and current \(J\) use \texttt{N0\_SPATIAL}. Depleted cells give \(J\approx 0\).
+\end{enumerate}
+
+Feed observables (\texttt{src/source/source.cpp}) are a hard \(E_z\) voltage at \((35,35,33)\) and an Amp\`{e}re loop of \(B_x,B_y\) around that cell. Plasma loading of \(Z\) therefore requires depleted response in \emph{near-antenna} Yee nodes---not at the outer domain wall.
+
+\section{Three overlapping mistakes}
+
+\paragraph{Init order.}
+\texttt{pffdtd.cpp} called \texttt{PLASMAclear()} \emph{before} \texttt{setup2()}. At that moment \texttt{ClearArrays()} had set \(\mathrm{ERX}=\mathrm{ERY}=\mathrm{ERZ}=1\) everywhere. The ``mark antenna / turn plasma on'' loop therefore set \(\mathrm{SIG}=1\) on the entire interior plasma box, not on the dipole.
+
+\paragraph{Wrong sheath seed.}
+Sheath dilation seeded from \(\mathrm{SIG}>0.5\). Even after reordering geometry, \(\mathrm{SIG}=1\) is defined where \emph{any} of \(\mathrm{ERX}/\mathrm{ERY}/\mathrm{ERZ}==1\). The thin-wire dipole in \texttt{sheath.str} is only \(\mathrm{ERZ}=0\) at \((35,35,20\text{--}45)\); \(\mathrm{ERX}\) and \(\mathrm{ERY}\) stay 1. So \(\mathrm{SIG}\) is a plasma-on mask, not a conductor mask. Distance \(d=0\) filled the whole interior; depletion landed in an \(\Sd\)-cell shell at the \emph{domain boundary} (\(\sim\SI{0.4}{\meter}\) for \(\Sd=10\), \(\Delta x=\SI{0.04}{\meter}\)), while the dipole sits at the grid center.
+
+\paragraph{Overloaded \(\mathrm{SIG}\).}
+\(\mathrm{SIG}\) was used as (a)~plasma--Maxwell coupling, (b)~sheath seed, and (c)~antenna density sink in \texttt{NBCcalc}. Those three meanings conflict. Near-antenna nodes kept bulk \(N_0\), so \(V\) and \(I\) were independent of \(\Sd\).
+
+\section{Diagnostic: \(N_0\) along a line normal to the dipole}
+
+A two-iteration dump of \texttt{N0\_SPATIAL} along \(i\) at \(j=35\), \(k=33\) (feed plane, \(+x\) normal to the \(z\)-dipole) is in \texttt{results/n0\_diag/}.
+
+\paragraph{Before the fix} (legacy SIG-seeded binary). Both \(\Sd=0\) and \(\Sd=10\) show bulk \(N_0=4.96\times 10^{10}\,\mathrm{m}^{-3}\) next to the wire (\(i\approx 35\)). For \(\Sd=10\), depletion to \(N_0\times 10^{-6}\) appears only near the domain edge (\(i=1\ldots 5\)), outside the plasma box. A density hole exists, but the feed does not use those cells.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{n0_line_before.png}
+\caption{\(N_0\) along a line through the feed, before the coupling fix. \(\Sd=10\) depletes the domain edge, not the wire.}
+\label{fig:n0-before}
+\end{figure}
+
+\paragraph{After the fix.} Sheath seeds from 26 dipole PEC cells (not \(\sim\)14k false boundary PECs). \(\Sd=0\) is uniform bulk. \(\Sd=10\) depletes for \(0<|i-35|\le 10\); the domain edge remains bulk. Near-wire median \(N_0\): \(4.96\times 10^{10}\) (\(\Sd=0\)) versus \(4.96\times 10^{4}\) (\(\Sd=10\)).
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{n0_line_after.png}
+\caption{\(N_0\) after the PEC-seeded fix. Depletion sits next to the wire for \(\Sd=10\).}
+\label{fig:n0-after}
+\end{figure}
+
+\section{What changed in the code}
+
+\begin{enumerate}[leftmargin=1.5em]
+\item Reorder init in \texttt{pffdtd.cpp}: \texttt{ClearArrays} \(\to\) \texttt{setup2} (antenna \(\mathrm{ER*}\)) \(\to\) \texttt{PLASMAclear} \(\to\) \texttt{ApplySheath} \(\to\) \texttt{DumpN0Line} \(\to\) \texttt{Ninital}.
+\item Seed the sheath from PEC cells (\(\mathrm{ERX}==0\) or \(\mathrm{ERY}==0\) or \(\mathrm{ERZ}==0\)), not from \(\mathrm{SIG}\).
+\item Keep \(\mathrm{SIG}=1\) as plasma--Maxwell coupling only, including sheath cells. With depleted \(N_0\), \(J\approx 0\), so those cells act as vacuum.
+\item Restrict the \texttt{NBCcalc} density sink to PEC cells.
+\item Initialize the full \(0\ldots s_x\) index range in \texttt{ClearArrays} so uncleared \(i/j/k=0\) faces do not look like PEC (\(\sim\)14k bogus seeds \(\to\) 26 real dipole cells).
+\item CLI \texttt{MaxIter} is re-applied after \texttt{setup1} reads the \texttt{.str} fail-safe line (previously ignored).
+\item Path buffers enlarged so long \texttt{results/...} paths do not overflow.
+\end{enumerate}
+
+Legacy SIG-seeded dumps can be reproduced with \texttt{-DSHEATH\_LEGACY\_SIG\_SEED=1}. The next chapter confirms that feed impedance now depends on \(\Sd\).
