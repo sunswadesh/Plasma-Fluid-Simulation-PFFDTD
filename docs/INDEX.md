@@ -28,6 +28,7 @@ This page is the primary navigation hub for project documentation.
 1. [Physics](PHYSICS.md)
 2. [Input Format](INPUT_FORMAT.md)
 3. [Architecture](ARCHITECTURE.md)
+4. [Sheath validation (Tu 2008)](sheath/README.md) — on branch `PffdtdSheath`; full LaTeX report in collab folder (see sheath README)
 
 ## Core Documents
 
@@ -41,9 +42,14 @@ This page is the primary navigation hub for project documentation.
 - [README_STRUCTURE.md](README_STRUCTURE.md)
 - [SETUP_SUMMARY.md](SETUP_SUMMARY.md)
 - [COMPLETION_REPORT.md](COMPLETION_REPORT.md)
-- [Sheath validation plan](sheath/SHEATH_VALIDATION_IMPLEMENTATION_PLAN.md)
-- [Sheath validation analysis](sheath/SHEATH_VALIDATION_ANALYSIS.md)
-- [Sheath coupling findings (pulse/CW post-mortem + fix)](../analysis/sheath_coupling_findings.md)
+- [Sheath validation hub](sheath/README.md) (branch `PffdtdSheath`)
+- [Sheath coupling findings](../analysis/sheath_coupling_findings.md)
+
+## Sheath report (external)
+
+LaTeX progress report and reference PDFs:
+
+`D:\Swadesh\Work\Impedance Probe\PiP Alireza\2026 Collab_PFFDTD_Sheath\report\`
 
 ## Build, Test, And Run References
 
