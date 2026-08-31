@@ -1,8 +1,0 @@
-# Provisional f_res from completed points only (Im +to-)
-Sd	f_res_Hz	note
-0	1845558.7	crossing in completed band
-2		all Im<0 in completed band (crossing at or below 1.50 MHz)
-4		all Im<0 in completed band (crossing at or below 1.50 MHz)
-6		all Im<0 in completed band (crossing at or below 1.50 MHz)
-8		all Im<0 in completed band (crossing at or below 1.50 MHz)
-10		all Im<0 in completed band (crossing at or below 1.50 MHz)
