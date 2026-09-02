@@ -4,7 +4,7 @@ Full PF-FDTD solver workspace for the Tu (2008) sheath impedance validation camp
 
 **Git branch:** `PffdtdSheath`  
 **Primary campaign folder:** [projects/tu2008-sheath/](projects/tu2008-sheath/)  
-**Upstream mirror (optional):** `D:\Swadesh\Work\Models\Pffdtd`
+**Legacy upstream (optional, not used for results):** `D:\Swadesh\Work\Models\Pffdtd`
 
 ## Quick links
 
@@ -41,6 +41,7 @@ Or `compile.bat` on Windows.
 
 - **Solver changes:** edit `src/`, commit from this repo root.
 - **Campaign work:** open `projects/tu2008-sheath/`; run scripts under `projects/tu2008-sheath/scripts/`.
-- **Results:** `results/sheath_*` at repo root (gitignored).
+- **Results:** `results/sheath_*` at **this repo root** (gitignored). Do not set `$env:PFFDtd_ROOT`.
+- **Low-f CW sweep:** `.\projects\tu2008-sheath\scripts\run_sheath_cw_lowf.ps1`
 
-No `$env:PFFDtd_ROOT` needed when using this layout — campaign scripts default to the repo root two levels above `scripts/`.
+No `$env:PFFDtd_ROOT` — campaign scripts always use this repo root for results and working directory.

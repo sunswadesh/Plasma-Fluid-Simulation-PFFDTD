@@ -1,6 +1,6 @@
 # Project Status Dashboard
 
-Last updated: 2026-08-30
+Last updated: 2026-09-02
 
 ## Phase summary
 
@@ -25,15 +25,18 @@ Last updated: 2026-08-30
 ## Open items
 
 - [ ] Tu upward \(f_\mathrm{res}(S_d)\) shift not reproduced with Im\(\{Z\}\) crossing observable for \(S_d \ge 2\)
+- [ ] Low-frequency CW sweep 0.5–1.5 MHz (\(S_d=0,2,10\)) — script `scripts/run_sheath_cw_lowf.ps1`
 - [ ] Denser frequency search or alternate observable if shift curve is required
 
-## PFFDtd solver
+## PFFDtd solver (this repo)
 
-- Branch: `PffdtdSheath` at `D:\Swadesh\Work\Models\Pffdtd`
+- Branch: `PffdtdSheath` in this collab repo
+- Build: `compile.bat` or `cmake --build build --target pffdtd_parallel` → `pffdtd_parallel.exe` at repo root
 - Sheath implementation: `src/physics/plasma.cpp`, reference header `plasmaNSheath.h`
+- **Results:** `<repo-root>/results/` (gitignored). Do not set `$env:PFFDtd_ROOT`.
 
 ## Next actions (when resuming)
 
-1. Review `analysis/data/cw_tu_summary.txt` and chapter 7 of the report
-2. Decide whether to extend CW band or change resonance metric
+1. Run `scripts/run_sheath_cw_lowf.ps1` from repo root (results → `results/sheath_cw_tu/`)
+2. Review `analysis/data/cw_tu_summary.txt` and chapter 7 of the report
 3. Copy fresh figures from `analysis/figures/` to `validation/phase_7_documentation/figures/` before report updates

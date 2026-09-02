@@ -17,12 +17,16 @@ tu2008-sheath/
 ├── analysis/          Findings, figures, summaries
 ├── inputs/            sheath*.str
 ├── scripts/           Campaign run/analyze drivers
-├── data/references/   PDF papers
+├── docs/references/   PDF papers
 ├── validation/        Phases 0–7 (LaTeX report in phase_7)
 └── archive/           Legacy snapshots
 ```
 
 Solver source: `../../src/` (repo root). Build `pffdtd_parallel.exe` at repo root before running campaign scripts.
+
+**Results:** `../../results/` at repo root (gitignored). Do not set `$env:PFFDtd_ROOT`.
+
+**Low-f sweep:** from repo root, run `.\projects\tu2008-sheath\scripts\run_sheath_cw_lowf.ps1`
 
 ## Quick links
 

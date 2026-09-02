@@ -10,15 +10,17 @@ def project_root() -> str:
 
 
 def repo_root() -> str:
-    """Collab repo root (full PFFDtd tree)."""
-    env = os.environ.get("PFFDtd_ROOT")
-    if env:
-        return os.path.abspath(env)
+    """Collab repo root (solver + results/)."""
     return os.path.abspath(os.path.join(project_root(), "..", ".."))
 
 
 def pffdtd_root() -> str:
     return repo_root()
+
+
+def results_dir(name: str) -> str:
+    """e.g. results_dir('sheath_cw_tu') -> <repo>/results/sheath_cw_tu"""
+    return os.path.join(repo_root(), "results", name)
 
 
 def analysis_dir() -> str:
