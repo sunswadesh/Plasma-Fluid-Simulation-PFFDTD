@@ -2,38 +2,48 @@
 
 All paths relative to `projects/tu2008-sheath/`.
 
-## Start here (three-paper program)
+## Start here (paper program)
 
 | Goal | Document |
 |------|----------|
-| Program overview (science + tasks) | [../README.md](../README.md) |
+| Program overview | [../README.md](../README.md) |
+| **Linear chronology (hindsight)** | [../CHRONICLE.md](../CHRONICLE.md) |
 | Locked decisions / fidelity ladder | [../PROJECT_GUIDE.md](../PROJECT_GUIDE.md) |
-| Phase + paper status | [../STATUS.md](../STATUS.md) |
+| Dashboard | [../STATUS.md](../STATUS.md) |
+| **Paper 0** — campaign chronicle | [../paper0_sheath_campaign/](../paper0_sheath_campaign/) |
 | **Paper 1** — static \(C_\mathrm{sh}\) | [../paper1_static_sheath_capacitance/](../paper1_static_sheath_capacitance/) |
 | **Paper 2** — oscillating \(r_s(t)\) | [../paper2_oscillating_sheath_boundary/](../paper2_oscillating_sheath_boundary/) |
 | **Paper 3** — self-consistent sheath | [../paper3_self_consistent_sheath/](../paper3_self_consistent_sheath/) |
 
-## Campaign science & findings
+## Paper 0 campaign findings
+
+| Goal | Document |
+|------|----------|
+| Coupling bug post-mortem | [../paper0_sheath_campaign/analysis/sheath_coupling_findings.md](../paper0_sheath_campaign/analysis/sheath_coupling_findings.md) |
+| Low-f CW findings (Sep 2026) | [../paper0_sheath_campaign/analysis/cw_lowf_findings.md](../paper0_sheath_campaign/analysis/cw_lowf_findings.md) |
+| Tu discrepancy / series-\(C\) | [../paper0_sheath_campaign/analysis/tu_discrepancy_discussion.md](../paper0_sheath_campaign/analysis/tu_discrepancy_discussion.md) |
+| Figures | [../paper0_sheath_campaign/analysis/figures/](../paper0_sheath_campaign/analysis/figures/) |
+| Data tables | [../paper0_sheath_campaign/analysis/data/](../paper0_sheath_campaign/analysis/data/) |
+
+Root [`../analysis/`](../analysis/) is a **redirect** only.
+
+## Shared science docs
 
 | Goal | Document |
 |------|----------|
 | Sheath models (Balmain / Liu / Song / Tu / FDTD) | [SHEATH_MODELS_LITERATURE_DISCUSSION.md](SHEATH_MODELS_LITERATURE_DISCUSSION.md) |
-| Tu discrepancy discussion (Sep 2026) | [../analysis/tu_discrepancy_discussion.md](../analysis/tu_discrepancy_discussion.md) |
-| Low-f CW findings (Sep 2026) | [../analysis/cw_lowf_findings.md](../analysis/cw_lowf_findings.md) |
-| Coupling bug post-mortem | [../analysis/sheath_coupling_findings.md](../analysis/sheath_coupling_findings.md) |
 | Implementation plan (legacy campaign) | [SHEATH_VALIDATION_IMPLEMENTATION_PLAN.md](SHEATH_VALIDATION_IMPLEMENTATION_PLAN.md) |
 | Pulse-FFT analysis | [SHEATH_VALIDATION_ANALYSIS.md](SHEATH_VALIDATION_ANALYSIS.md) |
 | Progress notes | [SHEATH_VALIDATION_PROGRESS.md](SHEATH_VALIDATION_PROGRESS.md) |
 | LaTeX report | [../validation/phase_7_documentation/main.pdf](../validation/phase_7_documentation/main.pdf) |
 
-## Key figures (low-f + combined)
+## Key figures (copies also under `docs/figures/` for lit note)
 
-| Figure | Path |
-|--------|------|
-| Low-f Z zoom | [figures/cw_lowf_impedance_zoom.png](figures/cw_lowf_impedance_zoom.png) |
-| Combined 0.5–2.3 MHz | [figures/cw_lowf_impedance.png](figures/cw_lowf_impedance.png) |
-| \(f_\mathrm{res}(S_d)\) | [figures/cw_lowf_resonance.png](figures/cw_lowf_resonance.png) |
-| Same files in analysis/ | [../analysis/figures/](../analysis/figures/) |
+| Figure | Canonical (Paper 0) |
+|--------|---------------------|
+| Low-f Z zoom | [../paper0_sheath_campaign/analysis/figures/cw_lowf_impedance_zoom.png](../paper0_sheath_campaign/analysis/figures/cw_lowf_impedance_zoom.png) |
+| Combined 0.5–2.3 MHz | [../paper0_sheath_campaign/analysis/figures/cw_lowf_impedance.png](../paper0_sheath_campaign/analysis/figures/cw_lowf_impedance.png) |
+| \(f_\mathrm{res}(S_d)\) | [../paper0_sheath_campaign/analysis/figures/cw_lowf_resonance.png](../paper0_sheath_campaign/analysis/figures/cw_lowf_resonance.png) |
 
 ## Scripts
 
@@ -42,13 +52,13 @@ All paths relative to `projects/tu2008-sheath/`.
 | `scripts/run_sheath_cw_lowf.ps1` | Low-f CW 0.5–1.5 MHz, Sd=0,2,10 |
 | `scripts/run_sheath_sweep.ps1` | Broadband pulse Sd sweep |
 | `scripts/run_sheath_cw_tu.ps1` | Dense CW Tu band sweep |
-| `scripts/analyze_cw_tu_partial.py` | CW Tu plots and tables → `analysis/` |
+| `scripts/analyze_cw_tu_partial.py` | CW plots/tables → `paper0_sheath_campaign/analysis/` (update paths if re-run) |
 | `scripts/analyze_sheath_results.py` | Pulse FFT impedance |
 | `scripts/config.ps1` | Repo paths, inputs sync |
 
-Results always land under **`<collab-repo-root>/results/`** (gitignored). Do not set `$env:PFFDtd_ROOT`. Optional `$env:PFFDtd_EXE_ROOT` only if the executable is outside the repo.
+Results always land under **`<collab-repo-root>/results/`** (gitignored). Do not set `$env:PFFDtd_ROOT`.
 
-## Validation phases (campaign archive)
+## Validation phases (raw archive)
 
 | Phase | Folder |
 |-------|--------|

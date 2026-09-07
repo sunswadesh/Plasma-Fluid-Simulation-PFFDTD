@@ -12,7 +12,7 @@ The dense CW grid was the post-fix measurement intended to produce a clean \(\fr
 \item Started 13 August 2026 12:48; all 66 cases finished by 18 August 2026.
 \end{itemize}
 
-Analyzer: \texttt{scripts/analyze\_cw\_tu\_partial.py} (last-50\% phasor \(Z\), same convention as the \(\fp\)-screen; series resonance is the first \(\ImZ\) \(+\) to \(-\) crossing). Tables and figures: \texttt{analysis/data/cw\_tu\_*.txt}, \texttt{analysis/figures/cw\_tu\_*.png}.
+Analyzer: \texttt{scripts/analyze\_cw\_tu\_partial.py} (last-50\% phasor \(Z\), same convention as the \(\fp\)-screen; series resonance is the first \(\ImZ\) \(+\) to \(-\) crossing). Tables and figures: \texttt{paper0_sheath_campaign/analysis/data/cw\_tu\_*.txt}, \texttt{paper0_sheath_campaign/analysis/figures/cw\_tu\_*.png}.
 
 \section{Campaign status}
 
@@ -52,7 +52,7 @@ Figure~\ref{fig:cwtu-z} and Table~\ref{tab:cwtu-z} show the full-grid phasor res
 
 \begin{table}[ht]
 \centering
-\caption{Selected phasor impedances (\(\si{\ohm}\)). Full table: \texttt{analysis/data/cw\_tu\_summary.txt}.}
+\caption{Selected phasor impedances (\(\si{\ohm}\)). Full table: \texttt{paper0_sheath_campaign/analysis/data/cw\_tu\_summary.txt}.}
 \label{tab:cwtu-z}
 \begin{tabular}{@{}rrrrr@{}}
 \toprule
@@ -125,4 +125,4 @@ The campaign design target---inspired by a circuit reading of Tu~\cite{tu2008}--
 \item If the same crossing definition applies to \(\Sd\ge 2\), the feature has moved \emph{downward} relative to \(\Sd=0\), or the feed impedance is dominated by series sheath capacitance without a clear in-band LC crossing.
 \end{itemize}
 
-Follow-up completed in Chapter~\ref{ch:lowf}: the CW grid was extended below 1.50~MHz for \(\Sd=0,2,10\). That campaign locates \(\fres(\Sd=2)\approx\SI{0.655}{\mega\hertz}\) and finds \(\Sd=10\) capacitive down to \(\SI{0.50}{\mega\hertz}\), confirming the downward trend. Interpretation (series \(C_{\mathrm{sh}}\) vs dielectric unloading; Balmain--Liu lineage; Tu regime mismatch): \texttt{analysis/tu\_discrepancy\_discussion.md} and Chapter~\ref{ch:status}.
+Follow-up completed in Chapter~\ref{ch:lowf}: the CW grid was extended below 1.50~MHz for \(\Sd=0,2,10\). That campaign locates \(\fres(\Sd=2)\approx\SI{0.655}{\mega\hertz}\) and finds \(\Sd=10\) capacitive down to \(\SI{0.50}{\mega\hertz}\), confirming the downward trend. Interpretation (series \(C_{\mathrm{sh}}\) vs dielectric unloading; Balmain--Liu lineage; Tu regime mismatch): \texttt{paper0_sheath_campaign/analysis/tu\_discrepancy\_discussion.md} and Chapter~\ref{ch:status}.

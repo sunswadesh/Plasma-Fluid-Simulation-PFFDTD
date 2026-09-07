@@ -16,7 +16,7 @@ Driver: \texttt{scripts/run\_sheath\_cw\_lowf.ps1} (wrapper around \texttt{run\_
 \item Wall time \(\approx\SI{52.85}{\hour}\) (30 completed + 3 skipped pre-existing 1.50~MHz cells); finished 4 September 2026.
 \end{itemize}
 
-Analyzer: same last-50\% phasor \(Z=V/I\) convention as August. Numeric tables: \texttt{analysis/data/cw\_lowf\_summary.txt}, \texttt{analysis/data/cw\_lowf\_resonance.txt}. Narrative: \texttt{analysis/cw\_lowf\_findings.md}.
+Analyzer: same last-50\% phasor \(Z=V/I\) convention as August. Numeric tables: \texttt{paper0_sheath_campaign/analysis/data/cw\_lowf\_summary.txt}, \texttt{paper0_sheath_campaign/analysis/data/cw\_lowf\_resonance.txt}. Narrative: \texttt{paper0_sheath_campaign/analysis/cw\_lowf\_findings.md}.
 
 \paragraph{Caveat.}
 \texttt{sd0\_f1500000} is the incomplete August restart file (\(\sim\)340~kB, no \texttt{DONE} line). Its \(Z\) (Re\(\approx\SI{2.1}{\kilo\ohm}\)) is an outlier relative to 1.40~MHz (Re\(\approx\SI{23}{\kilo\ohm}\)) and is discarded for physics. Use 1.40~MHz and August \(\ge\SI{1.60}{\mega\hertz}\) for the \(\Sd=0\) branch.
@@ -44,7 +44,7 @@ Selected phasors (Table~\ref{tab:lowf-z}) make the capacitive loading quantitati
 
 \begin{table}[ht]
 \centering
-\caption{Selected low-frequency phasor impedances (\(\si{\ohm}\)). Full table: \texttt{analysis/data/cw\_lowf\_summary.txt}.}
+\caption{Selected low-frequency phasor impedances (\(\si{\ohm}\)). Full table: \texttt{paper0_sheath_campaign/analysis/data/cw\_lowf\_summary.txt}.}
 \label{tab:lowf-z}
 \begin{tabular}{@{}rrrrr@{}}
 \toprule

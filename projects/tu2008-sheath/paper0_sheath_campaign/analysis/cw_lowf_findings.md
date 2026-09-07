@@ -4,9 +4,9 @@
 **Sweep:** `scripts/run_sheath_cw_lowf.ps1` — \(S_d\in\{0,2,10\}\), 11 tones, \(f_p=2\,\mathrm{MHz}\)  
 **Wall time:** 52.85 h (30 completed + 3 skipped August cases at 1.50 MHz)  
 **Method:** phasor \(Z=V/I\) on last 50% of `.vc` (same as August CW Tu)  
-**Outputs:** `analysis/data/cw_lowf_*.txt`, `analysis/figures/cw_lowf_*.png`  
+**Outputs:** `data/cw_lowf_*.txt`, `figures/cw_lowf_*.png` (this folder)  
 **Report:** `validation/phase_7_documentation/` — Ch.~low-f (`08_lowf.tex`), Ch.~discrepancy (`09_discrepancy.tex`)
-
+**Program:** Paper 0 archive — see `../../CHRONICLE.md`
 ## Status
 
 All planned low-f cells finished. Combined with August high-band points for the same three \(S_d\), 63 phasors are available (0.5–2.3 MHz).

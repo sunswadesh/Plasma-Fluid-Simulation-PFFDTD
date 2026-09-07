@@ -24,4 +24,5 @@ def results_dir(name: str) -> str:
 
 
 def analysis_dir() -> str:
-    return os.path.join(project_root(), "analysis")
+    """Campaign products live under Paper 0 (root analysis/ is a redirect only)."""
+    return os.path.join(project_root(), "paper0_sheath_campaign", "analysis")

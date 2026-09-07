@@ -2,9 +2,10 @@
 
 **Date:** 2026-09-04  
 **Status:** interpretive note (post low-f CW)  
-**Data:** `analysis/cw_lowf_findings.md`, August + September `results/sheath_cw_tu/`  
+**Data:** `cw_lowf_findings.md` (this folder), August + September `results/sheath_cw_tu/`  
 **Models:** `docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md`  
-**Report:** `validation/phase_7_documentation/` Chapters low-f / **discrepancy** / status
+**Report:** `validation/phase_7_documentation/` Chapters low-f / **discrepancy** / status  
+**Program:** Paper 0 — [`../../CHRONICLE.md`](../../CHRONICLE.md)
 
 ---
 

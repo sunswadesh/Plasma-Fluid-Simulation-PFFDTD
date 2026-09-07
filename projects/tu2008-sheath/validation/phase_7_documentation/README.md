@@ -11,8 +11,9 @@ pdflatex -interaction=nonstopmode main.tex
 
 **Output:** `main.pdf`  
 **Chapters:** goals → … → CW Tu (07) → **Low-f CW (08)** → **Tu discrepancy (09)** → Status (10)  
-**Discrepancy note (markdown twin):** `../../analysis/tu_discrepancy_discussion.md`  
-**Refresh figures:** copy from `../../analysis/figures/` into `figures/`, then recompile
+**Discrepancy note (markdown twin):** `../../paper0_sheath_campaign/analysis/tu_discrepancy_discussion.md`  
+**Refresh figures:** copy from `../../paper0_sheath_campaign/analysis/figures/` into `figures/`, then recompile  
+**Program chronology:** `../../CHRONICLE.md`
 
 ### Low-f figures in this folder
 

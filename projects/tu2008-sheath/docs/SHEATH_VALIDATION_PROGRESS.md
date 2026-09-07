@@ -1,7 +1,7 @@
 # Sheath Validation Progress
 
 **Superseded as a live log.** Current dashboard: [`../STATUS.md`](../STATUS.md).  
-Low-f results: [`../analysis/cw_lowf_findings.md`](../analysis/cw_lowf_findings.md).  
+Low-f results: [`../paper0_sheath_campaign/analysis/cw_lowf_findings.md`](../paper0_sheath_campaign/analysis/cw_lowf_findings.md). Chronology: [`../CHRONICLE.md`](../CHRONICLE.md).  
 Report: [`../validation/phase_7_documentation/main.pdf`](../validation/phase_7_documentation/main.pdf).
 
 ## Historical note (May 2026)

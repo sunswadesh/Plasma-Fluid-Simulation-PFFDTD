@@ -1,6 +1,6 @@
 # Antenna–Sheath PF-FDTD — Project Guide
 
-Authoritative program guide. Update when paper boundaries or success metrics change. Read this and [`docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md`](docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md) before opening a paper folder.
+Authoritative program guide. Update when paper boundaries or success metrics change. Read [`CHRONICLE.md`](CHRONICLE.md), this guide, and [`docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md`](docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md) before opening a paper folder.
 
 ## How to use this guide
 
@@ -8,7 +8,7 @@ Authoritative program guide. Update when paper boundaries or success metrics cha
 |---------|----------|
 | [Science overview](#science-overview) | Everyone |
 | [What the 2026 campaign established](#what-the-2026-campaign-established) | Everyone |
-| [Fidelity ladder](#fidelity-ladder) | Papers 1–3 |
+| [Fidelity ladder](#fidelity-ladder) | Papers 0–3 |
 | [Locked decisions](#locked-decisions) | Do not reopen without discussion |
 | [Paper map](#paper-map) | Implementation entry points |
 
@@ -30,8 +30,7 @@ Build a **clear, publishable path** from the existing PF-FDTD prescribed-sheath 
 ### End-to-end chain
 
 ```text
-Campaign Phases 0–8
-  coupling fix + Sd sweeps + low-f CW
+Paper 0 — campaign Phases 0–8 (coupling, CW, low-f, discrepancy)
         │
         ▼
 Paper 1 — static Sd → C_eff(Sd) vs coax / Song static
@@ -55,7 +54,7 @@ Paper 3 — self-consistent sheath
 | \(f_\mathrm{res}(0)\approx1.85\,\mathrm{MHz}\), \(f_\mathrm{res}(2)\approx0.66\,\mathrm{MHz}\), \(f_\mathrm{res}(10)\lesssim0.5\,\mathrm{MHz}\) | Im-zero tracks **series \(C\)**, not “Tu upward shift” |
 | Song/Tu read carefully | Wrong scoreboard was \(f_\mathrm{res}\uparrow\); right Song quantities are \(C_\mathrm{sh}\), \(X_s\), \(\dot{r}_s\) |
 
-Archive: [`STATUS.md`](STATUS.md), [`analysis/`](analysis/), [`validation/`](validation/).
+Evidence: [`CHRONICLE.md`](CHRONICLE.md), [`paper0_sheath_campaign/`](paper0_sheath_campaign/), [`validation/`](validation/).
 
 ---
 
@@ -63,6 +62,7 @@ Archive: [`STATUS.md`](STATUS.md), [`analysis/`](analysis/), [`validation/`](val
 
 | Stage | Sheath model | Observable | Engine change? |
 |-------|--------------|------------|----------------|
+| Paper 0 | Campaign / methods | Coupling proof; discovery of series-\(C\) trend | Done |
 | Paper 1 | Static prescribed \(S_d\) | \(C_\mathrm{eff}(S_d)\), multi-marker \(Z(f)\) | No |
 | Paper 2 | Kinematic \(r_s(t)\) | Feed \(Z\), radiated fields vs \(\dot{r}_s\) | Small (time-varying mask) |
 | Paper 3a | Fluid + nonlinear charging (Song-encoded) | \(C_\mathrm{sh}\), bias, sheath structure | Yes — plasma/sheath module |
@@ -75,11 +75,13 @@ Varying static \(S_d\) **partially** simulates a changing sheath (quasi-static t
 ## Locked decisions
 
 1. **Do not** use “Im\(\{Z\}\) +→− climbs with \(S_d\)” as the Song/Tu success metric.  
-2. **Paper 1 success** = quantitative \(C_\mathrm{eff}(S_d)\) vs coax (and optionally Song static \(C(r_s)\)), plus free-space / multi-marker reporting.  
-3. **Paper 2** keeps Maxwell + fluid core; sheath motion is **prescribed**, not charged self-consistently.  
-4. **Paper 3** chooses 3a and/or 3b explicitly; do not blur “fluid charging” with “PIC” in titles or abstracts.  
-5. Shared literature narrative stays in `docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md`; paper folders do not fork a second Balmain/Liu/Tu essay.  
-6. Results remain under `<collab-repo-root>/results/` (gitignored). Do not set `$env:PFFDtd_ROOT`.
+2. **Paper 0** owns the campaign chronicle; **Paper 1** owns \(C_\mathrm{eff}\) science — do not merge them in one abstract.  
+3. **Paper 1 success** = quantitative \(C_\mathrm{eff}(S_d)\) vs coax (and optionally Song static \(C(r_s)\)), plus free-space / multi-marker reporting.  
+4. **Paper 2** keeps Maxwell + fluid core; sheath motion is **prescribed**, not charged self-consistently.  
+5. **Paper 3** chooses 3a and/or 3b explicitly; do not blur “fluid charging” with “PIC” in titles or abstracts.  
+6. Shared literature narrative stays in `docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md`; paper folders do not fork a second Balmain/Liu/Tu essay.  
+7. Campaign products live under `paper0_sheath_campaign/analysis/`; root `analysis/` is a redirect only.  
+8. Results remain under `<collab-repo-root>/results/` (gitignored). Do not set `$env:PFFDtd_ROOT`.
 
 ---
 
@@ -87,9 +89,10 @@ Varying static \(S_d\) **partially** simulates a changing sheath (quasi-static t
 
 | Paper | README | First concrete work |
 |-------|--------|---------------------|
-| 1 | [`paper1_static_sheath_capacitance/`](paper1_static_sheath_capacitance/) | Free-space CW; \(C_\mathrm{eff}\) from existing low-f CW |
-| 2 | [`paper2_oscillating_sheath_boundary/`](paper2_oscillating_sheath_boundary/) | Design \(r_s(t)\) update in sheath mask; single-tone pilot |
-| 3 | [`paper3_self_consistent_sheath/`](paper3_self_consistent_sheath/) | Requirements doc: 3a vs 3b; no implementation until Paper 1 (and ideally 2) close |
+| 0 | [`paper0_sheath_campaign/`](paper0_sheath_campaign/) | Keep chronicle current; optional methods draft |
+| 1 | [`paper1_static_sheath_capacitance/`](paper1_static_sheath_capacitance/) | Free-space CW; \(C_\mathrm{eff}\) from Paper 0 low-f data |
+| 2 | [`paper2_oscillating_sheath_boundary/`](paper2_oscillating_sheath_boundary/) | Design \(r_s(t)\) update; single-tone pilot |
+| 3 | [`paper3_self_consistent_sheath/`](paper3_self_consistent_sheath/) | Requirements; gated on Paper 1 (+ ideally 2) |
 
 ### Solver pointers
 

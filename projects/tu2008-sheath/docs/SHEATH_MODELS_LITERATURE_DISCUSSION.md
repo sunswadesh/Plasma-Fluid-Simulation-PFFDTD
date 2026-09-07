@@ -1,6 +1,6 @@
 # Sheath Impedance Models: Literature Discussion and Design Choices
 
-**Purpose.** Compare Balmain-type antenna–plasma models (including later sheath/gap work), Liu et al.’s sheath-aware PIP formulation, Tu et al. (2008) kinetic sheath physics, and the PF-FDTD volumetric-sheath approach used in this campaign. Interpret the **downward** \(f_\mathrm{res}(S_d)\) discrepancy vs the campaign’s Tu upward-shift target (detail: [`analysis/tu_discrepancy_discussion.md`](../analysis/tu_discrepancy_discussion.md)).
+**Purpose.** Compare Balmain-type antenna–plasma models (including later sheath/gap work), Liu et al.’s sheath-aware PIP formulation, Tu et al. (2008) kinetic sheath physics, and the PF-FDTD volumetric-sheath approach used in this campaign. Interpret the **downward** \(f_\mathrm{res}(S_d)\) discrepancy vs the campaign’s Tu upward-shift target (detail: [`paper0_sheath_campaign/analysis/tu_discrepancy_discussion.md`](../paper0_sheath_campaign/analysis/tu_discrepancy_discussion.md)).
 
 **Primary external sources**
 
@@ -276,14 +276,14 @@ and ask whether FDTD and Liu’s analytic sheath agree on **loading**, even if t
 3. **Tu** → kinetic, self-consistent, time-varying sheath around a HV transmitter (physics, not retrieval).
 4. **This project** → 3D fluid FDTD with **prescribed volumetric vacuum gap** \(S_d\); emergent **series** capacitance; validation via feed \(Z(f)\).
 
-Sheath coupling works. Low-f CW shows \(f_\mathrm{res}\) **falling** with \(S_d\) under the Im +→− metric. Full discrepancy discussion (reasons, series vs parallel, PIP ranking): [`analysis/tu_discrepancy_discussion.md`](../analysis/tu_discrepancy_discussion.md). Remaining issue: **validation observable** and competing limits of “less plasma dielectric” vs “more series \(C_\mathrm{sh}\)”—not a GUM retrieval problem, and no longer a missing-frequency-band problem.
+Sheath coupling works. Low-f CW shows \(f_\mathrm{res}\) **falling** with \(S_d\) under the Im +→− metric. Full discrepancy discussion (reasons, series vs parallel, PIP ranking): [`paper0_sheath_campaign/analysis/tu_discrepancy_discussion.md`](../paper0_sheath_campaign/analysis/tu_discrepancy_discussion.md). Remaining issue: **validation observable** and competing limits of “less plasma dielectric” vs “more series \(C_\mathrm{sh}\)”—not a GUM retrieval problem, and no longer a missing-frequency-band problem.
 
 ---
 
 ## 8. Suggested next documentation / analysis steps
 
-1. ~~Run / complete low-frequency CW (`scripts/run_sheath_cw_lowf.ps1`) for \(S_d=0,2,10\).~~ **Done 2026-09-04** (`analysis/cw_lowf_findings.md`; LaTeX Ch.~low-f).
-2. ~~Save discrepancy discussion.~~ **Done** (`analysis/tu_discrepancy_discussion.md`; reflected in LaTeX Ch.~goals / low-f / status).
+1. ~~Run / complete low-frequency CW (`scripts/run_sheath_cw_lowf.ps1`) for \(S_d=0,2,10\).~~ **Done 2026-09-04** (`paper0_sheath_campaign/analysis/cw_lowf_findings.md`; LaTeX Ch.~low-f).
+2. ~~Save discrepancy discussion.~~ **Done** (`paper0_sheath_campaign/analysis/tu_discrepancy_discussion.md`; reflected in LaTeX Ch.~goals / low-f / status).
 3. Add free-space CW on the same dipole for an upper anchor on \(f_\mathrm{res}\).
 4. Post-process low-\(f\) \(\mathrm{Im}\{Z\}\sim -1/(\omega C_\mathrm{eff})\) to tabulate \(C_\mathrm{eff}(S_d)\) vs coax estimate.
 5. Keep report wording aligned with this note and the discrepancy discussion (no “Balmain had no sheath”; Tu upward shift = campaign *target*, not guaranteed FDTD outcome for a prescribed jacket).

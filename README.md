@@ -3,7 +3,7 @@
 Full PF-FDTD solver workspace for the Tu (2008) sheath impedance validation campaign (PiP / Alireza collab).
 
 **Git branch:** `PffdtdSheath`  
-**Primary campaign folder:** [projects/tu2008-sheath/](projects/tu2008-sheath/)  
+**Primary campaign folder:** [projects/tu2008-sheath/](projects/tu2008-sheath/) ([CHRONICLE.md](projects/tu2008-sheath/CHRONICLE.md), Papers 0–3)  
 **Legacy upstream (optional, not used for results):** `D:\Swadesh\Work\Models\Pffdtd`
 
 ## Quick links

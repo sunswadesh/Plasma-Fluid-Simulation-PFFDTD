@@ -105,7 +105,7 @@ for Sd in 0 2 4 6 8 10:
 - [x] Implementation uses active-path code only (no legacy header inclusion)
 - [x] Build passes on Windows (`compile.bat` / CMake)
 
-See `analysis/cw_lowf_findings.md` and `STATUS.md` for the closed measurement conclusion.
+See `paper0_sheath_campaign/analysis/cw_lowf_findings.md`, `CHRONICLE.md`, and `STATUS.md` for the closed measurement conclusion.
 
 ### 7.1 Current validation status
 

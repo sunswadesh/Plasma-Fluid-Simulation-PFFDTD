@@ -34,19 +34,20 @@ This is the **quasi-static bridge**: sampling different sheath thicknesses the w
 
 | Asset | Path |
 |-------|------|
-| Low-f findings | [`../analysis/cw_lowf_findings.md`](../analysis/cw_lowf_findings.md) |
-| Discrepancy note | [`../analysis/tu_discrepancy_discussion.md`](../analysis/tu_discrepancy_discussion.md) |
-| Coupling fix | [`../analysis/sheath_coupling_findings.md`](../analysis/sheath_coupling_findings.md) |
+| Low-f findings | [`../paper0_sheath_campaign/analysis/cw_lowf_findings.md`](../paper0_sheath_campaign/analysis/cw_lowf_findings.md) |
+| Discrepancy note | [`../paper0_sheath_campaign/analysis/tu_discrepancy_discussion.md`](../paper0_sheath_campaign/analysis/tu_discrepancy_discussion.md) |
+| Coupling fix | [`../paper0_sheath_campaign/analysis/sheath_coupling_findings.md`](../paper0_sheath_campaign/analysis/sheath_coupling_findings.md) |
+| Paper 0 chronicle | [`../paper0_sheath_campaign/`](../paper0_sheath_campaign/), [`../CHRONICLE.md`](../CHRONICLE.md) |
 | Dense CW + low-f phases | [`../validation/phase_6_cw_tu/`](../validation/phase_6_cw_tu/), [`../validation/phase_8_lowf_cw/`](../validation/phase_8_lowf_cw/) |
 | LaTeX report | [`../validation/phase_7_documentation/main.pdf`](../validation/phase_7_documentation/main.pdf) |
 
 ## Work plan
 
 1. Free-space CW on the same dipole grid (open item in `STATUS.md`).  
-2. Post-process existing low-\(f\) capacitive asymptotes → table of \(C_\mathrm{eff}(S_d)\).  
+2. Post-process Paper 0 low-\(f\) capacitive asymptotes → table of \(C_\mathrm{eff}(S_d)\) in **this** folder’s `analysis/`.  
 3. Compare to coax estimate; document \(r_\mathrm{eff}\) / staircasing assumptions.  
 4. Optional: denser tones near \(S_d=2\) (~0.55–0.75 MHz).  
-5. Draft paper Methods/Results from `analysis/` + this folder; cite Song static branch as related, Tu only as motivation/context.
+5. Draft paper Methods/Results citing Paper 0 for campaign path; Song static branch as related; Tu only as motivation/context.
 
 ## Folder layout (this paper)
 

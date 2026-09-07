@@ -234,9 +234,9 @@ Plots: [`figures/pulse_long_impedance.png`](figures/pulse_long_impedance.png), [
 
 | Path | Role |
 |------|------|
-| `analysis/sheath_coupling_findings.md` | This document |
-| `analysis/figures/` | Supporting plots |
-| `analysis/data/` | Numeric tables and N0 dumps |
+| `paper0_sheath_campaign/analysis/sheath_coupling_findings.md` | This document |
+| `paper0_sheath_campaign/analysis/figures/` | Supporting plots |
+| `paper0_sheath_campaign/analysis/data/` | Numeric tables and N0 dumps |
 | `docs/sheath/SHEATH_VALIDATION_ANALYSIS.md` | Earlier pulse-FFT post-mortem (points here) |
 | `docs/sheath/SHEATH_VALIDATION_IMPLEMENTATION_PLAN.md` | Original Tu validation plan |
 | `scripts/plot_n0_line.py` | Overlay Sd=0 vs Sd=10 N0 lines |

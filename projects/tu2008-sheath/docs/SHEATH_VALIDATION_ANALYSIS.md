@@ -73,7 +73,7 @@ Tu (2008) reports an upward shift in antenna resonance frequency as sheath width
 
 Later CW phasor screening near \(f_p\) resolved a clean resonance (~1.775 MHz) but showed **identical** \(Z(f)\) for Sd=0 and Sd=10 (~0.003% difference). That is a coupling/geometry bug (sheath seeded from the plasma-on mask before antenna PEC exists), not an FFT issue. Full post-mortem, N0 line diagnostics, and the coupling fix are documented in:
 
-- [`analysis/sheath_coupling_findings.md`](../analysis/sheath_coupling_findings.md)
+- [`paper0_sheath_campaign/analysis/sheath_coupling_findings.md`](../paper0_sheath_campaign/analysis/sheath_coupling_findings.md)
 
 ## Conclusion
 

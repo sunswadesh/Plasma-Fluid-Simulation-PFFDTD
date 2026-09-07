@@ -1,7 +1,7 @@
 """Partial analysis of the in-progress CW Tu sweep.
 
 Reads completed cases under results/sheath_cw_tu/ only. Writes plots and
-tables to analysis/ — never into the sweep directory (jobs may still be
+tables to paper0_sheath_campaign/analysis/ — never into the sweep directory (jobs may still be
 running).
 
 Resonance convention: first Im{Z} +to- crossing (CW series feature).
