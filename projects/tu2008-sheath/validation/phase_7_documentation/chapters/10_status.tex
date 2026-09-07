@@ -1,0 +1,63 @@
+\chapter{Status and Next Steps}
+\label{ch:status}
+
+\section{Where the campaign stands}
+
+The work from February through 4 September 2026 is one antenna-in-plasma story on a single dipole grid.
+
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{February baseline.} Free-space versus plasma impedance is measurable. Same geometry as all later sheath runs.
+\item \textbf{May pulse \(\Sd\) sweep.} Failed as a measurement (no usable \(\fres\); GHz FFT artifacts). Independently, the sheath was not on the wire.
+\item \textbf{Low-frequency CW (pre-fix).} Measurement method works; frequencies sit below resonance; \(Z\) still independent of \(\Sd\).
+\item \textbf{CW \(\fp\)-screen.} Measurement success (\(\fres\approx\SI{1.775}{\mega\hertz}\)) and physics failure (\(Z(\Sd=0)\equiv Z(\Sd=10)\) to \(\sim 0.003\%\)). Negative control, keep the folder.
+\item \textbf{Coupling fix.} Sheath had been seeded from the plasma-on mask before PEC existed; depletion sat at the domain edge. PEC-seeded \texttt{ApplySheath} after \texttt{setup2} puts the hole next to the wire.
+\item \textbf{Post-fix confirm.} \(\lvert\Delta Z\rvert/\lvert Z\rvert\sim 90\)--\(110\%\) at 1.7/1.9~MHz. Pulse FFT now sees \(\Sd\) but is too coarse for a precision \(\fres(\Sd)\) curve.
+\item \textbf{Dense CW (August).} All 66 cases finished. \(\fres(\Sd=0)\approx\SI{1.846}{\mega\hertz}\). \(\Sd\ge 2\) capacitive in 1.50--2.30~MHz.
+\item \textbf{Low-f CW (September).} 0.50--1.50~MHz for \(\Sd=0,2,10\). \(\fres(\Sd=2)\approx\SI{0.655}{\mega\hertz}\); \(\Sd=10\) capacitive down to \(\SI{0.50}{\mega\hertz}\) (Chapter~\ref{ch:lowf}).
+\item \textbf{Tu discrepancy.} Upward \(\fres(\Sd)\) not reproduced; interpreted as series \(C_{\mathrm{sh}}\) domination of a prescribed jacket (Chapter~\ref{ch:discrepancy}).
+\end{enumerate}
+
+\section{Combined scientific conclusion}
+
+\begin{enumerate}[leftmargin=1.5em]
+\item PF-FDTD resolves plasma-loaded dipole impedance near \(\fp\) on this grid.
+\item After the PEC-seeded fix, a prescribed volumetric sheath \emph{does} change feed \(Z\) strongly.
+\item With the campaign metric (first \(\ImZ\) \(+\) to \(-\) crossing), increasing \(\Sd\) moves \(\fres\) \emph{downward} (or removes the crossing), consistent with \textbf{series} sheath-capacitance domination---not with the upward dielectric-unloading target used to design the sweeps.
+\item The remaining problem is model/observable choice (volumetric gap vs analytic \(C_{\mathrm{sh}}\); phase-zero vs magnitude peak; Tu kinetic target vs prescribed jacket), not missing frequency coverage.
+\end{enumerate}
+
+\section{Open items}
+
+\begin{enumerate}[leftmargin=1.5em]
+\item Compare \(\fres(\Sd=0)\) and low-frequency crossings to free-space \(\fres\) on the same dipole grid.
+\item Optional: denser CW only around \(\Sd=2\) (0.55--0.75~MHz) if a precision pick for that island is required.
+\item Post-process low-\(f\) capacitive asymptotes to equivalent \(C_{\mathrm{sh}}(\Sd)\) and compare to a coax estimate.
+\item Decide whether an upward Tu-style \(\fres(\Sd)\) remains the right validation target for a prescribed vacuum jacket.
+\item Optional: re-run the \(\fp\)-screen with fixed physics as a published before/after pair (documentation, not debugging).
+\item Software not in this report's critical path: GPU, MPI, broader unit-test coverage.
+\end{enumerate}
+
+\section{Data map}
+
+\begin{table}[ht]
+\centering
+\caption{Primary data and writeups for each phase.}
+\label{tab:datamap}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Phase & Results & Notes / figures \\
+\midrule
+Feb baseline & \texttt{results/freespace\_test}, \texttt{ionoplasma\_*} & Ch.~\ref{ch:february} \\
+Pulse \(\Sd\) & \texttt{results/sheath\_sweep}, \texttt{sheath\_long} & \texttt{analysis/sheath\_coupling\_findings.md} \\
+Narrow / 2D CW & \texttt{results/sheath\_narrow\_band}, \texttt{sheath\_2d\_sweep} & Ch.~\ref{ch:narrow} \\
+\(\fp\)-screen & \texttt{results/sheath\_fp\_screen} & pre-fix negative control \\
+\(N_0\) dump & \texttt{results/n0\_diag} & \texttt{analysis/figures/n0\_line\_*.png} \\
+Confirm & \texttt{results/sheath\_confirm\_z}, \texttt{sheath\_pulse\_long} & Ch.~\ref{ch:confirm} \\
+CW Tu & \texttt{results/sheath\_cw\_tu} & Ch.~\ref{ch:cwtu}; \texttt{cw\_tu\_*.png} \\
+Low-f CW & \texttt{results/sheath\_cw\_tu} (0.5--1.5~MHz) & Ch.~\ref{ch:lowf}; Figs.~\ref{fig:lowf-z}--\ref{fig:lowf-res} \\
+Tu discrepancy & --- & Ch.~\ref{ch:discrepancy}; \texttt{tu\_discrepancy\_discussion.md} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The coupling-fix narrative in \texttt{analysis/sheath\_coupling\_findings.md}, the low-frequency note in \texttt{analysis/cw\_lowf\_findings.md}, and the discrepancy discussion in \texttt{analysis/tu\_discrepancy\_discussion.md} remain the detailed laboratory writeups; this report is the chronological account intended for sharing as PDF.

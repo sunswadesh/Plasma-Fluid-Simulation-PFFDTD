@@ -1,8 +1,26 @@
 # Project Status Dashboard
 
-Last updated: 2026-09-02
+Last updated: 2026-09-07
 
-## Phase summary
+## Program structure (IonOutflowWINDMI-style)
+
+| Doc / folder | Role |
+|--------------|------|
+| [README.md](README.md) | Science motivation + three-paper map |
+| [PROJECT_GUIDE.md](PROJECT_GUIDE.md) | Locked decisions, fidelity ladder |
+| [paper1_static_sheath_capacitance/](paper1_static_sheath_capacitance/) | Paper 1 — \(C_\mathrm{eff}(S_d)\) vs coax |
+| [paper2_oscillating_sheath_boundary/](paper2_oscillating_sheath_boundary/) | Paper 2 — kinematic \(r_s(t)\) |
+| [paper3_self_consistent_sheath/](paper3_self_consistent_sheath/) | Paper 3 — fluid charging and/or PIC |
+
+## Paper-task status
+
+| Paper | Status | Notes |
+|-------|--------|-------|
+| 1 — Static \(C_\mathrm{sh}\) | **Active** | Campaign data ready; free-space + \(C_\mathrm{eff}\) extraction open |
+| 2 — Oscillating boundary | Design only | Starts after Paper 1 methods freeze (recommended) |
+| 3 — Self-consistent | Gated | Requirements OK; no implementation until Paper 1 (+ ideally 2) |
+
+## Campaign phases (archive)
 
 | Phase | Status | Notes |
 |-------|--------|-------|
@@ -13,20 +31,32 @@ Last updated: 2026-09-02
 | 4 — Coupling fix | Complete | PEC-seeded sheath in `plasma.cpp` |
 | 5 — Post-fix confirm | Complete | CW confirm at 1.7 / 1.9 MHz |
 | 6 — CW Tu sweep | Complete | 66 cases, Aug 2026 |
-| 7 — Documentation | Complete | LaTeX report in `validation/phase_7_documentation/` |
+| 7 — Documentation | Complete | LaTeX report (updated with low-f chapter) |
+| 8 — Low-f CW | Complete | 0.5–1.5 MHz, Sd=0,2,10; Sep 2026 |
 
-## Completed
+## Combined campaign conclusion (feeds Paper 1)
+
+1. Plasma-loaded dipole impedance near \(f_p\) is measurable on this grid.
+2. After the PEC-seeded fix, volumetric sheath **strongly** changes feed \(Z\).
+3. With Im{Z} +→− as the metric: \(f_\mathrm{res}(0)\approx1.85\,\mathrm{MHz}\), \(f_\mathrm{res}(2)\approx0.66\,\mathrm{MHz}\), \(f_\mathrm{res}(10)\lesssim0.50\,\mathrm{MHz}\) — series-\(C\) behavior, **not** the old “Tu upward shift” scoreboard.
+4. Paper 1 reframes success as \(C_\mathrm{eff}(S_d)\) vs analytic coax / Song static.
+
+## Completed (campaign)
 
 - [x] Sheath coupling bug diagnosed and fixed
 - [x] Dense CW sweep at \(f_p = 2\,\mathrm{MHz}\) (1.5–2.3 MHz, Sd = 0–10)
+- [x] Low-frequency CW extension (0.5–1.5 MHz, Sd = 0,2,10)
 - [x] Campaign reorganized under `projects/tu2008-sheath/` (STORMS-style)
-- [x] Analysis summaries in `analysis/data/`
+- [x] Analysis summaries and figures in `analysis/`
+- [x] LaTeX report updated with low-f chapter and figures
+- [x] Three-paper program folders + `PROJECT_GUIDE.md`
 
-## Open items
+## Open items (Paper 1 first)
 
-- [ ] Tu upward \(f_\mathrm{res}(S_d)\) shift not reproduced with Im\(\{Z\}\) crossing observable for \(S_d \ge 2\)
-- [ ] Low-frequency CW sweep 0.5–1.5 MHz (\(S_d=0,2,10\)) — script `scripts/run_sheath_cw_lowf.ps1`
-- [ ] Denser frequency search or alternate observable if shift curve is required
+- [ ] Free-space \(f_\mathrm{res}\) anchor on the same dipole grid
+- [ ] Map low-\(f\) capacitive asymptote → equivalent \(C_\mathrm{eff}(S_d)\) vs coax estimate
+- [ ] Optional denser tones around \(S_d=2\) ~0.55–0.75 MHz
+- [ ] Paper 1 draft outline in `paper1_static_sheath_capacitance/draft/`
 
 ## PFFDtd solver (this repo)
 
@@ -35,8 +65,19 @@ Last updated: 2026-09-02
 - Sheath implementation: `src/physics/plasma.cpp`, reference header `plasmaNSheath.h`
 - **Results:** `<repo-root>/results/` (gitignored). Do not set `$env:PFFDtd_ROOT`.
 
-## Next actions (when resuming)
+## Key figures
 
-1. Run `scripts/run_sheath_cw_lowf.ps1` from repo root (results → `results/sheath_cw_tu/`)
-2. Review `analysis/data/cw_tu_summary.txt` and chapter 7 of the report
-3. Copy fresh figures from `analysis/figures/` to `validation/phase_7_documentation/figures/` before report updates
+| Figure | Path |
+|--------|------|
+| Low-f Z (zoom) | [analysis/figures/cw_lowf_impedance_zoom.png](analysis/figures/cw_lowf_impedance_zoom.png) |
+| Combined 0.5–2.3 MHz | [analysis/figures/cw_lowf_impedance.png](analysis/figures/cw_lowf_impedance.png) |
+| \(f_\mathrm{res}(S_d)\) | [analysis/figures/cw_lowf_resonance.png](analysis/figures/cw_lowf_resonance.png) |
+| Findings note | [analysis/cw_lowf_findings.md](analysis/cw_lowf_findings.md) |
+| **Discrepancy note** | [analysis/tu_discrepancy_discussion.md](analysis/tu_discrepancy_discussion.md) |
+| Report PDF | [validation/phase_7_documentation/main.pdf](validation/phase_7_documentation/main.pdf) |
+
+## Next actions
+
+1. Execute Paper 1 checklist (`paper1_static_sheath_capacitance/PLAN.md`)
+2. Design-only notes for Paper 2 `$r_s(t)$` when ready
+3. Paper 3 remains gated

@@ -17,17 +17,23 @@ Z(f)=\frac{V(f)}{I(f)}.
 
 \section{Scientific target: Tu (2008)}
 
-The active research goal is to reproduce the sheath-induced resonance shift reported by Tu~\cite{tu2008}. A conducting antenna in plasma develops a vacuum (or strongly depleted) sheath of width \(\Sd\) cells next to the conductor. Inside that layer the ambient density is essentially zero; outside it recovers to the bulk \(N_0\).
+The campaign target was to reproduce a sheath-induced resonance shift motivated by Tu~\cite{tu2008}. A conducting antenna in plasma develops a vacuum (or strongly depleted) sheath of width \(\Sd\) cells next to the conductor. Inside that layer the ambient density is essentially zero; outside it recovers to the bulk \(N_0\).
 
-Increasing \(\Sd\) reduces dielectric loading near the antenna, so the series resonance \(\fres\)---the frequency where \(\ImZ=0\) with a \(+\) to \(-\) crossing---should move \emph{upward} toward the free-space value.
+The working hypothesis used to design the sweeps was: increasing \(\Sd\) reduces dielectric loading near the antenna, so the series resonance \(\fres\)---the frequency where \(\ImZ=0\) with a \(+\) to \(-\) crossing---should move \emph{upward} toward the free-space value. That hypothesis is a \emph{circuit/FDTD reading} of sheath unloading; Tu's paper itself is a kinetic PIC study of a high-voltage transmitting dipole with a self-consistent, time-varying sheath, not a one-to-one prescription for a fixed vacuum jacket in fluid FDTD.
 
-An equivalent-circuit picture of the same effect is a sheath capacitance in series with the antenna feed:
+An equivalent-circuit picture of the volumetric gap is a sheath capacitance in series with the antenna feed:
 \begin{equation}
 Z_{\mathrm{in}}(f)=Z_{\mathrm{ant}}(f)+\frac{1}{j\omega C_{\mathrm{sh}}},
 \qquad
 C_{\mathrm{sh}}\sim\frac{\varepsilon_0 A}{\Sd\,\Delta x}.
 \end{equation}
-In FDTD this is realized as a volumetric vacuum gap on Yee nodes adjacent to the conductor: depleted \(N_0\) implies \(J\approx 0\), so those cells act as vacuum capacitors loading the feed. Tu's lumped \(C_{\mathrm{sh}}\) is the circuit limit of that gap; it is not implemented as a separate circuit element.
+In FDTD this is realized as a volumetric vacuum gap on Yee nodes adjacent to the conductor: depleted \(N_0\) implies \(J\approx 0\), so those cells act as vacuum capacitors loading the feed. The series \(C_{\mathrm{sh}}\) is \emph{emergent}, not a separate circuit element. (The parallel-plate estimate above is only pedagogical; a thin wire is closer to a cylindrical/coaxial gap. Parallel-\emph{topology} shunt capacitance across the feed is \emph{not} what a radial sheath jacket produces.)
+
+\section{Model lineage (Balmain / Liu / Tu)}
+
+For ionospheric impedance probes, the closest \emph{operational} picture is the Balmain--Liu lineage: magnetoplasma antenna impedance plus an explicit \textbf{series} sheath capacitor. Balmain's 1964 closed form is for a homogeneous magnetoplasma; \textbf{later Balmain papers} and contemporaries already include ion-sheath, insulating-jacket, and sheath-wave models. Liu-type PIP formulations continue that lineage with a fitted coax \(C_{\mathrm{sh}}\) and metrological marker splitting (\(f_{uh}\) vs phase-zero \(f_{\phi0}\)). Tu remains a different physical regime (HV transmitter, kinetic oscillating sheath).
+
+Under a series-\(C_{\mathrm{sh}}\) picture, widening the gap can pull the \(\ImZ=0\) crossing \emph{down}, competing with ``less dielectric loading raises \(\fres\).'' Chapter~\ref{ch:lowf} shows that competition winning in the measured spectra; Chapter~\ref{ch:discrepancy} states the Tu discrepancy and the reasons we favor the series-\(C_{\mathrm{sh}}\) reading.
 
 \section{Campaign protocol}
 
@@ -37,4 +43,4 @@ What changed between phases is the excitation (broadband pulse versus CW sine), 
 
 \section{How to read this document}
 
-Chapters are chronological. Chapter~\ref{ch:february} is the February 2026 free-space versus plasma baseline on this dipole; it is a prerequisite, not a detour. Chapters~\ref{ch:pulse}--\ref{ch:fpscreen} are pre-fix sheath campaigns. Chapter~\ref{ch:fix} diagnoses the coupling bug. Chapters~\ref{ch:confirm}--\ref{ch:cwtu} are post-fix confirmation and the dense CW Tu sweep completed 18 August 2026.
+Chapters are chronological. Chapter~\ref{ch:february} is the February 2026 free-space versus plasma baseline on this dipole; it is a prerequisite, not a detour. Chapters~\ref{ch:pulse}--\ref{ch:fpscreen} are pre-fix sheath campaigns. Chapter~\ref{ch:fix} diagnoses the coupling bug. Chapters~\ref{ch:confirm}--\ref{ch:cwtu} are post-fix confirmation and the dense CW Tu sweep (18 August 2026). Chapter~\ref{ch:lowf} is the September 2026 low-frequency extension with spectra and resonance plots. Chapter~\ref{ch:discrepancy} states the discrepancy with Tu and why we think series sheath capacitance dominates. Chapter~\ref{ch:status} states the combined conclusion and remaining open items.

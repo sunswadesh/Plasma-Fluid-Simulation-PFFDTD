@@ -1,46 +1,21 @@
 # Sheath Validation Progress
 
-## Current status
+**Superseded as a live log.** Current dashboard: [`../STATUS.md`](../STATUS.md).  
+Low-f results: [`../analysis/cw_lowf_findings.md`](../analysis/cw_lowf_findings.md).  
+Report: [`../validation/phase_7_documentation/main.pdf`](../validation/phase_7_documentation/main.pdf).
 
-- Plan and analysis are documented in `docs/sheath/SHEATH_VALIDATION_IMPLEMENTATION_PLAN.md` and `docs/sheath/SHEATH_VALIDATION_ANALYSIS.md`.
-- The current branch is `PffdtdSheath`.
-- Existing `Sd` sweep outputs exist under `results/sheath_sweep/sd*/data.vc` and `data.fd`.
-- The long-run analysis found no clean Im{Z}=0 resonance crossing in the original broadband analysis band.
-- The low-frequency analyzer validation was run on existing `results/sheath_long/sd0/data.vc` with `--fmax 200000 --decimate 10 --trim_seconds 0.0001 --peak_fmax 200000`.
-- Result: no zero-crossing found; fallback peak at 46.845 kHz.
+## Historical note (May 2026)
 
-## Verified constraints
+This file originally tracked early narrow-band / pulse-FFT analysis constraints before the coupling fix and the August–September CW campaigns. Those early constraints (do not burn wall time on broadband FFT until the method works) were correct for that phase; the campaign later moved to CW phasors near \(f_p\), fixed PEC-seeded sheath coupling, and completed dense + low-f CW grids.
 
-- Do not run another long broadband sheath test until the analysis method is confirmed.
-- Focus first on validating the low-frequency signal-processing flow with existing data.
-- Use a narrow-band or low-`fmax` analysis path before committing to expensive simulations.
+## Current conclusion (2026-09-04)
 
-## Current experiment: Optimized narrow-band sweep
+| Item | Result |
+|------|--------|
+| Plasma resonance near \(f_p\) | Yes — \(f_\mathrm{res}(S_d=0)\approx1.85\,\mathrm{MHz}\) |
+| Sheath coupling | Yes — post-fix \(Z\) strongly depends on \(S_d\) |
+| Tu upward \(f_\mathrm{res}(S_d)\) | **No** — \(f_\mathrm{res}\) decreases with \(S_d\) (0.66 MHz at \(S_d=2\); ≤0.5 MHz at \(S_d=10\)) |
 
-**Status:** Running (started May 20, ~13:40 UTC)
-**Parameters:**
-- Frequencies: 20, 30, 40 kHz (sequential runs)
-- MaxIter per frequency: 50,000 (down from 200,000)
-- T (simulated time): 100 ms (down from 2000 ms)
-- VcRate: 10
-- Expected duration: ~10-12 hours total (3-4 hours per frequency)
+![Resonance trend](figures/cw_lowf_resonance.png)
 
-**Rationale:**
-- 50k iterations sufficient for steady-state equilibration
-- 100 ms gives 10 Hz frequency resolution (adequate for impedance in 20-40 kHz band)
-- Reduces runtime by ~95% compared to initial 200k/2000 setup
-- Enables rapid iteration and validation before committing to longer runs
-
-## Next steps
-
-1. ✅ Validate the analyzer with `--fmax`, `--decimate`, and `--trim_seconds` on existing `.vc` files.
-2. 🔄 Run optimized narrow-band sweep for 20, 30, 40 kHz (in progress)
-3. Analyze completed narrow-band `.vc` files with the verified analyzer
-4. Confirm resonance behavior and compare to long-run baseline
-5. Only then, if needed, run targeted follow-up frequencies or longer broadband cases
-
-## Notes
-
-- The goal is to preserve the current implementation plan while avoiding wasted long runs.
-- `scripts/run_sheath_narrow_band.ps1` is the first implementation artifact for the next experimental phase.
-- Previous 3-day run of 200k/2000 was cancelled to adopt faster turnaround parameters.
+*Last updated: 2026-09-04.*

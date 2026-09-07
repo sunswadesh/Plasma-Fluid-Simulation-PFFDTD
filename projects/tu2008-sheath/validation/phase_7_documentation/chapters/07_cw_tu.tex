@@ -115,14 +115,14 @@ Table~\ref{tab:cwtu-res} summarizes the resonance extraction. The high-frequency
 \item The full grid confirms the post-fix confirm-Z picture: \(\Sd=0\) is inductive below \(\sim\SI{1.85}{\mega\hertz}\); \(\Sd=10\) is capacitive everywhere in the band.
 \end{itemize}
 
-\section{What did not match Tu (2008)}
+\section{What did not match the upward-shift target}
 
-The Tu observable is the \emph{upward shift} of \(\fres\) with \(\Sd\). That shift was not reproduced:
+The campaign design target---inspired by a circuit reading of Tu~\cite{tu2008}---was an \emph{upward} shift of \(\fres\) with \(\Sd\). That shift was not reproduced in this band:
 
 \begin{itemize}[leftmargin=1.5em]
 \item Only \(\Sd=0\) yields a measurable in-band series crossing.
 \item Wider sheaths add capacitive loading (\(\lvert Z\rvert\) falls with \(\Sd\) at fixed \(f\)) but do not move a \(+\) to \(-\) crossing upward through 1.50--2.30~MHz.
-\item If the same crossing definition applies to \(\Sd\ge 2\), the feature has moved \emph{downward} relative to \(\Sd=0\), or the feed impedance is dominated by sheath capacitance without a clear in-band LC crossing.
+\item If the same crossing definition applies to \(\Sd\ge 2\), the feature has moved \emph{downward} relative to \(\Sd=0\), or the feed impedance is dominated by series sheath capacitance without a clear in-band LC crossing.
 \end{itemize}
 
-Possible follow-ups (Chapter~\ref{ch:status}): extend the CW grid below 1.50~MHz for \(\Sd\ge 2\); compare against free-space \(\fres\) on the same grid; revisit whether the \(+\) to \(-\) crossing is the right marker when a wide vacuum sheath makes the feed uniformly capacitive in the band.
+Follow-up completed in Chapter~\ref{ch:lowf}: the CW grid was extended below 1.50~MHz for \(\Sd=0,2,10\). That campaign locates \(\fres(\Sd=2)\approx\SI{0.655}{\mega\hertz}\) and finds \(\Sd=10\) capacitive down to \(\SI{0.50}{\mega\hertz}\), confirming the downward trend. Interpretation (series \(C_{\mathrm{sh}}\) vs dielectric unloading; Balmain--Liu lineage; Tu regime mismatch): \texttt{analysis/tu\_discrepancy\_discussion.md} and Chapter~\ref{ch:status}.

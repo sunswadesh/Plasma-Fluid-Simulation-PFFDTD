@@ -12,7 +12,7 @@
 \maketitle
 
 \begin{abstract}
-This report records the experimental campaign on the Plasma Fluid Finite-Difference Time-Domain (PF-FDTD) solver from the February 2026 dipole-in-plasma baseline through the August 2026 dense continuous-wave (CW) sheath-width sweep. The scientific goal is to reproduce the Tu (2008) result that a vacuum sheath of increasing width \(\Sd\) around a radio-frequency dipole raises the series resonance \(\fres\) toward the free-space value. Early pulse and low-frequency CW campaigns either failed as measurements or showed \(Z\) independent of \(\Sd\). A coupling bug---sheath depletion seeded from the plasma-on mask before antenna geometry existed---placed the density hole at the domain edge rather than next to the wire. After a PEC-seeded fix, feed impedance depends strongly on sheath width. A dense 66-case CW sweep at \(\fp=\SI{2}{\mega\hertz}\) (1.50--2.30~MHz) completed on 18 August 2026: \(\fres(\Sd=0)\approx\SI{1.846}{\mega\hertz}\), but no \(\ImZ\) \(+\) to \(-\) crossing appears for \(\Sd\ge 2\) in that band, so the Tu upward shift was not reproduced with this observable.
+This report records the experimental campaign on the Plasma Fluid Finite-Difference Time-Domain (PF-FDTD) solver from the February 2026 dipole-in-plasma baseline through the September 2026 low-frequency CW sheath extension. The design target was a Tu-inspired upward shift of series resonance \(\fres\) with vacuum-sheath width \(\Sd\). Early pulse and CW campaigns either failed as measurements or showed \(Z\) independent of \(\Sd\). A coupling bug---sheath depletion seeded from the plasma-on mask before antenna geometry existed---placed the density hole at the domain edge rather than next to the wire. After a PEC-seeded fix, feed impedance depends strongly on sheath width. Dense CW at \(\fp=\SI{2}{\mega\hertz}\) plus a low-frequency extension locate \(\fres(\Sd=0)\approx\SI{1.846}{\mega\hertz}\), \(\fres(\Sd=2)\approx\SI{0.655}{\mega\hertz}\), and \(\Sd=10\) capacitive to \(\SI{0.50}{\mega\hertz}\): with the \(\ImZ\) \(+\) to \(-\) metric, \(\fres\) moves \emph{downward} with \(\Sd\). Chapter~\ref{ch:lowf} presents the spectra and resonance plots; Chapter~\ref{ch:discrepancy} states the Tu discrepancy and attributes it primarily to series sheath capacitance dominating a prescribed volumetric jacket (Balmain--Liu lineage), not to dielectric unloading toward free space.
 \end{abstract}
 
 \tableofcontents
@@ -25,14 +25,26 @@ This report records the experimental campaign on the Plasma Fluid Finite-Differe
 \include{chapters/05_coupling_fix}
 \include{chapters/06_postfix_confirm}
 \include{chapters/07_cw_tu}
-\include{chapters/08_status}
+\include{chapters/08_lowf}
+\include{chapters/09_discrepancy}
+\include{chapters/10_status}
 
 \begin{thebibliography}{9}
 \bibitem{tu2008}
-W.~Tu, J.-L.~Pathak, and R.~F.~Benson,
+W.~Tu, P.~Song, and B.~W.~Reinisch,
 \textit{Plasma sheath structures around a radio frequency antenna},
-J.\ Geophys.\ Res., 2008.
+J.\ Geophys.\ Res., vol.~113, A07223, 2008.
 A local copy is in \texttt{../../docs/references/Tu2008\_JGR\_plasma\_sheath.pdf}.
+
+\bibitem{balmain1964}
+K.~G.~Balmain,
+\textit{The impedance of a short dipole antenna in a magnetoplasma},
+IEEE Trans.\ Antennas Propag., vol.~12, no.~5, pp.~605--617, 1964.
+
+\bibitem{balmain1969}
+K.~G.~Balmain,
+\textit{Dipole admittance for magnetoplasma diagnostics},
+IEEE Trans.\ Antennas Propag., vol.~17, no.~3, pp.~389--392, 1969.
 
 \bibitem{ward2006}
 J.~D.~Ward,

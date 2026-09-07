@@ -1,0 +1,125 @@
+\chapter{Low-Frequency CW Extension}
+\label{ch:lowf}
+
+\section{Motivation}
+
+Chapter~\ref{ch:cwtu} left an open measurement question: for \(\Sd\ge 2\), \(\ImZ<0\) everywhere in 1.50--2.30~MHz, so any \(+\) to \(-\) series crossing---if it exists---must lie \emph{below} \(\SI{1.50}{\mega\hertz}\). The September 2026 low-frequency campaign extends the same CW phasor method into 0.50--1.50~MHz for \(\Sd\in\{0,2,10\}\) to close that gap and complete the \(\fres(\Sd)\) comparison against the Tu-inspired upward-shift target.
+
+\section{Campaign setup}
+
+Driver: \texttt{scripts/run\_sheath\_cw\_lowf.ps1} (wrapper around \texttt{run\_sheath\_cw\_tu.ps1}). Output folder shared with the August grid: \texttt{results/sheath\_cw\_tu/}.
+
+\begin{itemize}[leftmargin=1.5em]
+\item \(\Sd\in\{0,2,10\}\).
+\item Drive frequencies: 0.50, 0.60, \ldots, 1.50~MHz (100~kHz steps; 33 planned cases).
+\item \(\fp=\SI{2}{\mega\hertz}\), template \texttt{sheath\_sine\_vc.str}, \(\mathrm{MaxParallel}=2\), \(\mathrm{OMP}=4\) (4-core / 8-thread workstation).
+\item Wall time \(\approx\SI{52.85}{\hour}\) (30 completed + 3 skipped pre-existing 1.50~MHz cells); finished 4 September 2026.
+\end{itemize}
+
+Analyzer: same last-50\% phasor \(Z=V/I\) convention as August. Numeric tables: \texttt{analysis/data/cw\_lowf\_summary.txt}, \texttt{analysis/data/cw\_lowf\_resonance.txt}. Narrative: \texttt{analysis/cw\_lowf\_findings.md}.
+
+\paragraph{Caveat.}
+\texttt{sd0\_f1500000} is the incomplete August restart file (\(\sim\)340~kB, no \texttt{DONE} line). Its \(Z\) (Re\(\approx\SI{2.1}{\kilo\ohm}\)) is an outlier relative to 1.40~MHz (Re\(\approx\SI{23}{\kilo\ohm}\)) and is discarded for physics. Use 1.40~MHz and August \(\ge\SI{1.60}{\mega\hertz}\) for the \(\Sd=0\) branch.
+
+\section{Findings: impedance spectra}
+
+\subsection Low-frequency band (0.50--1.50~MHz)
+
+Figure~\ref{fig:lowf-z} is the primary low-frequency result. Three facts are immediate from the plot:
+
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Sheath coupling works.} The three \(\Sd\) curves are widely separated: \(\lvert\Delta Z\rvert/\lvert Z_0\rvert\) is typically 80--350\% relative to \(\Sd=0\). This is the opposite of the pre-fix \(\fp\)-screen, where \(Z(\Sd=0)\equiv Z(\Sd=10)\) to \(\sim 0.003\%\).
+\item \(\mathbf{\Sd=0}\) \textbf{stays inductive} (\(\ImZ>0\)) through the entire low-frequency band. Its series crossing remains in the August band near \(\SI{1.85}{\mega\hertz}\).
+\item \(\mathbf{\Sd=10}\) \textbf{is capacitive everywhere} (\(\ImZ<0\)) from 0.50 to 1.50~MHz. \(\mathbf{\Sd=2}\) is almost entirely capacitive, with only a brief inductive island at 0.60~MHz.
+\end{enumerate}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.92\textwidth]{cw_lowf_impedance_zoom.png}
+\caption{Low-frequency CW findings, 0.50--1.50~MHz. Top: \(\ReZ\); bottom: \(\ImZ\). \(\Sd=0\) (blue) remains inductive. \(\Sd=2\) (orange) shows a brief inductive island at 0.60~MHz then returns to capacitive. \(\Sd=10\) (green) is capacitive at every point. The sharp drop in \(\Sd=0\) at 1.50~MHz is the incomplete August file and must be ignored.}
+\label{fig:lowf-z}
+\end{figure}
+
+Selected phasors (Table~\ref{tab:lowf-z}) make the capacitive loading quantitative: at fixed \(f\), wider sheath lowers \(\ImZ\) (more negative) and typically reduces \(\lvert Z\rvert\) at high \(\Sd\).
+
+\begin{table}[ht]
+\centering
+\caption{Selected low-frequency phasor impedances (\(\si{\ohm}\)). Full table: \texttt{analysis/data/cw\_lowf\_summary.txt}.}
+\label{tab:lowf-z}
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+\(f\) (MHz) & \(\Sd\) & \(\ReZ\) & \(\ImZ\) & note \\
+\midrule
+0.50 & 0  & 20298 & $+6220$  & inductive \\
+0.50 & 2  & 49711 & $-18430$ & capacitive \\
+0.50 & 10 & 4891  & $-65903$ & strongly capacitive \\
+0.60 & 2  & 33714 & $+8053$  & only inductive island for \(\Sd=2\) \\
+0.70 & 2  & 35919 & $-6614$  & back to capacitive \\
+1.00 & 0  & 19340 & $+3799$  & still inductive \\
+1.00 & 10 & 32110 & $-55764$ & still capacitive \\
+1.40 & 0  & 22795 & $+7343$  & use this, not 1.50~MHz \(\Sd=0\) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection Combined band (0.50--2.30~MHz)
+
+Figure~\ref{fig:lowf-full} stitches the September low-frequency points to the August dense grid for the same three \(\Sd\). The shaded region is the new coverage. Key visual takeaways:
+
+\begin{itemize}[leftmargin=1.5em]
+\item \(\Sd=0\) crosses \(\ImZ=0\) only once in the combined band, near \(\SI{1.85}{\mega\hertz}\).
+\item \(\Sd=2\) and \(\Sd=10\) never recover an inductive branch in the August high band; they remain capacitive from their low-frequency crossings (or from below 0.50~MHz) through 2.30~MHz.
+\item The three families remain distinct across more than two decades of \(\lvert Z\rvert\) variation---volumetric sheath loading is a first-order effect on this grid.
+\end{itemize}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.92\textwidth]{cw_lowf_impedance.png}
+\caption{Combined findings for \(\Sd=0,2,10\) over 0.50--2.30~MHz. Shaded region: September low-frequency extension. \(\Sd=0\) alone shows the high-band inductive-to-capacitive transition; \(\Sd\ge 2\) stay on the capacitive side through the August band.}
+\label{fig:lowf-full}
+\end{figure}
+
+\section{Findings: series resonance \(\fres(\Sd)\)}
+
+Linear interpolation of \(\ImZ\) \(+\) to \(-\) crossings yields Table~\ref{tab:lowf-res} and Figure~\ref{fig:lowf-res}.
+
+\begin{table}[ht]
+\centering
+\caption{Series resonance from \(\ImZ\) \(+\) to \(-\) crossings after the low-frequency extension.}
+\label{tab:lowf-res}
+\begin{tabular}{@{}rll@{}}
+\toprule
+\(\Sd\) & \(\fres\) & note \\
+\midrule
+0  & \(\SI{1.846}{\mega\hertz}\) & August band; low-f band all inductive \\
+2  & \(\SI{0.655}{\mega\hertz}\) & also a \(-\) to \(+\) at \(\SI{0.570}{\mega\hertz}\) (brief inductive island) \\
+10 & \(\le\SI{0.50}{\mega\hertz}\) & all \(\ImZ<0\) in 0.50--1.50~MHz \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{cw_lowf_resonance.png}
+\caption{Headline resonance finding: \(\fres(\Sd)\) from Im\(\{Z\}\) \(+\) to \(-\) crossings. Wider sheath moves the crossing \emph{downward} (\(1.85\to 0.66\to\lesssim 0.50\)~MHz), opposite to the Tu-inspired upward-shift target toward free space.}
+\label{fig:lowf-res}
+\end{figure}
+
+\paragraph{\(\Sd=2\) fine structure.}
+Im signs over 0.50--1.50~MHz are \texttt{-{}+---------}: capacitive at 0.50, inductive only at 0.60, capacitive thereafter. Treat \(\SI{0.655}{\mega\hertz}\) as the best single \(+\) to \(-\) pick; denser tones around 0.55--0.75~MHz would refine that island if needed.
+
+\section{Headline result versus Tu}
+
+The August open question is closed, and the Tu comparison is unambiguous under this metric:
+\[
+\fres(0)\approx\SI{1.85}{\mega\hertz}
+\;>\;
+\fres(2)\approx\SI{0.66}{\mega\hertz}
+\;>\;
+\fres(10)\lesssim\SI{0.50}{\mega\hertz}.
+\]
+The campaign's Tu-inspired expectation was an \emph{upward} \(\fres(\Sd)\). Figure~\ref{fig:lowf-res} shows the opposite. Chapter~\ref{ch:discrepancy} states the discrepancy formally and explains why we interpret it as series sheath-capacitance domination of a prescribed vacuum jacket---not as a return of the pre-fix coupling bug.
+
+\section{What remains for this band}
+
+Further 100~kHz CW on the same frequencies will not reverse the trend. Remaining work is interpretive (Chapter~\ref{ch:status}): free-space \(\fres\) on the same dipole; optional denser tones only around the \(\Sd=2\) island; mapping low-\(f\) capacitive asymptotes to an equivalent coax \(C_{\mathrm{sh}}\).

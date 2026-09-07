@@ -1,0 +1,5 @@
+# f_res from Im{Z} crossings (Sd=0,2,10; 0.5-2.3 MHz combined)
+Sd	f_res_plus_to_minus_Hz	f_res_minus_to_plus_Hz	note
+0			lowf all Im>0; fullband +to- at 1.846 MHz
+2	654906.1	569592.3	lowf +to- at 0.655 MHz; lowf -to+ at 0.570 MHz
+10			lowf all Im<0 (crossing at or below 0.50 MHz)

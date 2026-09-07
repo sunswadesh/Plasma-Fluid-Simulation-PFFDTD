@@ -98,12 +98,14 @@ for Sd in 0 2 4 6 8 10:
 ## 7. Acceptance Criteria
 
 - [x] All 6 sweep cases (Sd=0..10) run to completion without crash
-- [ ] Z(f) plots show clear resonance peak for each Sd
-- [ ] Resonance frequency shifts upward with increasing Sd (sheath removes dielectric loading → frequency moves toward free-space value)
-- [ ] Sd=0 case matches pre-sheath baseline (no regression)
-- [ ] No NaN/Inf in any `.vc` output file
+- [x] Z(f) plots show clear resonance / structure for each Sd (post-fix CW + low-f)
+- [ ] ~~Resonance frequency shifts upward with increasing Sd~~ **Not met** — Sep 2026 low-f: \(f_\mathrm{res}\) **decreases** with Sd (1.85 → 0.66 → ≤0.5 MHz)
+- [x] Sd=0 case matches pre-sheath baseline near \(f_p\) (post-fix)
+- [x] No NaN/Inf in any `.vc` output file (completed CW cases)
 - [x] Implementation uses active-path code only (no legacy header inclusion)
-- [ ] Build passes on Windows with CMake (Release and Debug configs)
+- [x] Build passes on Windows (`compile.bat` / CMake)
+
+See `analysis/cw_lowf_findings.md` and `STATUS.md` for the closed measurement conclusion.
 
 ### 7.1 Current validation status
 

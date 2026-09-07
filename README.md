@@ -14,6 +14,7 @@ Full PF-FDTD solver workspace for the Tu (2008) sheath impedance validation camp
 | Physics & input format | [docs/PHYSICS.md](docs/PHYSICS.md), [docs/INPUT_FORMAT.md](docs/INPUT_FORMAT.md) |
 | **Tu 2008 sheath campaign** | [projects/tu2008-sheath/](projects/tu2008-sheath/) |
 | Campaign status | [projects/tu2008-sheath/STATUS.md](projects/tu2008-sheath/STATUS.md) |
+| Low-f findings (Sep 2026) | [projects/tu2008-sheath/analysis/cw_lowf_findings.md](projects/tu2008-sheath/analysis/cw_lowf_findings.md) |
 | Progress report PDF | [projects/tu2008-sheath/validation/phase_7_documentation/main.pdf](projects/tu2008-sheath/validation/phase_7_documentation/main.pdf) |
 
 ## Repository layout (STORMS-style)

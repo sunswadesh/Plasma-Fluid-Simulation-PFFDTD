@@ -253,3 +253,19 @@ Plots: [`figures/pulse_long_impedance.png`](figures/pulse_long_impedance.png), [
 - **Fix:** seed sheath from PEC after `setup2`, keep `SIG` for coupling only, sink density only on PEC, initialize full ER arrays.
 - **Verification:** N0 line dumps show depletion next to the wire for Sd=10; CW confirm runs show \(\|\Delta Z\|/\|Z\|\sim 90\text{–}110\%\) at 1.7/1.9 MHz (was 0.003%).
 - **Post-fix pulse:** Sd dependence is visible in \(Z(f)\); use CW for precise \(f_\mathrm{res}\) vs Sd.
+
+---
+
+## 11. September 2026 low-frequency CW (follow-on)
+
+After August dense CW left \(S_d\ge 2\) capacitive in 1.50–2.30 MHz, the low-f extension (0.50–1.50 MHz, \(S_d=0,2,10\)) closed the measurement gap. Full write-up: [`cw_lowf_findings.md`](cw_lowf_findings.md).
+
+![Low-f Z](figures/cw_lowf_impedance_zoom.png)
+
+| \(S_d\) | \(f_\mathrm{res}\) (Im +→−) |
+|--------:|----------------------------|
+| 0 | 1.846 MHz (August) |
+| 2 | **0.655 MHz** |
+| 10 | ≤ 0.50 MHz (all Im < 0 in low-f) |
+
+**Combined conclusion:** sheath coupling works; campaign Tu-inspired upward \(f_\mathrm{res}(S_d)\) is **not** reproduced—wider sheath moves the crossing **downward** under this metric. Interpretation: [`tu_discrepancy_discussion.md`](tu_discrepancy_discussion.md) (series \(C_\mathrm{sh}\), Balmain later sheath papers, PIP ranking).

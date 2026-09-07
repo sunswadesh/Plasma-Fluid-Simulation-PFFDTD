@@ -1,0 +1,77 @@
+\chapter{Discrepancy with Tu (2008)}
+\label{ch:discrepancy}
+
+This chapter consolidates the Tu comparison for the PDF. Laboratory detail lives in \texttt{analysis/tu\_discrepancy\_discussion.md}; model lineage in \texttt{docs/SHEATH\_MODELS\_LITERATURE\_DISCUSSION.md}. The numerical evidence is Chapters~\ref{ch:cwtu}--\ref{ch:lowf}, especially Figures~\ref{fig:lowf-z}--\ref{fig:lowf-res}.
+
+\section{What Tu motivated, and what we measured}
+
+\paragraph{Campaign target (circuit/FDTD reading of Tu).}
+A vacuum (depleted) sheath of width \(\Sd\) around the dipole should reduce near-antenna dielectric loading, so the series resonance \(\fres\)---first \(\ImZ=0\) with a \(+\) to \(-\) crossing---should move \emph{upward} toward the free-space value as \(\Sd\) increases~\cite{tu2008}.
+
+\paragraph{Measurement (post-fix CW).}
+After the PEC-seeded coupling fix, sheath \emph{does} enter the feed (\(\lvert\Delta Z\rvert/\lvert Z_0\rvert\sim 80\)--\(350\%\)). With the same \(\ImZ\) metric used throughout this report:
+
+\begin{center}
+\begin{tabular}{@{}rll@{}}
+\toprule
+\(\Sd\) & \(\fres\) & direction vs \(\Sd=0\) \\
+\midrule
+0  & \(\approx\SI{1.846}{\mega\hertz}\) & baseline plasma-loaded resonance \\
+2  & \(\approx\SI{0.655}{\mega\hertz}\) & \textbf{down} by \(\sim\SI{1.2}{\mega\hertz}\) \\
+10 & \(\lesssim\SI{0.50}{\mega\hertz}\) & \textbf{further down} / no in-band crossing \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.5em}
+\noindent
+So \(\mathrm{d}\fres/\mathrm{d}\Sd < 0\) under this observable---the opposite sign from the upward-shift target. Figure~\ref{fig:lowf-res} is the summary plot.
+
+\section{Why we think this is the case}
+
+The discrepancy is not ``sheath missing from the solver'' (that was the pre-fix bug; \(N_0\) line dumps and confirm-Z runs closed it). The leading interpretation is \textbf{model / metric / loading}:
+
+\subsection Competing limits when the vacuum jacket thickens
+
+Widening \(\Sd\) does two things at once:
+
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Dielectric unloading.} Removing plasma next to the wire reduces \(\varepsilon\)-loading and tends to raise resonance toward free space (the design-time ``Tu reading'').
+\item \textbf{Series sheath capacitance.} The depleted shell sits \emph{between} metal and bulk plasma. RF current must cross that gap by displacement current, so
+\[
+Z_{\mathrm{in}}(f)\;\approx\; Z_{\mathrm{pl}}(f)+\frac{1}{j\omega C_{\mathrm{sh}}(\Sd)}.
+\]
+Series \(C_{\mathrm{sh}}\) pulls the phase-zero / \(\ImZ=0\) crossing \emph{down}---the same topology as Liu-type PIP sheath models and later Balmain sheath/jacket treatments~\cite{balmain1964,balmain1969}.
+\end{enumerate}
+
+Our spectra look like limit~(2) winning: larger \(\Sd\) makes \(\ImZ\) more negative and moves (or removes) the \(+\) to \(-\) crossing downward.
+
+\subsection Series, not parallel, capacitance
+
+A radial vacuum jacket is \textbf{series} loading, not a shunt capacitor across the feed terminals. Parallel (shunt) \(C\) would bypass the antenna--plasma path; that is not what \(\Sd\) implements. Do not confuse the pedagogical parallel-plate estimate \(C\sim\varepsilon_0 A/(\Sd\Delta x)\) with parallel \emph{topology}---that formula only estimates the magnitude of the series gap capacitor. For a thin wire the emergent \(C_{\mathrm{sh}}\) is closer to cylindrical/coaxial.
+
+\subsection Problem mismatch with Tu (2008)
+
+Tu~\cite{tu2008} is a \textbf{1D PIC} study of a \textbf{high-voltage transmitting} dipole with a \textbf{self-consistent, time-varying} sheath. This campaign uses 3D \textbf{fluid} FDTD with a \textbf{prescribed static} step-profile jacket of width \(\Sd\) cells (effectively unmagnetized runs). There is no oscillating sheath radius and no kinetic charging as the primary mechanism. Expecting Tu's kinetic \(f_{\mathrm{res}}(\Sd)\) curve from a fixed vacuum jacket is therefore not a one-to-one validation.
+
+\subsection Marker and geometry caveats
+
+\begin{itemize}[leftmargin=1.5em]
+\item We use the first \(\ImZ\) \(+\) to \(-\) crossing. Literature often separates phase-zero from magnitude / admittance peaks. Wide \(\Sd\) can kill the inductive branch in-band, so the crossing tracks sheath-dominated phase-zero.
+\item On this grid \(\Delta x=\SI{0.04}{\meter}\), so \(\Sd=2\) is already an \(\SI{8}{\centi\meter}\) vacuum jacket---a large series capacitive load relative to a physical thin-wire Debye sheath.
+\item Free-space \(\fres\) on the \emph{same} dipole is still needed as an upper anchor (open item).
+\end{itemize}
+
+\section{What this means for ionospheric PIP models}
+
+For ionospheric impedance probes, the closest \emph{operational} picture remains the Balmain--Liu lineage: magnetoplasma \(Z_{\mathrm{pl}}\) plus an explicit \textbf{series} coax \(C_{\mathrm{sh}}\). Balmain's 1964 formula is homogeneous; \textbf{later Balmain papers} already include sheath/jacket/sheath-wave models---Liu continues that lineage for retrieval (\(f_{uh}\) vs \(f_{\phi0}\)), it does not invent sheath physics Balmain missed. Tu remains a related but different (HV transmitter) regime.
+
+Our FDTD jacket has the correct \emph{series} topology and successfully demonstrates sheath--feed coupling, but as run it is not a PIP metrology model (prescribed \(\Sd\), coarse gap, little magnetization).
+
+\section{Bottom line}
+
+\begin{enumerate}[leftmargin=1.5em]
+\item Coupling works; the Tu upward \(\fres(\Sd)\) target is \emph{not} reproduced under the campaign metric.
+\item Best reading: \textbf{series \(C_{\mathrm{sh}}\) dominates} a prescribed volumetric vacuum jacket, pulling Im-zero down.
+\item Next steps are free-space anchor, \(C_{\mathrm{eff}}(\Sd)\) extraction, alternate markers, and deciding whether an upward Tu-style curve remains the right FDTD validation target (Chapter~\ref{ch:status}).
+\end{enumerate}
