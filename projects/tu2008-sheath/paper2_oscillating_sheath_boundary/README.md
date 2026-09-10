@@ -2,10 +2,11 @@
 
 **Working title.** *Kinematic oscillating sheath boundary in 3D plasma fluid FDTD: testing Song’s \(\dot{r}_s\) radiation mechanism without particle-in-cell.*
 
-**Status:** Implementation started (kinematic mask + pilot script + Radio Science draft).  
+**Status:** Pilot complete — oscillating \(Z\) outside static brackets; manuscript Results filled.  
 **Guide:** [`../PROJECT_GUIDE.md`](../PROJECT_GUIDE.md)  
 **Design:** [`design/rs_t_spec.md`](design/rs_t_spec.md)  
 **Manuscript:** [`draft/manuscript.tex`](draft/manuscript.tex) (*Radio Science* / AGU format)  
+**Pilot findings:** [`analysis/pilot_findings.md`](analysis/pilot_findings.md)  
 **Prerequisite:** Paper 1 static \(C(r_s)\) baseline ideally in hand (or at least \(C_\mathrm{eff}\) extraction method frozen).
 
 ---

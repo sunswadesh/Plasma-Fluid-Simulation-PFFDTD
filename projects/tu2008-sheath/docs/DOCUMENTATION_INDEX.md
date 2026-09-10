@@ -51,6 +51,7 @@ Root [`../analysis/`](../analysis/) is a **redirect** only.
 | Script | Purpose |
 |--------|---------|
 | `scripts/run_paper2_rs_t_pilot.ps1` | Paper 2: static vs oscillating \(r_s(t)\) single-tone pilot |
+| `scripts/analyze_paper2_pilot.py` | Paper 2: phasor \(Z\) + bracket metrics → `paper2_.../analysis/` |
 | `scripts/run_sheath_cw_lowf.ps1` | Low-f CW 0.5–1.5 MHz, Sd=0,2,10 |
 | `scripts/run_sheath_sweep.ps1` | Broadband pulse Sd sweep |
 | `scripts/run_sheath_cw_tu.ps1` | Dense CW Tu band sweep |

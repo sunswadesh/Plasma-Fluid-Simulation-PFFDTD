@@ -17,8 +17,9 @@ Last updated: 2026-09-10
 
 ## Analysis / manuscript
 
-- [ ] Static vs oscillating comparison figure (run pilot)
+- [x] Static vs oscillating comparison figure
 - [ ] \(\Delta r\) scan
-- [ ] Discussion: what kinematic model can and cannot claim vs Song/Tu
+- [x] Discussion: what kinematic model can and cannot claim vs Song/Tu (staircasing caveat)
 - [x] `draft/outline.md`
-- [x] Radio Science AGU-format `draft/manuscript.tex` started
+- [x] Radio Science AGU-format `draft/manuscript.tex` updated with pilot results
+- [x] Analyzer `../scripts/analyze_paper2_pilot.py` + `analysis/pilot_findings.md`

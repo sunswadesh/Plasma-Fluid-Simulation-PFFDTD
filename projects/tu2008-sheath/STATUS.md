@@ -21,7 +21,7 @@ Last updated: 2026-09-10
 |-------|--------|-------|
 | 0 — Campaign chronicle | **Complete (archive)** | Phases 0–8 evidence under `paper0_.../analysis/` |
 | 1 — Static \(C_\mathrm{sh}\) | **Active** | Radio Science draft + \(C_\mathrm{eff}\) done; free-space still open |
-| 2 — Oscillating boundary | **Implementation started** | Kinematic \(r_s(t)\) in solver; pilot script; Radio Science draft |
+| 2 — Oscillating boundary | **Pilot done** | Osc \(Z\) outside static brackets at 700 kHz; \(\Delta r\) scan next |
 | 3 — Self-consistent | Gated | No implementation until Paper 1 (+ ideally 2) |
 
 ## Campaign phases (raw archive in `validation/`)
@@ -76,5 +76,5 @@ Last updated: 2026-09-10
 ## Next actions
 
 1. Free-space CW + author metadata for Paper 1 submission polish
-2. Run Paper 2 pilot (`scripts/run_paper2_rs_t_pilot.ps1`); fill Results in `paper2_.../draft/manuscript.tex`
+2. Paper 2: \(\Delta r\) / phase scan; reduce staircasing if needed; refine Radio Science draft
 3. Paper 3 remains gated
