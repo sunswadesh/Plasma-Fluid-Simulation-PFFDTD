@@ -10,19 +10,34 @@ $script:InputsDir = Join-Path $ProjectRoot 'inputs'
 $script:AnalysisDir = Join-Path $ProjectRoot 'analysis'
 
 function Get-PffdtdExe {
+    param(
+        [ValidateSet('auto','rs_t','baseline')]
+        [string]$Variant = 'auto'
+    )
+    $names = switch ($Variant) {
+        'rs_t'     { @('pffdtd_parallel_rs_t.exe', 'build\pffdtd_parallel_rs_t.exe') }
+        'baseline' { @('pffdtd_parallel.exe', 'build\pffdtd_parallel.exe', 'build\bin\parallel\pffdtd_parallel.exe') }
+        default    {
+            @(
+                'pffdtd_parallel_rs_t.exe',
+                'build\pffdtd_parallel_rs_t.exe',
+                'pffdtd_parallel.exe',
+                'build\pffdtd_parallel.exe',
+                'build\bin\parallel\pffdtd_parallel.exe'
+            )
+        }
+    }
     $searchRoots = @($RepoRoot)
     if ($env:PFFDtd_EXE_ROOT) {
         $searchRoots = @($env:PFFDtd_EXE_ROOT) + $searchRoots
     }
     foreach ($base in $searchRoots) {
-        foreach ($exe in @(
-            (Join-Path $base 'build\pffdtd_parallel.exe'),
-            (Join-Path $base 'pffdtd_parallel.exe')
-        )) {
+        foreach ($rel in $names) {
+            $exe = Join-Path $base $rel
             if (Test-Path $exe) { return $exe }
         }
     }
-    throw "pffdtd_parallel.exe not found under $RepoRoot (run compile.bat or cmake --build build --target pffdtd_parallel)"
+    throw "pffdtd executable not found under $RepoRoot (run compile.bat or compile.bat baseline)"
 }
 
 function Initialize-SheathRun {

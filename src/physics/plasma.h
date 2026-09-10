@@ -45,6 +45,14 @@ extern double *QF;                                   // Charging Factor (Flat 1D
 // Sheath parameters
 extern int Sd;                                  // Sheath width in cells (0 = no sheath)
 
+// Paper 2 — kinematic oscillating sheath (Δr=0 disables; static ApplySheath path)
+extern int SheathOscEnable;                     // 1 when SheathDeltaR > 0
+extern double SheathDeltaR;                     // amplitude in cells
+extern double SheathPhase;                      // radians
+extern double SheathFosc;                       // Hz; <=0 → use drive frequency
+extern int SheathSdMax;                         // ceil(Sd + |Δr|)
+extern int SheathSdApplied;                     // last staircased width
+
 // Externs for Field Arrays used in plasma.cpp
 extern double *EX, *EY, *EZ;
 extern double *BX, *BY, *BZ;
@@ -57,6 +65,9 @@ int PLASMAallocate(int allocate);
 void PLASMAclear();
 void PLASMAfree();
 void ApplySheath();
+void InitOscillatingSheath();
+void UpdateOscillatingSheath(double timev, double f_drive_hz);
+void FreeOscillatingSheath();
 void DumpN0Line(const char *fileout);
 #ifdef SHEATH_LEGACY_SIG_SEED
 void ApplySheathLegacySigSeed();

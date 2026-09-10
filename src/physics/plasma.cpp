@@ -31,6 +31,15 @@ double *QF;                                   // Charging Factor (Flat 1D)
 // Sheath parameters
 int Sd = 0;                             // Sheath width in cells (0 = no sheath)
 
+// Paper 2 — kinematic oscillating sheath
+int SheathOscEnable = 0;
+double SheathDeltaR = 0.0;
+double SheathPhase = 0.0;
+double SheathFosc = 0.0;
+int SheathSdMax = 0;
+int SheathSdApplied = -1;
+static int *sheath_dist = NULL;         // PEC distance field (cells); owned by oscillating path
+
 // Externs for Field Arrays (defined in pffdtd.cpp or field modules, declared in plasma.h used here)
 // They are included via plasma.h
 
@@ -174,6 +183,137 @@ void ApplySheath()
   printf("\tSheath: Sd=%d cells, step profile applied (PEC-seeded, %d seed cells)\n", Sd, pec_seeds);
 }
 
+static void ApplySheathWidthFromDist(int sd_now, int floor_N)
+{
+  int i, j, k, m;
+  if (!sheath_dist || SheathSdMax <= 0)
+    return;
+  if (sd_now < 0)
+    sd_now = 0;
+  if (sd_now > SheathSdMax)
+    sd_now = SheathSdMax;
+
+  #pragma omp parallel for private(j,k,m)
+  for (i=0;i<=sx;i++)
+    for (j=0;j<=sy;j++)
+      for (k=0;k<=sz;k++) {
+          int d = sheath_dist[IDX3(i,j,k)];
+          if (d <= 0 || d > SheathSdMax)
+            continue;
+          if (d <= sd_now) {
+              for (m=0; m<NS; m++) {
+                  N0_SPATIAL[IDX_N0(i,j,k,m)] = N_0[m] * N_MIN_RATIO;
+                  if (floor_N && N) {
+                      N[IDX5(i,j,k,0,m)] = N0_SPATIAL[IDX_N0(i,j,k,m)] * N_MIN_RATIO;
+                      N[IDX5(i,j,k,1,m)] = N0_SPATIAL[IDX_N0(i,j,k,m)] * N_MIN_RATIO;
+                      N[IDX5(i,j,k,2,m)] = N0_SPATIAL[IDX_N0(i,j,k,m)] * N_MIN_RATIO;
+                  }
+              }
+          } else {
+              for (m=0; m<NS; m++)
+                  N0_SPATIAL[IDX_N0(i,j,k,m)] = N_0[m];
+          }
+      }
+  SheathSdApplied = sd_now;
+}
+
+void InitOscillatingSheath()
+{
+  int i, j, k;
+  int total_grid = (sx+1)*(sy+1)*(sz+1);
+  int pec_seeds = 0;
+  double max_r;
+
+  FreeOscillatingSheath();
+
+  if (!SheathOscEnable)
+    return;
+
+  max_r = (double)Sd + fabs(SheathDeltaR);
+  SheathSdMax = (int)ceil(max_r);
+  if (SheathSdMax < Sd)
+    SheathSdMax = Sd;
+  if (SheathSdMax <= 0) {
+      SheathOscEnable = 0;
+      return;
+  }
+
+  sheath_dist = (int*)malloc(total_grid * sizeof(int));
+  if (!sheath_dist) {
+      printf("InitOscillatingSheath: failed to allocate distance field\n");
+      SheathOscEnable = 0;
+      return;
+  }
+  for (int idx = 0; idx < total_grid; idx++)
+      sheath_dist[idx] = SheathSdMax + 1;
+
+  for (i=0;i<=sx;i++)
+    for (j=0;j<=sy;j++)
+      for (k=0;k<=sz;k++)
+        if (ERX[IDX3(i,j,k)] == 0 || ERY[IDX3(i,j,k)] == 0 || ERZ[IDX3(i,j,k)] == 0) {
+          sheath_dist[IDX3(i,j,k)] = 0;
+          pec_seeds++;
+        }
+
+  for (int d=1; d<=SheathSdMax; d++) {
+      for (i=1;i<sx;i++)
+        for (j=1;j<sy;j++)
+          for (k=1;k<sz;k++) {
+              if (sheath_dist[IDX3(i,j,k)] <= d) continue;
+              if (sheath_dist[IDX3(i-1,j,k)] < d ||
+                  sheath_dist[IDX3(i+1,j,k)] < d ||
+                  sheath_dist[IDX3(i,j-1,k)] < d ||
+                  sheath_dist[IDX3(i,j+1,k)] < d ||
+                  sheath_dist[IDX3(i,j,k-1)] < d ||
+                  sheath_dist[IDX3(i,j,k+1)] < d) {
+                  sheath_dist[IDX3(i,j,k)] = d;
+              }
+          }
+  }
+
+  SheathSdApplied = -1;
+  ApplySheathWidthFromDist(Sd, 0);
+  printf("\tSheath OSC: rs0=%d Δr=%.3f cells, Smax=%d, φ=%.1f deg, fosc=%s (PEC seeds=%d)\n",
+         Sd, SheathDeltaR, SheathSdMax, SheathPhase * 180.0 / PI,
+         (SheathFosc > 0.0) ? "CLI" : "drive", pec_seeds);
+}
+
+void UpdateOscillatingSheath(double timev, double f_drive_hz)
+{
+  double f, rs, phase;
+  int sd_now;
+
+  if (!SheathOscEnable || !sheath_dist)
+    return;
+
+  f = (SheathFosc > 0.0) ? SheathFosc : f_drive_hz;
+  if (f <= 0.0)
+    return;
+
+  phase = 2.0 * PI * f * timev + SheathPhase;
+  rs = (double)Sd + SheathDeltaR * sin(phase);
+  sd_now = (int)lround(rs);
+  if (sd_now < 0)
+    sd_now = 0;
+  if (sd_now > SheathSdMax)
+    sd_now = SheathSdMax;
+
+  if (sd_now == SheathSdApplied)
+    return;
+
+  ApplySheathWidthFromDist(sd_now, 1);
+}
+
+void FreeOscillatingSheath()
+{
+  if (sheath_dist) {
+      free(sheath_dist);
+      sheath_dist = NULL;
+  }
+  SheathSdApplied = -1;
+  SheathSdMax = 0;
+}
+
 /* Legacy SIG-seeded sheath for before-fix diagnostics only.
  * Reproduce the old bug: when SIG marks the whole plasma box,
  * depletion forms at the domain edge instead of around the antenna.
@@ -271,6 +411,7 @@ void PLASMAfree()
    int total_grid = (sx+1)*(sy+1)*(sz+1);
    int total_5d = total_grid * 3 * NS;
    int total_n0 = total_grid * NS;
+   FreeOscillatingSheath();
    freedarray1(UX, 0, total_5d);
    freedarray1(UY, 0, total_5d);
    freedarray1(UZ, 0, total_5d);

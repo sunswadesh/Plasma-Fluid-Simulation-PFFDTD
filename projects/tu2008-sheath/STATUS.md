@@ -1,6 +1,6 @@
 # Project Status Dashboard
 
-Last updated: 2026-09-07
+Last updated: 2026-09-10
 
 ## Program structure
 
@@ -20,8 +20,8 @@ Last updated: 2026-09-07
 | Paper | Status | Notes |
 |-------|--------|-------|
 | 0 — Campaign chronicle | **Complete (archive)** | Phases 0–8 evidence under `paper0_.../analysis/` |
-| 1 — Static \(C_\mathrm{sh}\) | **Active** | Free-space + \(C_\mathrm{eff}\) extraction open |
-| 2 — Oscillating boundary | Design only | After Paper 1 methods freeze (recommended) |
+| 1 — Static \(C_\mathrm{sh}\) | **Active** | Radio Science draft + \(C_\mathrm{eff}\) done; free-space still open |
+| 2 — Oscillating boundary | **Implementation started** | Kinematic \(r_s(t)\) in solver; pilot script; Radio Science draft |
 | 3 — Self-consistent | Gated | No implementation until Paper 1 (+ ideally 2) |
 
 ## Campaign phases (raw archive in `validation/`)
@@ -48,14 +48,15 @@ Last updated: 2026-09-07
 ## Open items (Paper 1 first)
 
 - [ ] Free-space \(f_\mathrm{res}\) anchor on the same dipole grid
-- [ ] Map low-\(f\) capacitive asymptote → \(C_\mathrm{eff}(S_d)\) vs coax
+- [x] Map low-\(f\) capacitive asymptote → \(C_\mathrm{eff}(S_d)\) vs coax (`paper1_.../analysis/`)
+- [x] Paper 1 Radio Science draft (`paper1_.../draft/paper1_radioscience.pdf`)
+- [ ] Author metadata + Open Research DOI for submission
 - [ ] Optional denser tones around \(S_d=2\) ~0.55–0.75 MHz
-- [ ] Paper 1 draft outline in `paper1_static_sheath_capacitance/draft/`
 
 ## PFFDtd solver (this repo)
 
 - Branch: `PffdtdSheath` in this collab repo
-- Build: `compile.bat` or `cmake --build build --target pffdtd_parallel` → `pffdtd_parallel.exe` at repo root
+- Build: `compile.bat` → `pffdtd_parallel_rs_t.exe` (Paper 2); `compile.bat baseline` → `pffdtd_parallel.exe`
 - Sheath implementation: `src/physics/plasma.cpp`, reference header `plasmaNSheath.h`
 - **Results:** `<repo-root>/results/` (gitignored). Do not set `$env:PFFDtd_ROOT`.
 
@@ -69,9 +70,11 @@ Last updated: 2026-09-07
 | Findings note | [paper0_sheath_campaign/analysis/cw_lowf_findings.md](paper0_sheath_campaign/analysis/cw_lowf_findings.md) |
 | Discrepancy note | [paper0_sheath_campaign/analysis/tu_discrepancy_discussion.md](paper0_sheath_campaign/analysis/tu_discrepancy_discussion.md) |
 | Report PDF | [validation/phase_7_documentation/main.pdf](validation/phase_7_documentation/main.pdf) |
+| **Paper 1 RS draft** | [paper1_static_sheath_capacitance/draft/paper1_radioscience.pdf](paper1_static_sheath_capacitance/draft/paper1_radioscience.pdf) |
+| Paper 1 \(C_\mathrm{eff}\) | [paper1_static_sheath_capacitance/analysis/](paper1_static_sheath_capacitance/analysis/) |
 
 ## Next actions
 
-1. Execute Paper 1 checklist (`paper1_static_sheath_capacitance/PLAN.md`)
-2. Design-only notes for Paper 2 \(r_s(t)\) when ready
+1. Free-space CW + author metadata for Paper 1 submission polish
+2. Run Paper 2 pilot (`scripts/run_paper2_rs_t_pilot.ps1`); fill Results in `paper2_.../draft/manuscript.tex`
 3. Paper 3 remains gated

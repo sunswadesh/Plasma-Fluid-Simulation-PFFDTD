@@ -143,6 +143,7 @@ int main(int argc, char*argv[])
   int size, allocate=0;			// allocated data size
   int vc_rate = 1;             // Voltage/current output stride
   int cli_fail_safe = -1;      // CLI MaxIter override (applied after setup1)
+  double sheath_phase_deg = 0.0;
   
   //Defaults
   FAIL_SAFE=10;        			// Fail Safe (Program will stop at iteration ###)
@@ -152,6 +153,10 @@ int main(int argc, char*argv[])
   plasma = 0;
   fields = 0;
   frate = FAIL_SAFE;
+  SheathDeltaR = 0.0;
+  SheathPhase = 0.0;
+  SheathFosc = 0.0;
+  SheathOscEnable = 0;
 
   // Welcome
   time(&tstart);
@@ -207,6 +212,16 @@ int main(int argc, char*argv[])
 	vc_rate = 1;
       if (argc > 11)
 	cli_fail_safe = atoi(argv[11]);
+      // Paper 2: oscillating sheath — argv[12]=Δr(cells), [13]=phase(deg), [14]=fosc(Hz; 0=drive)
+      if (argc > 12)
+	SheathDeltaR = atof(argv[12]);
+      if (argc > 13) {
+	sheath_phase_deg = atof(argv[13]);
+	SheathPhase = sheath_phase_deg * PI / 180.0;
+      }
+      if (argc > 14)
+	SheathFosc = atof(argv[14]);
+      SheathOscEnable = (SheathDeltaR > 0.0) ? 1 : 0;
     }
   else      	
     {
@@ -294,7 +309,10 @@ int main(int argc, char*argv[])
   if (plasma == 1)
     {
       PLASMAclear();
-      ApplySheath();
+      if (SheathOscEnable)
+        InitOscillatingSheath();
+      else
+        ApplySheath();
       DumpN0Line(fileout);
       Ninital();
     }
@@ -306,7 +324,10 @@ int main(int argc, char*argv[])
       printf("\t\\\\Plasma Parameters\n\tfp->%5.3f(MHz)\tfc->%5.3f(MHz)\tfg->%5.3f(MHz)\n\t@%5.3f elevation & %5.3f azimuth\n",(FREQ_PLASMA/1e6),(FREQ_PLASMA*FREQ_COL/1e6),(FREQ_CYC/1e6),ANGLE_E_CYC,ANGLE_A_CYC);
       df = dt*FREQ_PLASMA; 
       printf("\t N_0 -> %5.3f, %5.3f, %5.3f 1/cc\n",N_0[0]*1e-6,N_0[1]*1e-6,N_0[2]*1e-6);
-      if (Sd > 0)
+      if (SheathOscEnable)
+        printf("\t Sheath OSC: rs0=%d Δr=%.3f Smax=%d φ=%.1f deg\n",
+               Sd, SheathDeltaR, SheathSdMax, sheath_phase_deg);
+      else if (Sd > 0)
         printf("\t Sheath: Sd=%d cells (step profile)\n", Sd);
     }
 
@@ -350,6 +371,8 @@ int main(int argc, char*argv[])
       // Plasma
       if (plasma == 1) //& ((ip*df*1e3) >= 1))
       {
+	  if (SheathOscEnable)
+	    UpdateOscillatingSheath(timev, (Snum >= 1) ? Spar[1] : 0.0);
 	  Pcalc();
 	  ip = 1;
       }

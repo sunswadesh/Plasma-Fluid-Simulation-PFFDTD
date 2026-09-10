@@ -2,8 +2,10 @@
 
 **Working title.** *Kinematic oscillating sheath boundary in 3D plasma fluid FDTD: testing Song’s \(\dot{r}_s\) radiation mechanism without particle-in-cell.*
 
-**Status:** Not started (design only).  
+**Status:** Implementation started (kinematic mask + pilot script + Radio Science draft).  
 **Guide:** [`../PROJECT_GUIDE.md`](../PROJECT_GUIDE.md)  
+**Design:** [`design/rs_t_spec.md`](design/rs_t_spec.md)  
+**Manuscript:** [`draft/manuscript.tex`](draft/manuscript.tex) (*Radio Science* / AGU format)  
 **Prerequisite:** Paper 1 static \(C(r_s)\) baseline ideally in hand (or at least \(C_\mathrm{eff}\) extraction method frozen).
 
 ---
@@ -41,13 +43,24 @@ This is the **bridge that static \(S_d\) cannot provide**: time dependence witho
 
 **Same Maxwell + fluid core.** Change is limited to a **time-dependent sheath mask** (density hole radius updates each step or subcycle). No PIC. No orbit-limited collection.
 
+### Solver CLI (Paper 2 extras)
+
+```text
+pffdtd_parallel <in> <out> fp col cyc el az T Sd vc_rate MaxIter [Δr] [phase_deg] [fosc_Hz]
+```
+
+- \(\Delta r=0\) (default): static `ApplySheath(Sd)` — Paper 1 path.  
+- \(\Delta r>0\): kinematic \(r_s(t)\); `fosc_Hz=0` locks to drive `Spar[1]`.
+
+Pilot: [`../scripts/run_paper2_rs_t_pilot.ps1`](../scripts/run_paper2_rs_t_pilot.ps1) → `results/paper2_rs_t_pilot/`.
+
 ## Work plan
 
-1. Requirements: discrete cylindrical (or Cartesian staircased) \(r_s(t)\); stability with \(\Delta x\), CFL.  
-2. Implement time-varying `ApplySheath`-class update (branch / feature flag).  
+1. ~~Requirements: discrete cylindrical (or Cartesian staircased) \(r_s(t)\); stability with \(\Delta x\), CFL.~~  
+2. ~~Implement time-varying `ApplySheath`-class update (branch / feature flag).~~  
 3. Single-tone pilot at one \(f < f_p\); compare static vs oscillating.  
 4. Parameter scan: \(\Delta r\), \(r_{s0}\), \(\phi\), drive amplitude.  
-5. Draft: mechanism paper; cite Song 2007 as theory target, Tu as future self-consistent step.
+5. Draft: mechanism paper; cite Song 2007 as theory target, Tu as future self-consistent step. *(Radio Science skeleton started.)*
 
 ## Risks
 
@@ -65,7 +78,7 @@ paper2_oscillating_sheath_boundary/
 ├── PLAN.md
 ├── design/          ← rs(t) formulation, mask update notes
 ├── analysis/
-└── draft/
+└── draft/           ← Radio Science manuscript + outline
 ```
 
 ## Depends on / feeds

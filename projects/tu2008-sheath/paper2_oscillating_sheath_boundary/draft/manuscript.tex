@@ -1,0 +1,139 @@
+% Radio Science (AGU) manuscript draft — Paper 2
+% Requires agujournal2019.cls (or agujournal2025.cls) from AGU author templates.
+% If the class is unavailable locally, keep this file as the authoritative draft structure.
+%
+\documentclass[draft]{agujournal2019}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{lineno}
+\linenumbers
+
+\journalname{Radio Science}
+
+\begin{document}
+
+\title{Kinematic Oscillating Sheath Boundary in Three-Dimensional Plasma Fluid FDTD: Isolating Song's Moving-Boundary Coupling Without Particle-in-Cell}
+
+\authors{A. Author\affil{1}, B. Author\affil{1}}
+
+\affiliation{1}{Institution, City, Country}
+
+\correspondingauthor{A. Author}{author@example.edu}
+
+\begin{keypoints}
+\item A prescribed oscillating sheath radius is implemented in three-dimensional plasma fluid FDTD.
+\item Static sheath controls bracket the kinematic case so moving-boundary effects can be isolated.
+\item The approach tests Song-type coupling without self-consistent charging or PIC.
+\end{keypoints}
+
+\begin{abstract}
+High-voltage antennas in plasma develop electron-depleted sheaths whose radius can oscillate at the drive frequency.
+Song's analytic treatment links radiation and feed loading to the moving sheath boundary through a current proportional to the boundary velocity.
+Particle-in-cell (PIC) models recover related self-consistent sheath dynamics but are costly in three dimensions.
+Here we introduce a kinematic sheath in a plasma fluid finite-difference time-domain (PF-FDTD) solver: the depleted-radius history \(r_s(t)\) is prescribed, while Maxwell and fluid equations remain unchanged.
+We compare single-tone feed diagnostics for oscillating \(r_s(t)\) against static jackets at the mean and extreme radii, providing a controlled test of whether staircased \(\dot{r}_s\) coupling appears beyond quasi-static thickness changes.
+The framework isolates moving-boundary effects without PIC and informs whether self-consistent charging (a subsequent study) is warranted.
+\end{abstract}
+
+\section*{Plain Language Summary}
+Radio antennas in space plasmas are surrounded by a low-density sheath.
+When the antenna voltage is large, that sheath can breathe in and out each radio cycle, and the motion itself can help launch waves or change how the antenna loads.
+Fully kinetic particle simulations can capture this breathing but are expensive in three dimensions.
+We prescribe the sheath size as a known oscillating function of time inside an existing fluid electromagnetic code, then compare the antenna voltage and current to cases where the sheath thickness is fixed.
+This lets us test whether boundary motion matters before investing in self-consistent charging or particle methods.
+
+\section{Introduction}
+\label{sec:intro}
+
+A depleted sheath between a metallic antenna and the ambient plasma inserts a largely reactive series impedance and can dominate feed behavior at ionospheric and magnetospheric radio frequencies
+\cite{balmain1964,liu_sheath,song2007,tu2008}.
+For high-voltage whistlers and related transmitters, Song~\cite{song2007} argued that the sheath is nearly electron-free and that the oscillating outer radius \(r_s(t)\) supplies a radiation current tied to \(\dot{r}_s\).
+Tu et al.~\cite{tu2008} later examined the same problem with one-dimensional PIC, improving reactance agreement relative to Song's analytics.
+
+Three-dimensional plasma fluid FDTD (PF-FDTD) can already impose a \emph{static} volumetric density hole of width \(S_d\) around a thin-wire dipole and measure feed impedance
+\cite{ward2006}.
+Campaign work with that prescribed jacket showed strong series-capacitance loading once the hole was seeded from the conductor surface rather than from a plasma-on mask
+(companion campaign chronicle; static capacitance study in preparation).
+Varying static \(S_d\) samples different quasi-steady thicknesses but does not represent Song's moving-boundary current.
+
+This paper asks a narrower question: if \(r_s(t)\) is \emph{prescribed} to oscillate at the drive frequency inside the same Maxwell--fluid core, do feed (and optionally radiated) diagnostics show \(\omega\)-locked differences attributable to \(\dot{r}_s\) beyond static jackets of thickness \(r_{s0}\) and \(r_{s0}+\Delta r\)?
+A positive signature would support investing in self-consistent charging; a controlled null result would still clarify the limits of kinematic sheath models in fluid FDTD.
+
+\section{Model and Methods}
+\label{sec:methods}
+
+\subsection{Plasma fluid FDTD}
+\label{sec:pffdtd}
+
+We advance Maxwell's equations on a staggered Yee grid coupled to multi-species cold/warm fluid continuity and momentum equations following the PF-FDTD formulation of Ward~\cite{ward2006}.
+Plasma--Maxwell coupling is masked by a conductivity field \(\mathrm{SIG}\) on free-space cells; conductors are encoded by permittivity flags \(\mathrm{ER}_*=0\).
+Feed voltage and current are recorded at the dipole gap for impedance diagnostics.
+Unless noted, the plasma frequency, collision ratio, and grid match the companion static-sheath campaign (\(f_p=2\,\mathrm{MHz}\), \(\Delta x=0.04\,\mathrm{m}\)).
+
+\subsection{Kinematic sheath radius}
+\label{sec:rst}
+
+The ambient density \(N_0(\mathbf{r})\) is depleted to a floor fraction inside a staircased neighborhood of the PEC antenna.
+For the oscillating case we adopt
+\begin{equation}
+r_s(t)=r_{s0}+\Delta r\sin(2\pi f_{\mathrm{osc}}t+\phi),
+\label{eq:rst}
+\end{equation}
+with \(r_{s0}\) and \(\Delta r\) expressed in grid cells.
+A PEC-seeded integer distance field is computed once out to \(S_{\max}=\lceil r_{s0}+|\Delta r|\rceil\).
+At each time step the integer threshold \(S_d(t)=\mathrm{round}[r_s(t)]\) is applied only when it changes, restoring bulk \(N_0\) outside the instantaneous hole and flooring fluid density inside newly covered cells.
+When \(\Delta r=0\), the static sheath path is unchanged, preserving bit-level continuity with prior static-\(S_d\) runs.
+
+Oscillation frequency defaults to the RF drive; phase \(\phi\) is a free control.
+Song's \(r_s^2(t)\) law is deferred; the sinusoid is the minimal mechanism probe.
+
+\subsection{Experimental design}
+\label{sec:design}
+
+For a single CW tone below \(f_p\) we compare three runs: static \(r_{s0}\), static \(r_{s0}+\lceil\Delta r\rceil\), and oscillating equation~\eqref{eq:rst}.
+Success metrics are (i)~an \(\omega\)-locked difference in feed \(Z\) or radiated diagnostics for the oscillating case relative to both static brackets, (ii)~sensible scaling with \(\Delta r\), and (iii)~phase relations between boundary motion and feed \(V\)/\(I\) where interpretable.
+Matching Tu PIC reactance is \emph{not} required.
+
+\section{Results}
+\label{sec:results}
+
+\emph{[To be completed after the Paper~2 pilot and \(\Delta r\) scan.]}
+
+Planned products: time-domain \(V(t)\), \(I(t)\); phasor \(Z\) at the drive; comparison of oscillating versus static brackets; optional amplitude scan in \(\Delta r\).
+
+% \begin{figure}
+% \centering
+% \includegraphics[width=\textwidth]{fig_placeholder.png}
+% \caption{Caption.}
+% \label{fig:z}
+% \end{figure}
+
+\section{Discussion}
+\label{sec:discussion}
+
+The kinematic model isolates boundary motion without solving Poisson charging or kinetic collection.
+Limitations include Cartesian staircasing of \(r_s(t)\), the fluid code's inability to enforce a strictly electron-free sheath interior beyond a density floor, and the absence of self-consistent bias.
+A clear \(\dot{r}_s\) signature would motivate nonlinear fluid charging or PIC (separate tracks).
+Absence of a signature would still bound what prescribed motion can achieve in this engine and would caution against reading static-\(S_d\) sweeps as Song dynamics.
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+We have formulated and implemented a prescribed oscillating sheath boundary in three-dimensional PF-FDTD as a controlled intermediate between static volumetric jackets and self-consistent Song/Tu sheath physics.
+Pilot comparisons against static radius brackets will determine whether kinematic \(\dot{r}_s\) coupling is detectable in feed diagnostics and whether self-consistent extensions are justified.
+
+%%
+
+\acknowledgments
+The authors thank collaborators on the PF-FDTD sheath campaign.
+Funding statement to be added.
+
+\section*{Open Research}
+Simulation inputs and analysis scripts for the kinematic sheath pilot will be archived with the accepted manuscript.
+Derived impedance products will be deposited in a public repository upon submission.
+The PF-FDTD solver modifications for time-varying sheath masks are described in the methods and companion project documentation.
+
+\bibliography{references}
+
+\end{document}

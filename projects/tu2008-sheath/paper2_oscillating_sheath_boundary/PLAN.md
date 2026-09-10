@@ -1,23 +1,24 @@
 # Paper 2 — Plan checklist
 
-Last updated: 2026-09-07
+Last updated: 2026-09-10
 
 ## Design (before coding)
 
-- [ ] Choose \(r_s(t)\) law: simple sinusoid vs Song \(r_s^2 = r_{s0}^2 + \Re\{ja^2 e^{j\omega t}\}\) analogue
-- [ ] Define discrete update: recompute distance field vs radial threshold only
-- [ ] Diagnostics list: feed \(V,I,Z\); optional probe \(E\) outside max sheath; cycle-averaged power
-- [ ] Write `design/rs_t_spec.md`
+- [x] Choose \(r_s(t)\) law: simple sinusoid vs Song \(r_s^2 = r_{s0}^2 + \Re\{ja^2 e^{j\omega t}\}\) analogue → **sinusoid first**
+- [x] Define discrete update: recompute distance field vs radial threshold only → **threshold on cached PEC distance**
+- [x] Diagnostics list: feed \(V,I,Z\); optional probe \(E\) outside max sheath; cycle-averaged power
+- [x] Write `design/rs_t_spec.md`
 
 ## Implementation
 
-- [ ] Feature flag for time-varying sheath mask in plasma/sheath module
-- [ ] Regression: static \(S_d\) still bit-matches Paper 1 when \(\Delta r=0\)
-- [ ] Single-tone pilot script under `../scripts/` (or paper-local)
+- [x] Feature flag for time-varying sheath mask in plasma/sheath module (`SheathOscEnable` / \(\Delta r>0\))
+- [x] Regression path: static \(S_d\) when \(\Delta r=0\) still uses `ApplySheath()` only
+- [x] Single-tone pilot script under `../scripts/run_paper2_rs_t_pilot.ps1`
 
 ## Analysis / manuscript
 
-- [ ] Static vs oscillating comparison figure
+- [ ] Static vs oscillating comparison figure (run pilot)
 - [ ] \(\Delta r\) scan
 - [ ] Discussion: what kinematic model can and cannot claim vs Song/Tu
-- [ ] `draft/outline.md`
+- [x] `draft/outline.md`
+- [x] Radio Science AGU-format `draft/manuscript.tex` started

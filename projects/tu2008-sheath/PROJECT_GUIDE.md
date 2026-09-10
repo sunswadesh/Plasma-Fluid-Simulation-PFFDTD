@@ -91,7 +91,7 @@ Varying static \(S_d\) **partially** simulates a changing sheath (quasi-static t
 |-------|--------|---------------------|
 | 0 | [`paper0_sheath_campaign/`](paper0_sheath_campaign/) | Keep chronicle current; optional methods draft |
 | 1 | [`paper1_static_sheath_capacitance/`](paper1_static_sheath_capacitance/) | Free-space CW; \(C_\mathrm{eff}\) from Paper 0 low-f data |
-| 2 | [`paper2_oscillating_sheath_boundary/`](paper2_oscillating_sheath_boundary/) | Design \(r_s(t)\) update; single-tone pilot |
+| 2 | [`paper2_oscillating_sheath_boundary/`](paper2_oscillating_sheath_boundary/) | Pilot static vs \(r_s(t)\); fill Radio Science draft results |
 | 3 | [`paper3_self_consistent_sheath/`](paper3_self_consistent_sheath/) | Requirements; gated on Paper 1 (+ ideally 2) |
 
 ### Solver pointers
