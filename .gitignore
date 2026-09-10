@@ -48,6 +48,10 @@ tmp/
 *.png
 !projects/tu2008-sheath/analysis/figures/
 !projects/tu2008-sheath/analysis/figures/*.png
+!projects/tu2008-sheath/paper0_sheath_campaign/analysis/figures/
+!projects/tu2008-sheath/paper0_sheath_campaign/analysis/figures/*.png
+!projects/tu2008-sheath/paper2_oscillating_sheath_boundary/analysis/figures/
+!projects/tu2008-sheath/paper2_oscillating_sheath_boundary/analysis/figures/*.png
 !projects/tu2008-sheath/validation/**/figures/*.png
 
 # Collab archives (local only)
