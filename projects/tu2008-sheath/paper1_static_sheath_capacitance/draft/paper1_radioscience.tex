@@ -6,7 +6,7 @@
 
 \journalname{Radio Science}
 
-\title{Series Sheath Capacitance of a Plasma-Immersed Dipole in Three-Dimensional Fluid FDTD: Volumetric Jacket Versus Analytic Coaxial Loading}
+\title{Emergent Series Loading of a Plasma-Immersed Dipole by a Prescribed Vacuum Jacket in Three-Dimensional Fluid FDTD}
 
 \authors{%
 S.~Neshragh\affil{1}%
@@ -22,38 +22,40 @@ S.~Neshragh, corresponding author address and email (update before submission)
 \titlerunninghead{Ignored.}
 
 \keypoints%
-{A conductor-coated vacuum jacket in 3D fluid FDTD loads the feed as series sheath capacitance, not a shunt capacitor.}%
-{Dense CW at all \(S_d=0,2,4,6,8,10\) shows monotonic capacitive loading; Im\{Z\} crossings fall with sheath width.}%
-{Band-averaged \(C_\mathrm{eff}(S_d)\) tracks coaxial \(C_\mathrm{sh}\) in trend, with a scale factor near 0.3.}
+{A conductor-coated vacuum jacket in 3D fluid FDTD loads the feed as a series gap, not a shunt capacitor.}%
+{In \(1.50\)--\(1.80\,\mathrm{MHz}\), thicker jackets make \(\mathrm{Im}\{Z\}\) more capacitive for all \(S_d\ge 2\); near \(f_p\) that ordering reverses.}%
+{A dipole coaxial estimate (two arms in series) matches band \(C_\mathrm{eff}\) to within \(\sim 20\%\); a fixed-\(Z_\mathrm{pl}\) circuit overlay fails because \(\mathrm{Re}\{Z\}\) also drops with \(S_d\).}
 
 \maketitle
 
 \begin{abstract}
-We quantify how a prescribed volumetric vacuum sheath of width \(S_d\) cells loads the feed impedance of a thin-wire dipole in a three-dimensional plasma-fluid finite-difference time-domain (PF-FDTD) solver. The sheath is not a lumped element placed across the feed. It is a conductor-attached density hole: ambient density is depleted by \(10^{-6}\) in a staircased shell of thickness \(S_d\Delta x\) about every PEC cell, so plasma conduction current cannot reach the metal and feed current must close by displacement current across the radial gap. That geometry is the FDTD analogue of a series sheath capacitor in series with the plasma-loaded antenna, not a shunt feed capacitance. Continuous-wave (CW) phasors at plasma frequency \(f_p=2\,\mathrm{MHz}\) are reported for the full thickness set \(S_d\in\{0,2,4,6,8,10\}\) in \(1.50\)--\(2.30\,\mathrm{MHz}\). For every \(S_d\ge 2\), \(\mathrm{Im}\{Z\}<0\) throughout that band and \(\mathrm{Im}\{Z\}\) at fixed frequency becomes steadily more negative as \(S_d\) increases. A low-frequency extension at \(S_d=0,2,10\) (\(0.50\)--\(1.50\,\mathrm{MHz}\)) was run because those three thicknesses already showed that any \(\mathrm{Im}\{Z\}\) \(+\to-\) crossing for \(S_d\ge 2\) lies below \(1.50\,\mathrm{MHz}\); \(S_d=4,6,8\) were not omitted from the physics, only from the extra low-frequency grid. The first \(+\to-\) marker is \(f_\mathrm{res}(0)=1.846\,\mathrm{MHz}\), \(f_\mathrm{res}(2)=0.655\,\mathrm{MHz}\), \(f_\mathrm{res}(4,6,8)<1.50\,\mathrm{MHz}\), and \(f_\mathrm{res}(10)\le 0.50\,\mathrm{MHz}\). Defining \(C_\mathrm{eff}=-1/(\omega\,\mathrm{Im}\{Z\})\) on capacitive branches and averaging \(0.8\)--\(1.2\,\mathrm{MHz}\) gives \(C_\mathrm{eff}(2)\approx 7.4\,\mathrm{pF}\) and \(C_\mathrm{eff}(10)\approx 4.3\,\mathrm{pF}\). Dense-band averages at \(1.50\)--\(1.70\,\mathrm{MHz}\) for \(S_d=4,6,8,10\) continue the same decrease. Both sets track coaxial \(C_\mathrm{sh}=2\pi\varepsilon_0 L/\ln(1+S_d\Delta x/r_\mathrm{eff})\) in trend, with \(C_\mathrm{eff}/C_\mathrm{sh}\approx 0.3\) in the quasi-static window. The work is a static prescribed-jacket result, not a claim of Tu/Song dynamic sheath fidelity.
+We quantify how a prescribed volumetric vacuum sheath of width \(S_d\) cells loads the feed impedance of a thin-wire dipole in a three-dimensional plasma-fluid finite-difference time-domain (PF-FDTD) solver. The sheath is a conductor-attached density hole: ambient density is depleted by \(10^{-6}\) in a staircased shell of thickness \(S_d\Delta x\) about every PEC cell, so plasma conduction current cannot reach the metal and feed current must close by displacement current across the radial gap. That geometry is the FDTD analogue of a series gap between metal and exterior plasma, not a shunt feed capacitance. Continuous-wave (CW) phasors at plasma frequency \(f_p=2\,\mathrm{MHz}\) are reported for \(S_d\in\{0,2,4,6,8,10\}\) in \(1.50\)--\(2.30\,\mathrm{MHz}\), with a low-frequency extension at \(S_d=0,2,10\) (\(0.50\)--\(1.50\,\mathrm{MHz}\)). In \(1.50\)--\(1.80\,\mathrm{MHz}\), \(\mathrm{Im}\{Z\}\) at fixed frequency becomes steadily more negative as \(S_d\) increases for every \(S_d\ge 2\). Near \(f_p\) that ordering reverses: thicker jackets damp the plasma-resonance swing rather than deepen capacitive reactance. Measured \(\mathrm{Im}\{Z\}\) \(+\to-\) crossings exist for \(S_d=0\) (\(1.846\,\mathrm{MHz}\)) and \(S_d=2\) (\(0.655\,\mathrm{MHz}\), resting on a single inductive sample); \(S_d=4,6,8\) supply only upper bounds \(<1.50\,\mathrm{MHz}\), and \(S_d=10\) is capacitive throughout \(0.50\)--\(2.30\,\mathrm{MHz}\). Defining the mixed diagnostic \(C_\mathrm{eff}=-1/(\omega\,\mathrm{Im}\{Z\})\) on capacitive branches and averaging \(0.8\)--\(1.2\,\mathrm{MHz}\) gives \(C_\mathrm{eff}(2)\approx 7.4\,\mathrm{pF}\) and \(C_\mathrm{eff}(10)\approx 4.3\,\mathrm{pF}\). A coaxial estimate for a \emph{center-fed dipole} (two arms of length \(L/2\) in series) yields \(C_\mathrm{sh}^\mathrm{(dip)}\approx 6.1\) and \(3.7\,\mathrm{pF}\) for those widths, so \(C_\mathrm{eff}/C_\mathrm{sh}^\mathrm{(dip)}\approx 1.2\). The Liu monopole formula overpredicts by a factor of four and is not the correct analytic object. A pedagogical circuit \(Z(S_d=0)+1/(j\omega C_\mathrm{sh}^\mathrm{(dip)})\) fails to reproduce the measured \(\mathrm{Re}\{Z\}(S_d)\) drop: the jacket both inserts a gap and removes near-wire plasma dielectric. The work is a static prescribed-jacket result on a small domain, not a claim of Tu/Song dynamic sheath fidelity.
 \begin{plainlanguagesummary}
-Radio antennas in space plasmas sit inside a thin empty sheath next to the metal. We simulated that empty layer as a jacket of controlled thickness around a dipole in a 3-D plasma wave code. The jacket wraps the wire, so current has to jump the empty gap to reach the plasma; that is a series capacitor, not a capacitor across the antenna terminals. Making the jacket thicker made every thickness we simulated look more capacitive and moved the resonance to lower frequency. The effective capacitance extracted from the simulations decreases with jacket thickness in the same way as a simple coaxial capacitor formula, up to a nearly constant scale factor.
+Radio antennas in space plasmas sit inside a thin empty sheath next to the metal. We simulated that empty layer as a jacket of controlled thickness around a dipole in a 3-D plasma wave code. Because the jacket wraps the wire, current has to jump the empty gap to reach the plasma; that is a series capacitor, not a capacitor across the antenna terminals. In a band below the plasma frequency, thicker jackets made the antenna look more capacitive for every thickness we ran. Near the plasma frequency the picture changes because the jacket also removes plasma near the wire. An analytic coax formula written for a dipole (not a monopole) matches the simulated capacitance to about twenty percent in a low-frequency window, but the full impedance is not a fixed plasma load plus a pure capacitor.
 \end{plainlanguagesummary}
 \end{abstract}
 
 \section{Introduction}
 
-A conducting antenna immersed in plasma is surrounded by a depleted sheath that can dominate low-frequency impedance. Classical short-dipole theory in a cold magnetoplasma \cite{balmain1964,balmain1969} provides the homogeneous-medium baseline; later Balmain-era and contemporary treatments add ion sheaths, insulating jackets, and sheath-wave physics as series gap loading between metal and exterior plasma. Modern plasma impedance probe (PIP) retrievals often write an explicit coaxial sheath capacitor in series with a Balmain-like plasma term \cite{liu_pip,brooks2024}, so that the phase-zero frequency lies below bulk plasma features.
+A conducting antenna immersed in plasma is surrounded by a depleted sheath that can dominate low-frequency impedance. Classical short-dipole theory in a cold magnetoplasma \cite{balmain1964,balmain1969} provides the homogeneous-medium baseline. Later treatments add ion sheaths, insulating jackets, and dielectric coatings as gap loading between metal and exterior plasma \cite{mlodnosky1962,galejs1966,adachi1977}. Modern plasma impedance probe (PIP) retrievals often write an explicit coaxial sheath capacitor in series with a Balmain-like plasma term \cite{brooks2024,liu_pip}, so that the phase-zero frequency lies below bulk plasma features.
 
-High-voltage transmitting antennas raise a related but distinct problem: Song and coworkers modeled an oscillating ion-sheath radius about a bare dipole \cite{song2007}, and Tu et al.\ used one-dimensional particle-in-cell (PIC) simulations to refine sheath structure and reactance \cite{tu2008}. Those studies motivate the statement that sheath changes antenna impedance, but they do not prescribe a fixed vacuum jacket in three-dimensional fluid FDTD, nor do they require that an \(\mathrm{Im}\{Z\}=0\) marker climb with sheath thickness.
+High-voltage transmitting antennas raise a related but distinct problem: Song and coworkers modeled an oscillating ion-sheath radius about a bare dipole \cite{song2007}, and Tu et al.\ used one-dimensional particle-in-cell (PIC) simulations to refine sheath structure and reactance \cite{tu2008}. Those studies motivate the statement that sheath changes antenna impedance. They address self-consistent, time-varying sheaths on high-voltage transmitters; they do not prescribe a fixed vacuum jacket in three-dimensional fluid FDTD.
 
-This paper addresses a narrower, quantitative question suited to the PF-FDTD solver used here \cite{ward2006}: does a \emph{prescribed} volumetric vacuum jacket of width \(S_d\Delta x\) behave as a \emph{series} sheath capacitor whose effective \(C_\mathrm{eff}(S_d)\) tracks coaxial analytic expectations? Campaign diagnostics that established conductor-attached sheath coupling are summarized only as needed; the methodological path, including a pre-fix seeding bug, is documented elsewhere \cite{paper0}. Success is defined by \(C_\mathrm{eff}\) versus coax and multi-marker reporting of \(Z(f)\), not by an upward Im-zero shift with \(S_d\).
+This paper asks a narrower question suited to the PF-FDTD solver used here \cite{ward2006}: does a \emph{prescribed} volumetric vacuum jacket of width \(S_d\Delta x\) load a plasma-immersed dipole as an emergent \emph{series} gap, and how does that loading compare with a dipole coaxial estimate? Success is defined by (i)~monotonic capacitive ordering of \(Z(f)\) with \(S_d\) in a stated band below \(f_p\), (ii)~honest reporting of resonance markers including upper bounds, and (iii)~comparison to the correct dipole coax object after acknowledging that \(C_\mathrm{eff}\) mixes sheath and plasma reactance. An upward Im-zero shift with \(S_d\) is not a success metric for this static-jacket experiment.
 
 \section{Methods}
 
 \subsection{PF-FDTD solver and antenna geometry}
 
-PF-FDTD advances Maxwell's equations on a staggered Yee grid coupled to multi-species fluid continuity and momentum equations \cite{ward2006}. Plasma current enters Ampere's law; feed observables are voltage \(V(t)\) and current \(I(t)\) at a hard \(E_z\) source, with
+PF-FDTD advances Maxwell's equations on a staggered Yee grid coupled to multi-species fluid continuity and momentum equations \cite{ward2006}. Plasma current \(\mathbf{J}=\sum_s q_s n_s\mathbf{u}_s\) enters Ampere's law. The present builds use \(NS=3\) species (electrons plus two positive-ion fluids with oxygen and nitric-oxide masses), cold fluid temperature \(T=0\), and a collision ratio \(\nu/f_p=0.1\) (\(\nu=200\,\mathrm{kHz}\) at \(f_p=2\,\mathrm{MHz}\)). Unless noted, the cyclotron frequency is set to zero (effectively unmagnetized). Bulk electron density follows from \(f_p\): \(N_{0,e}\approx 4.96\times 10^{10}\,\mathrm{m}^{-3}\).
+
+Feed observables are voltage \(V(t)\) and current \(I(t)\) at a hard \(E_z\) source. Voltage is \(V=-E_z\Delta z\); current is the Ampere-loop circulation of \(\mathbf{B}\) around the feed cell \cite{ward2006}. Input impedance
 \begin{equation}
 Z(f)=\frac{V(f)}{I(f)}
 \end{equation}
-from steady-state CW phasors on the last 50\% of each \texttt{.vc} record.
+is formed from steady-state CW phasors on the last 50\% of each \texttt{.vc} record. Source type~3 (hard field) is imposed at the feed; this is not a soft gap feed and should be treated as part of the numerical antenna model.
 
-All runs use a \(70\times 70\times 65\) grid with \(\Delta x=0.04\,\mathrm{m}\) and a \(z\)-directed thin-wire dipole from grid indices \((35,35,20)\) to \((35,35,45)\) (length \(L=1.00\,\mathrm{m}\)) with the feed at \((35,35,33)\). Unless noted, \(f_p=2\,\mathrm{MHz}\), collisions are weak, and the background magnetic field is zero.
+All runs use a \(70\times 70\times 65\) grid with \(\Delta x=\Delta y=\Delta z=0.04\,\mathrm{m}\) (domain \(\approx 2.8\times 2.8\times 2.6\,\mathrm{m}\)) and time step \(\Delta t=6.671114\times 10^{-11}\,\mathrm{s}\). Domain faces use first-order retarded absorbing boundary conditions \cite{ward2006}. A \(z\)-directed thin-wire dipole occupies grid indices \((35,35,20)\) to \((35,35,45)\) (length \(L=1.00\,\mathrm{m}\)) as a one-cell PEC line (\(\mathrm{ER}_z=0\)); the feed is at \((35,35,33)\). No Holland--Simpson thin-wire radius correction is applied inside the solver; \(r_\mathrm{eff}\) appears only in the analytic coax comparison below. Each CW tone is integrated for at least \(10^5\) steps and at least 15 drive cycles (\texttt{VcRate}=10 samples). The domain is electrically small relative to \(c/\omega_p\approx 24\,\mathrm{m}\) and to free-space wavelengths at \(0.5\)--\(2\,\mathrm{MHz}\); absolute \(Z\) values may therefore carry box and boundary contributions, which is why trend-with-\(S_d\) is the primary claim.
 
 \subsection{Prescribed volumetric sheath as a series gap}
 
@@ -63,65 +65,77 @@ The sheath is imposed as a \emph{jacket that coats the conductor}, not as a circ
 \quad\Rightarrow\quad
 N_0 \rightarrow N_0\cdot 10^{-6}
 \end{equation}
-are depleted to a numerical floor (\(N_\mathrm{min}/N_0=10^{-6}\)). Plasma conduction current in that shell is negligible, so the jacket behaves as vacuum. Seeding from the plasma-on mask rather than from PEC previously placed the hole at the domain boundary and made \(Z\) independent of \(S_d\); all results here use the PEC-seeded implementation \cite{paper0}. Figure~\ref{fig:n0} shows the resulting radial step in \(N_0\).
+are depleted to a numerical floor (\(N_\mathrm{min}/N_0=10^{-6}\)). Plasma conduction current in that shell is negligible, so the jacket behaves as vacuum. All results here use this PEC-seeded implementation. Figure~\ref{fig:n0} shows a \emph{schematic} of the applied step, not a dumped field dump.
 
-Because the depleted shell surrounds the metal, feed current reaching the bulk plasma must cross the radial gap as displacement current. The corresponding circuit is
+Because the depleted shell surrounds the metal, feed current reaching the bulk plasma must cross the radial gap as displacement current. A pedagogical circuit is
 \begin{equation}
 Z_\mathrm{in}(f)\approx Z_\mathrm{pl}(f)+\frac{1}{j\omega C_\mathrm{sh}(S_d)},
 \label{eq:series}
 \end{equation}
-i.e.\ series sheath capacitance, not a shunt \(C\) across the terminals. Parallel-plate estimates \(C\sim\varepsilon_0 A/(S_d\Delta x)\) are only pedagogical magnitude guides for that series gap. Thin-wire geometry favors the logarithmic coaxial form used below.
+i.e.\ series sheath capacitance, not a shunt \(C\) across the terminals. Equation~(\ref{eq:series}) is a useful topology statement, not an assumption that \(Z_\mathrm{pl}\) is independent of \(S_d\): thickening the jacket also removes plasma dielectric near the wire. Thin-wire geometry favors a logarithmic coaxial form for the gap estimate.
 
 \begin{figure}
 \noindent\includegraphics[width=\textwidth]{figures/sheath_geometry.png}
-\caption{How the prescribed jacket mimics a series sheath. (a)~Cross-section: a vacuum shell of thickness \(S_d\Delta x\) coats the PEC wire; bulk plasma lies outside. (b)~Equivalent topology: displacement current across the gap inserts \(1/(j\omega C_\mathrm{sh})\) in series with the plasma-loaded antenna \(Z_\mathrm{pl}\). A shunt capacitor would sit across the feed, which is not the geometry we impose.}
+\caption{How the prescribed jacket mimics a series sheath. (a)~Cross-section: a vacuum shell of thickness \(S_d\Delta x\) coats the PEC wire; bulk plasma lies outside. (b)~Equivalent topology: displacement current across the gap inserts \(1/(j\omega C_\mathrm{sh})\) in series with a plasma-loaded antenna path. A shunt capacitor would sit across the feed, which is not the geometry we impose. Measured \(\mathrm{Re}\{Z\}(S_d)\) shows that the plasma path is not invariant.}
 \label{fig:geom}
 \end{figure}
 
 \begin{figure}
 \noindent\includegraphics[width=0.85\textwidth]{figures/n0_radial_profile.png}
-\caption{Schematic of the applied electron-density mask along a cut through the feed. For \(S_d=10\) the PEC-seeded step depletes \(N_0\) by \(10^{-6}\) in ten cells on either side of the wire; \(S_d=0\) leaves a uniform plasma.}
+\caption{Schematic of the applied electron-density mask along a cut through the feed (not a dumped \(N_0\) field). For \(S_d=10\) the PEC-seeded step depletes \(N_0\) by \(10^{-6}\) in ten cells on either side of the wire; the PEC cell itself carries no plasma density. \(S_d=0\) leaves a uniform plasma.}
 \label{fig:n0}
 \end{figure}
 
-\subsection{CW campaigns and why the low-frequency grid is smaller}
+\subsection{CW campaigns and resonance markers}
 
 Two CW grids share the same geometry and \(f_p\):
 \begin{description}
-\item[Dense band (all thicknesses)] \(S_d\in\{0,2,4,6,8,10\}\), \(f=1.50\)--\(2.30\,\mathrm{MHz}\) (100~kHz and selected half steps; 66 completed cases). This is the full \(S_d\) survey.
-\item[Low-frequency extension] \(S_d\in\{0,2,10\}\), \(f=0.50\)--\(1.50\,\mathrm{MHz}\) (100~kHz steps). These three thicknesses were re-run below \(1.50\,\mathrm{MHz}\) after the dense band showed that every \(S_d\ge 2\) was already capacitive there, so any \(+\to-\) crossing had to lie at lower frequency. Intermediate widths \(S_d=4,6,8\) remain in the dense-band results; they were not discarded.
+\item[Dense band (all thicknesses)] \(S_d\in\{0,2,4,6,8,10\}\), \(f=1.50\)--\(2.30\,\mathrm{MHz}\) (100~kHz and selected half steps; 66 completed cases). This is the full \(S_d\) survey and the primary loading evidence.
+\item[Low-frequency extension] \(S_d\in\{0,2,10\}\), \(f=0.50\)--\(1.50\,\mathrm{MHz}\) (100~kHz steps). These three thicknesses were re-run below \(1.50\,\mathrm{MHz}\) after the dense band showed that every \(S_d\ge 2\) was already capacitive there. Intermediate widths \(S_d=4,6,8\) remain in the dense-band results; their low-frequency crossings are not yet measured and are reported only as upper bounds.
 \end{description}
 One dense-band sample (\(S_d=0\), \(1.50\,\mathrm{MHz}\)) is an incomplete restart file and is omitted from all plots and averages.
 
-Series resonance \(f_\mathrm{res}\) is the first \(\mathrm{Im}\{Z\}\) positive-to-negative zero crossing by linear interpolation. We also report $|Z|$ in the dense band as a second marker and do not equate phase-zero with magnitude extrema.
+Series resonance \(f_\mathrm{res}\) is the first \(\mathrm{Im}\{Z\}\) positive-to-negative zero crossing by linear interpolation when both neighboring samples exist. We also report $|Z|$ in the dense band as a second marker and do not equate phase-zero with magnitude extrema. On \(\Delta x=0.04\,\mathrm{m}\), \(S_d=2\) is already an \(8\,\mathrm{cm}\) vacuum jacket---thick relative to a typical ionospheric Debye sheath at this density---so series-gap loading is intentionally strong.
 
-\subsection{Effective capacitance and coaxial reference}
+\subsection{Effective capacitance and coaxial references}
 
-Where \(\mathrm{Im}\{Z\}<0\), define
+Where \(\mathrm{Im}\{Z\}<0\), define the mixed diagnostic
 \begin{equation}
 C_\mathrm{eff}(f)=-\frac{1}{\omega\,\mathrm{Im}\{Z(f)\}},
 \qquad \omega=2\pi f.
 \label{eq:ceff}
 \end{equation}
-This \(C_\mathrm{eff}\) is an \emph{effective} feed capacitance of the full antenna--sheath--plasma system, not a pure vacuum gap to an ideal plasma electrode. The quasi-static average uses \(0.8\)--\(1.2\,\mathrm{MHz}\) (capacitive points only), away from the narrow inductive island of \(S_d=2\) near \(0.60\,\mathrm{MHz}\). That window exists only for the low-frequency set \(S_d=2,10\). For \(S_d=4,6,8\) (and as a consistency check on \(S_d=10\)) we also average \(C_\mathrm{eff}\) over \(1.50\)--\(1.70\,\mathrm{MHz}\), the lowest dense-band frequencies still well below \(f_p\). We do not use the dense-band \(C_\mathrm{eff}\) for \(S_d=2\), where \(\mathrm{Im}\{Z\}\) is approaching zero and equation~(\ref{eq:ceff}) is no longer a quasi-static capacitor.
+This is an effective feed capacitance of the full antenna--sheath--plasma system on the present grid, not a pure vacuum gap to an ideal plasma electrode. It is frequency-dependent in the data and is used only as a secondary comparison, not as the primary claim.
 
-The coaxial analytic sheath for a cylinder of length \(L\) and effective radius \(r_\mathrm{eff}\) is
+The Liu-style coaxial sheath for a \emph{monopole} of length \(L\) is
 \begin{equation}
-C_\mathrm{sh}^\mathrm{(coax)}=\frac{2\pi\varepsilon_0 L}{\ln\!\bigl(1+S_d\Delta x/r_\mathrm{eff}\bigr)}.
-\label{eq:coax}
+C_\mathrm{sh}^\mathrm{(mono)}=\frac{2\pi\varepsilon_0 L}{\ln\!\bigl(1+S_d\Delta x/r_\mathrm{eff}\bigr)}.
+\label{eq:coax_mono}
 \end{equation}
-We take \(r_\mathrm{eff}=0.23\Delta x\) as a Holland-type thin-wire estimate on the Yee lattice \cite{holland1981}; sensitivity to \(r_\mathrm{eff}\) is discussed in Section~\ref{sec:disc}.
+For a center-fed dipole of total length \(L\), each arm of length \(L/2\) contributes half that capacitance if treated as an independent coax, and the two arms are electrically in series at the feed, so
+\begin{equation}
+C_\mathrm{sh}^\mathrm{(dip)}=\frac{C_\mathrm{sh}^\mathrm{(mono)}}{4}
+=\frac{\pi\varepsilon_0 L}{2\ln\!\bigl(1+S_d\Delta x/r_\mathrm{eff}\bigr)}.
+\label{eq:coax_dip}
+\end{equation}
+We take \(r_\mathrm{eff}=0.23\Delta x\) as a Holland-type thin-wire estimate for the analytic comparison only \cite{holland1981}, and also show \(r_\mathrm{eff}=0.5\Delta x\) as a staircased-radius sensitivity. The quasi-static diagnostic average uses \(0.8\)--\(1.2\,\mathrm{MHz}\) (capacitive points only) for \(S_d=2,10\). Dense-band \(C_\mathrm{eff}\) near \(f_p\) is not treated as a quasi-static capacitor.
 
 \section{Results}
 
 \subsection{Dense-band impedance at all \(S_d\)}
 
-Figure~\ref{fig:zdense} shows the full thickness survey. Curves are ordered with \(S_d\): larger jackets reduce \(\mathrm{Re}\{Z\}\) and drive \(\mathrm{Im}\{Z\}\) more negative at every frequency in \(1.50\)--\(1.80\,\mathrm{MHz}\). For \(S_d\ge 2\), \(\mathrm{Im}\{Z\}<0\) at all dense-band tones; only \(S_d=0\) crosses from inductive to capacitive, at \(1.846\,\mathrm{MHz}\). The same ordering appears in $|Z|$ (Figure~\ref{fig:zabs}): the dense-band magnitude peak collapses monotonically as the jacket thickens. Intermediate widths \(S_d=4,6,8\) lie between \(S_d=2\) and \(S_d=10\); they are not outliers and are not omitted from the loading argument.
+Figure~\ref{fig:zdense} shows the full thickness survey. In \(1.50\)--\(1.80\,\mathrm{MHz}\), curves are ordered with \(S_d\): larger jackets reduce \(\mathrm{Re}\{Z\}\) and drive \(\mathrm{Im}\{Z\}\) more negative at every frequency in that window. For \(S_d\ge 2\), \(\mathrm{Im}\{Z\}<0\) at all dense-band tones; only \(S_d=0\) crosses from inductive to capacitive, at \(1.846\,\mathrm{MHz}\). Near \(f_p\) (\(2.0\)--\(2.3\,\mathrm{MHz}\)) the ordering reverses: the unsheathed dipole develops the largest capacitive swing, and thicker jackets damp that plasma feature (Figure~\ref{fig:imzsd}). Intermediate widths \(S_d=4,6,8\) lie between \(S_d=2\) and \(S_d=10\) in the low dense band; they are not outliers. The same low-band ordering appears in $|Z|$ (Figure~\ref{fig:zabs}).
 
 \begin{figure}
 \noindent\includegraphics[width=\textwidth]{figures/z_dense.png}
-\caption{Dense-band CW phasor impedance for all simulated jackets \(S_d=0,2,4,6,8,10\) (\(f_p=2\,\mathrm{MHz}\)). Top: \(\mathrm{Re}\{Z\}\); bottom: \(\mathrm{Im}\{Z\}\). The \(S_d=0\), \(1.50\,\mathrm{MHz}\) restart file is omitted. Every \(S_d\ge 2\) is capacitive throughout this band.}
+\caption{Dense-band CW phasor impedance for all simulated jackets \(S_d=0,2,4,6,8,10\) (\(f_p=2\,\mathrm{MHz}\)). Top: \(\mathrm{Re}\{Z\}\); bottom: \(\mathrm{Im}\{Z\}\). The \(S_d=0\), \(1.50\,\mathrm{MHz}\) restart file is omitted. Green shading marks the band where thicker jackets are more capacitive; near \(f_p\) that ordering reverses.}
 \label{fig:zdense}
+\end{figure}
+
+\begin{figure}
+\noindent\includegraphics[width=\textwidth]{figures/imz_vs_sd.png}
+\caption{(a)~Dense-band \(\mathrm{Im}\{Z\}(S_d)\) at \(1.60\), \(1.70\), and \(1.80\,\mathrm{MHz}\): monotonic capacitive loading with thickness. (b)~Same quantity near \(f_p\): thicker jackets reduce the plasma-resonance swing. This figure is the primary quantitative loading evidence.}
+\label{fig:imzsd}
 \end{figure}
 
 \begin{figure}
@@ -132,7 +146,7 @@ Figure~\ref{fig:zdense} shows the full thickness survey. Curves are ordered with
 
 \subsection{Low-frequency extension for \(S_d=0,2,10\)}
 
-Figure~\ref{fig:zfull} stitches the low-frequency extension onto the dense band for the three thicknesses that were re-run below \(1.50\,\mathrm{MHz}\). \(S_d=0\) stays inductive through \(0.50\)--\(1.50\,\mathrm{MHz}\). \(S_d=10\) is capacitive at every low-frequency point. \(S_d=2\) is capacitive except for a brief inductive island at \(0.60\,\mathrm{MHz}\), with a \(+\to-\) crossing at \(0.655\,\mathrm{MHz}\).
+Figure~\ref{fig:zfull} stitches the low-frequency extension onto the dense band for the three thicknesses that were re-run below \(1.50\,\mathrm{MHz}\). \(S_d=0\) stays inductive through \(0.50\)--\(1.50\,\mathrm{MHz}\). \(S_d=10\) is capacitive at every low-frequency point. \(S_d=2\) is capacitive except for a brief inductive sample at \(0.60\,\mathrm{MHz}\), with an interpolated \(+\to-\) crossing at \(0.655\,\mathrm{MHz}\). That crossing rests on a single inductive tone and should be treated as provisional pending denser sampling.
 
 \begin{figure}
 \noindent\includegraphics[width=\textwidth]{figures/z_combined.png}
@@ -142,7 +156,7 @@ Figure~\ref{fig:zfull} stitches the low-frequency extension onto the dense band 
 
 \subsection{Resonance markers versus sheath width}
 
-Table~\ref{tab:fres} and Figure~\ref{fig:fres} collect \(\mathrm{Im}\{Z\}\) \(+\to-\) crossings. Widening the jacket moves \(f_\mathrm{res}\) \emph{downward}. For \(S_d=4,6,8\) the dense band supplies only an upper bound (\(<1.50\,\mathrm{MHz}\)), consistent with the measured \(S_d=2\) and \(S_d=10\) crossings.
+Table~\ref{tab:fres} and Figure~\ref{fig:fres} collect \(\mathrm{Im}\{Z\}\) \(+\to-\) crossings. Measured crossings exist only for \(S_d=0\) and \(2\). For \(S_d=4,6,8\) the dense band supplies only an upper bound (\(<1.50\,\mathrm{MHz}\)). \(S_d=10\) remains capacitive through \(0.50\,\mathrm{MHz}\). The plot therefore does not establish a continuous monotonic \(f_\mathrm{res}(S_d)\) curve across all six thicknesses; it establishes a downward move from \(S_d=0\) to \(S_d=2\) and bounds thereafter. The \(S_d=0\) marker is a plasma-loaded dipole resonance, not a pure sheath resonance, and should not be read as the same physical object as the sheathed crossings.
 
 \begin{table}
 \caption{Series resonance from \(\mathrm{Im}\{Z\}\) \(+\) to \(-\) crossings}
@@ -151,9 +165,9 @@ Table~\ref{tab:fres} and Figure~\ref{fig:fres} collect \(\mathrm{Im}\{Z\}\) \(+\
 \hline
 \(S_d\) & \(f_\mathrm{res}\) & Note \\
 \hline
-0 & \(1.846\,\mathrm{MHz}\) & Dense band; low-frequency band all inductive \\
-2 & \(0.655\,\mathrm{MHz}\) & Also \(-\) to \(+\) at \(0.570\,\mathrm{MHz}\) (inductive island) \\
-4, 6, 8 & \(<1.50\,\mathrm{MHz}\) & All \(\mathrm{Im}\{Z\}<0\) in the dense band; no low-frequency run \\
+0 & \(1.846\,\mathrm{MHz}\) & Dense band; plasma-loaded resonance \\
+2 & \(0.655\,\mathrm{MHz}\) & Provisional; single inductive sample at \(0.60\,\mathrm{MHz}\) \\
+4, 6, 8 & \(<1.50\,\mathrm{MHz}\) & Upper bound only; no low-frequency run \\
 10 & \(\le 0.50\,\mathrm{MHz}\) & All \(\mathrm{Im}\{Z\}<0\) in \(0.50\)--\(2.30\,\mathrm{MHz}\) \\
 \hline
 \end{tabular}
@@ -162,26 +176,23 @@ Table~\ref{tab:fres} and Figure~\ref{fig:fres} collect \(\mathrm{Im}\{Z\}\) \(+\
 
 \begin{figure}
 \noindent\includegraphics[width=0.85\textwidth]{figures/fres_vs_sd.png}
-\caption{Resonance frequency \(f_\mathrm{res}(S_d)\) from \(\mathrm{Im}\{Z\}\) positive-to-negative crossings. Diamonds and the \(S_d=10\) symbol are upper limits (no crossing in the available band), not missing data.}
+\caption{Resonance frequency \(f_\mathrm{res}(S_d)\) from \(\mathrm{Im}\{Z\}\) positive-to-negative crossings. Diamonds and the \(S_d=10\) symbol are upper limits (no crossing in the available band), not missing slope points.}
 \label{fig:fres}
 \end{figure}
 
-\subsection{Effective capacitance versus coaxial sheath}
+\subsection{Capacitance diagnostic and circuit overlay}
 
-Figure~\ref{fig:cefff} shows \(C_\mathrm{eff}(f)\) from equation~(\ref{eq:ceff}) on capacitive low-frequency branches. Band means are listed in Table~\ref{tab:ceff}. Figure~\ref{fig:ceffsd}a confirms that, at the single dense-band frequency \(1.60\,\mathrm{MHz}\), \(\mathrm{Im}\{Z\}\) for \(S_d=2,4,6,8,10\) is a monotonic function of thickness. Figure~\ref{fig:ceffsd}b compares \(C_\mathrm{eff}\) with equation~(\ref{eq:coax}).
+Figure~\ref{fig:cefff} shows \(C_\mathrm{eff}(f)\) from equation~(\ref{eq:ceff}). The quantity is not flat in the \(0.8\)--\(1.2\,\mathrm{MHz}\) window: for \(S_d=10\) the band scatter is \(\approx 43\%\) of the mean. Band means are therefore diagnostics, not high-precision capacitors (Table~\ref{tab:ceff}). Figure~\ref{fig:ceffsd} compares those means with monopole and dipole coax formulae. After the dipole correction, \(C_\mathrm{eff}/C_\mathrm{sh}^\mathrm{(dip)}\approx 1.20\) (\(S_d=2\)) and \(1.17\) (\(S_d=10\)). The monopole formula yields the previously reported factor \(\approx 0.3\) and overstates the analytic capacitance by four.
 
 \begin{table}
-\caption{Band-averaged \(C_\mathrm{eff}\) versus coaxial \(C_\mathrm{sh}\). Low-frequency window: \(0.8\)--\(1.2\,\mathrm{MHz}\). Dense window: \(1.50\)--\(1.70\,\mathrm{MHz}\).}
+\caption{Diagnostic band-averaged \(C_\mathrm{eff}\) (\(0.8\)--\(1.2\,\mathrm{MHz}\)) versus monopole and dipole coaxial references (\(r_\mathrm{eff}=0.23\Delta x\)).}
 \centering
-\begin{tabular}{cccccc}
+\begin{tabular}{ccccccc}
 \hline
-\(S_d\) & \(t_\mathrm{sh}\) (m) & \(C_\mathrm{eff}^\mathrm{(low)}\) (pF) & \(C_\mathrm{eff}^\mathrm{(dense)}\) (pF) & \(C_\mathrm{sh}^\mathrm{(coax)}\) (pF) & Ratio \\
+\(S_d\) & \(t_\mathrm{sh}\) (m) & \(C_\mathrm{eff}\) (pF) & \(C_\mathrm{sh}^\mathrm{(mono)}\) (pF) & \(C_\mathrm{sh}^\mathrm{(dip)}\) (pF) & Ratio (mono) & Ratio (dip) \\
 \hline
-2 & 0.08 & \(7.35\pm 1.12\) & --- & 24.49 & 0.30 \\
-4 & 0.16 & --- & \(7.06\pm 0.63\) & 19.11 & 0.37 \\
-6 & 0.24 & --- & \(5.39\pm 0.24\) & 16.86 & 0.32 \\
-8 & 0.32 & --- & \(4.76\pm 0.13\) & 15.55 & 0.31 \\
-10 & 0.40 & \(4.27\pm 1.83\) & \(4.43\pm 0.08\) & 14.66 & 0.29 \\
+2 & 0.08 & \(7.35\pm 1.12\) & 24.49 & 6.12 & 0.30 & 1.20 \\
+10 & 0.40 & \(4.27\pm 1.83\) & 14.66 & 3.66 & 0.29 & 1.17 \\
 \hline
 \end{tabular}
 \label{tab:ceff}
@@ -189,52 +200,64 @@ Figure~\ref{fig:cefff} shows \(C_\mathrm{eff}(f)\) from equation~(\ref{eq:ceff})
 
 \begin{figure}
 \noindent\includegraphics[width=0.85\textwidth]{figures/ceff_vs_frequency.png}
-\caption{Effective capacitance \(C_\mathrm{eff}(f)\) for \(S_d=2\) and \(10\). The shaded band is the averaging window in Table~\ref{tab:ceff}. The spike near \(0.70\,\mathrm{MHz}\) for \(S_d=2\) is the approach to the inductive island and is excluded from the mean.}
+\caption{Effective capacitance \(C_\mathrm{eff}(f)\) for \(S_d=2\) and \(10\). The shaded band is the averaging window in Table~\ref{tab:ceff}. Frequency dependence shows that equation~(\ref{eq:ceff}) is a mixed diagnostic, not a pure gap capacitor.}
 \label{fig:cefff}
 \end{figure}
 
 \begin{figure}
 \noindent\includegraphics[width=\textwidth]{figures/ceff_vs_sd.png}
-\caption{(a)~Dense-band \(\mathrm{Im}\{Z\}\) at \(1.60\,\mathrm{MHz}\) for every jacket with \(S_d\ge 2\): thicker sheaths are more capacitive. (b)~\(C_\mathrm{eff}(S_d)\) compared with coaxial analytic \(C_\mathrm{sh}\) for \(r_\mathrm{eff}=0.23\Delta x\). Orange: quasi-static low-frequency means. Green: dense-band means for widths that were not re-run below \(1.50\,\mathrm{MHz}\) (plus \(S_d=10\) as a cross-check). Dense-band \(C_\mathrm{eff}(S_d=2)\) is omitted because \(\mathrm{Im}\{Z\}\) is approaching zero in that window.}
+\caption{(a)~Monopole coax (dashed), dipole coax (solid), and staircased-radius dipole sensitivity (dotted), with diagnostic low-frequency \(C_\mathrm{eff}\) means. (b)~Ratio to the dipole formula is order unity (\(\approx 1.2\)).}
 \label{fig:ceffsd}
 \end{figure}
 
-Low-frequency ratios \(C_\mathrm{eff}/C_\mathrm{sh}\) are \(0.30\) (\(S_d=2\)) and \(0.29\) (\(S_d=10\)). Dense-band ratios for \(S_d=4,6,8,10\) lie in \(0.29\)--\(0.37\). Absolute scale therefore depends on \(r_\mathrm{eff}\), staircasing, and residual plasma reactance inside \(C_\mathrm{eff}\), but the \emph{trend} with \(S_d\) matches series coaxial loading: thicker jackets reduce capacitance and strengthen capacitive reactance at fixed frequency.
+Figure~\ref{fig:circuit} tests equation~(\ref{eq:series}) with \(Z_\mathrm{pl}\) fixed at the measured \(S_d=0\) impedance and \(C_\mathrm{sh}=C_\mathrm{sh}^\mathrm{(dip)}\). Imaginary parts move in the right direction but do not match quantitatively. Real parts diverge strongly: measured \(\mathrm{Re}\{Z\}\) falls with \(S_d\), whereas a lossless series capacitor leaves \(\mathrm{Re}\{Z\}\) unchanged. The jacket therefore cannot be reduced to a fixed plasma load plus a pure series \(C\).
+
+\begin{figure}
+\noindent\includegraphics[width=\textwidth]{figures/circuit_overlay.png}
+\caption{Circuit overlay at dense-band frequencies: measured \(Z(S_d)\) versus \(Z(S_d{=}0)+1/(j\omega C_\mathrm{sh}^\mathrm{(dip)})\). (a)~Imaginary part. (b)~Real part. Lossless series \(C\) cannot explain the measured resistive drop.}
+\label{fig:circuit}
+\end{figure}
 
 \section{Discussion}
 \label{sec:disc}
 
 \subsection{Series versus parallel topology}
 
-The depleted shell sits between the conductor and bulk plasma (Figure~\ref{fig:geom}). Equation~(\ref{eq:series}) follows from that geometry, not from a post-hoc circuit fit. A shunt capacitor across the feed would not thicken when \(S_d\) increases around the wire, and it would not produce the ordered capacitive family in Figure~\ref{fig:zdense}.
+The depleted shell sits between the conductor and bulk plasma (Figure~\ref{fig:geom}). Series topology follows from that geometry. A shunt capacitor across the feed would not thicken when \(S_d\) increases around the wire, and it would not produce the ordered capacitive family in Figure~\ref{fig:imzsd}a.
 
-\subsection{Why \(f_\mathrm{res}\) falls with \(S_d\)}
+\subsection{Why low-band capacitive loading strengthens with \(S_d\)}
 
-Thickening the jacket simultaneously (i) removes plasma dielectric near the wire (favoring an upward shift toward free space) and (ii) inserts series \(C_\mathrm{sh}\) (favoring a downward phase-zero shift, as in PIP \(f_{\phi0}\) arguments). Under the \(\mathrm{Im}\{Z\}\) crossing metric on this grid, series capacitance wins. On \(\Delta x=0.04\,\mathrm{m}\), \(S_d=2\) is already an \(8\,\mathrm{cm}\) vacuum jacket---a strong capacitive load relative to a physical Debye sheath---which amplifies series-\(C\) domination.
+Thickening the jacket simultaneously (i) removes plasma dielectric near the wire and (ii) inserts series gap capacitance. In \(1.50\)--\(1.80\,\mathrm{MHz}\), the net effect is stronger capacitive \(\mathrm{Im}\{Z\}\). Near \(f_p\), removing plasma dielectric and damping the resonance dominate, so ordering reverses (Figure~\ref{fig:imzsd}b). On this grid \(S_d=2\) is already an \(8\,\mathrm{cm}\) vacuum jacket---a strong load relative to a physical Debye sheath at ionospheric temperatures---which amplifies gap effects in the low band.
 
-\subsection{Relation to Tu et al.\ and Song et al.}
+\subsection{Analytic coax: monopole versus dipole}
 
-\citeA{tu2008} and \citeA{song2007} address high-voltage transmitting dipoles with self-consistent, time-varying sheaths. The present runs prescribe a static step jacket in fluid FDTD. We therefore do not claim Tu dynamic fidelity. The appropriate static bridge is \(C_\mathrm{sh}(r_s)\) (and later, in follow-on work, prescribed \(\dot{r}_s\)), not an upward Im-zero scoreboard.
+PIP formulations typically write equation~(\ref{eq:coax_mono}) for a cylindrical monopole. Applying that formula unchanged to a center-fed dipole of total length \(L\) overpredicts feed capacitance by a factor of four. With equation~(\ref{eq:coax_dip}), the diagnostic ratios become order unity. Remaining \(\sim 20\%\) offsets are consistent with staircasing, \(r_\mathrm{eff}\) ambiguity, residual plasma reactance inside \(C_\mathrm{eff}\), and the electrically small domain.
+
+\subsection{Relation to Song et al.\ and Tu et al.}
+
+\citeA{song2007} and \citeA{tu2008} address high-voltage transmitting dipoles with self-consistent, time-varying sheaths. The present runs prescribe a static step jacket in fluid FDTD. We therefore do not claim Tu dynamic fidelity. The appropriate static bridge is emergent gap loading and \(C_\mathrm{sh}(S_d)\), not an Im-zero scoreboard against those papers.
 
 \subsection{Limitations}
 
 \begin{enumerate}
-\item Free-space \(f_\mathrm{res}\) on the same dipole remains an open upper anchor for the unloading narrative.
-\item \(C_\mathrm{eff}\) mixes sheath and plasma reactance; a pure gap extraction would require additional modeling (e.g., vacuum reference or circuit de-embedding).
-\item Absolute coax comparison depends on \(r_\mathrm{eff}\); the reported ratio \(\approx 0.3\) is for \(r_\mathrm{eff}=0.23\Delta x\). Larger \(r_\mathrm{eff}\) raises \(C_\mathrm{sh}\) further; smaller \(r_\mathrm{eff}\) improves absolute agreement but does not change the shared \(S_d\) trend.
+\item Free-space \(f_\mathrm{res}\) on the same dipole remains an open upper anchor (run plan documented with the analysis products).
+\item Intermediate widths \(S_d=4,6,8\) lack low-frequency CW; \(f_\mathrm{res}\) for those cases is only an upper bound. Denser tones around \(0.55\)--\(0.70\,\mathrm{MHz}\) for \(S_d=2\) are also open.
+\item \(C_\mathrm{eff}\) mixes sheath and plasma reactance and is frequency-dependent; it is a diagnostic, not a de-embedded gap capacitance.
+\item Absolute \(Z\) and \(C_\mathrm{eff}\) may include box/ABC contributions on this electrically small domain.
+\item Absolute coax comparison still depends on \(r_\mathrm{eff}\); we report Holland-like \(0.23\Delta x\) and staircased \(0.5\Delta x\).
 \item Campaigns here are effectively unmagnetized; PIP upper-hybrid markers require \(B\neq 0\).
-\item Low-frequency \(C_\mathrm{eff}\) exists only for \(S_d=2\) and \(10\). Intermediate widths enter through the dense band, where \(C_\mathrm{eff}\) is a more mixed observable. That is a sampling choice, not evidence against those jackets.
+\item Cold fluid \(T=0\) has no thermal Debye length; physical-sheath comparisons use ionospheric \(T_e\) only as context.
 \end{enumerate}
 
 \section{Conclusions}
 
-A prescribed volumetric vacuum sheath in PF-FDTD loads a plasma-immersed dipole as a \textbf{series} capacitor because the jacket coats the wire and feed current must cross the gap by displacement current. CW measurements at all six thicknesses show monotonic capacitive loading with \(S_d\). \(\mathrm{Im}\{Z\}\) zero-crossings decrease with \(S_d\) where they can be located, and band-averaged \(C_\mathrm{eff}(S_d)\) decreases in parallel with coaxial analytic \(C_\mathrm{sh}(S_d)\) at a scale factor \(\approx 0.3\) in the quasi-static window. These results validate series-gap loading as the correct FDTD interpretation of a static jacket and provide the quantitative baseline needed before prescribing time-varying sheath boundaries or self-consistent charging.
+A prescribed volumetric vacuum sheath in PF-FDTD loads a plasma-immersed dipole as a \textbf{series} gap because the jacket coats the wire and feed current must cross that gap by displacement current. In \(1.50\)--\(1.80\,\mathrm{MHz}\), CW measurements at all six thicknesses show monotonic capacitive loading with \(S_d\). Near \(f_p\) that ordering reverses because the jacket also modifies the plasma path. Measured Im-zero crossings decrease from \(S_d=0\) to \(S_d=2\); intermediate widths are constrained only by upper bounds. A dipole coaxial estimate matches the low-frequency \(C_\mathrm{eff}\) diagnostic to within \(\sim 20\%\), whereas a monopole coax formula is the wrong object. A fixed-\(Z_\mathrm{pl}\) series-\(C\) overlay fails for \(\mathrm{Re}\{Z\}\). These results establish emergent series-gap loading as the correct FDTD interpretation of a static jacket and provide a quantitative baseline---with stated limitations---before prescribing time-varying sheath boundaries or self-consistent charging.
 
 \section*{Acknowledgments}
 The authors thank collaborators on the PF-FDTD sheath campaign for discussions of coupling diagnostics and impedance markers.
 
 \section*{Open Research}
-Phasor tables supporting the figures are in \texttt{paper0\_sheath\_campaign/analysis/data/} (dense band: \texttt{cw\_tu\_summary.txt}; low-frequency: \texttt{cw\_lowf\_summary.txt}). Derived \(C_\mathrm{eff}\) tables and figure scripts are in \texttt{paper1\_static\_sheath\_capacitance/analysis/}. Solver source is the collab PF-FDTD repository (PEC-seeded \texttt{ApplySheath}). Replace this section with a persistent DOI before submission.
+Phasor tables and derived products supporting the figures are in \texttt{projects/tu2008-sheath/paper1\_static\_sheath\_capacitance/analysis/data/}. Figure scripts are in the same analysis directory. Solver source is the collab PF-FDTD repository (PEC-seeded \texttt{ApplySheath}). Replace this section with a persistent DOI / repository link before submission.
 
 \bibliography{references}
 

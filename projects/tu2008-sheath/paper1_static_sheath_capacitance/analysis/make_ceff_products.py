@@ -1,6 +1,13 @@
-"""Paper 1 figures and C_eff tables.
+"""Paper 1 figures and tables (review revision).
 
-Run from anywhere:
+Primary observables:
+  - dense-band Z(f) ordering with Sd
+  - Im{Z}(Sd) at fixed frequencies (including near-fp reversal)
+  - dipole coaxial C_sh (two arms in series), not Liu monopole
+  - circuit overlay Z_pl(Sd=0) + 1/(j omega C_dipole)
+  - optional C_eff as a mixed diagnostic only
+
+Run from repo root:
     python projects/tu2008-sheath/paper1_static_sheath_capacitance/analysis/make_ceff_products.py
 """
 from __future__ import annotations
@@ -24,11 +31,12 @@ DRAFTFIG = HERE.parent / "draft" / "figures"
 
 EPS0 = 8.854187817e-12
 DX = 0.04
-L = 25 * DX
+L = 25 * DX  # total dipole length (m)
 R_EFF = 0.23 * DX
+R_STAIR = 0.5 * DX
 N_MIN_RATIO = 1e-6
-N0_BULK = 4.96e10  # m^-3 at fp = 2 MHz (electrons)
-OUTLIER = {(0, 1_500_000)}  # incomplete Sd=0 restart at 1.50 MHz
+N0_BULK = 4.0 * math.pi**2 * (2e6) ** 2 * 9.1066e-31 * EPS0 / (1.6021917e-19) ** 2
+OUTLIER = {(0, 1_500_000)}
 
 SD_COLORS = {
     0: "#1f77b4",
@@ -41,8 +49,14 @@ SD_COLORS = {
 SD_MARKERS = {0: "o", 2: "s", 4: "D", 6: "^", 8: "v", 10: "P"}
 
 
-def coax_c(sd: int) -> float:
-    return 2.0 * math.pi * EPS0 * L / math.log(1.0 + sd * DX / R_EFF)
+def coax_monopole(sd: int, r_eff: float = R_EFF) -> float:
+    """Liu-style monopole coax (wrong object for this center-fed dipole)."""
+    return 2.0 * math.pi * EPS0 * L / math.log(1.0 + sd * DX / r_eff)
+
+
+def coax_dipole(sd: int, r_eff: float = R_EFF) -> float:
+    """Two arms of length L/2 in series: C_feed = C_arm/2 = C_monopole/4."""
+    return coax_monopole(sd, r_eff) / 4.0
 
 
 def ceff_from_im(freq: float, imz: float) -> float | None:
@@ -63,6 +77,25 @@ def load_rows(path: Path, has_abs: bool) -> list[tuple[int, float, float, float,
             re = float(parts[2])
             im = float(parts[3])
             az = float(parts[4]) if has_abs else math.hypot(re, im)
+            if (sd, int(fr)) in OUTLIER:
+                continue
+            rows.append((sd, fr, re, im, az))
+    return rows
+
+
+def load_from_paper1_table(path: Path) -> list[tuple[int, float, float, float, float]]:
+    """Self-contained fallback: Sd, Freq, Re, Im, Abs[, C_eff]."""
+    rows = []
+    with path.open(encoding="utf-8") as f:
+        for line in f:
+            if line.startswith("#") or not line.strip() or line.startswith("Sd"):
+                continue
+            parts = line.split()
+            sd = int(float(parts[0]))
+            fr = float(parts[1])
+            re = float(parts[2])
+            im = float(parts[3])
+            az = float(parts[4])
             if (sd, int(fr)) in OUTLIER:
                 continue
             rows.append((sd, fr, re, im, az))
@@ -168,9 +201,9 @@ def fig_geometry():
     ax.text(
         5.0,
         1.15,
-        "A shunt capacitor would sit across the feed terminals.\n"
-        "The FDTD jacket coats the wire, so the gap is in series\n"
-        "with the plasma-loaded antenna.",
+        "Pedagogical series circuit only.\n"
+        "Measured Re{Z}(Sd) shows Z_pl also changes\n"
+        "when the jacket removes near-wire plasma.",
         ha="center",
         va="center",
         fontsize=8,
@@ -187,19 +220,19 @@ def fig_n0_profile():
     for ii in i:
         d = abs(ii - 35)
         if d == 0:
-            n_sd10.append(N0_BULK)  # PEC cell
+            n_sd10.append(float("nan"))  # PEC cell: no plasma density
         elif 1 <= d <= 10:
             n_sd10.append(N0_BULK * N_MIN_RATIO)
         else:
             n_sd10.append(N0_BULK)
     ax.semilogy(i, n_bulk, color=SD_COLORS[0], lw=2, label=r"$S_d=0$")
-    ax.semilogy(i, n_sd10, color=SD_COLORS[10], lw=2, label=r"$S_d=10$")
+    ax.semilogy(i, n_sd10, color=SD_COLORS[10], lw=2, label=r"$S_d=10$ (schematic)")
     ax.axvline(35, color="0.4", ls=":", lw=1, label="dipole")
     ax.set_xlabel("Grid index $i$ through the feed")
     ax.set_ylabel(r"$N_{0,e}$ (m$^{-3}$)")
     ax.set_xlim(0, 70)
     ax.legend(loc="lower right")
-    ax.set_title("PEC-seeded vacuum jacket (step depletion)")
+    ax.set_title("Schematic PEC-seeded vacuum jacket (not a dumped field)")
     fig.tight_layout()
     save(fig, "n0_radial_profile.png")
 
@@ -232,6 +265,9 @@ def fig_z_dense(by_sd):
     fig, axes = plt.subplots(2, 1, figsize=(7.2, 6.4), sharex=True)
     plot_zi(axes[0], axes[1], by_sd, [0, 2, 4, 6, 8, 10], fmin=1.5e6, fmax=2.3e6)
     axes[0].set_title(r"Dense CW band, all $S_d$ ($f_p=2$ MHz)")
+    axes[1].axvspan(1.5, 1.8, color="#e8f5e9", zorder=0, alpha=0.7)
+    axes[1].text(1.65, axes[1].get_ylim()[0] * 0.08, "series-C ordering", ha="center", fontsize=8, color="#1b5e20")
+    axes[1].text(2.1, axes[1].get_ylim()[0] * 0.08, "plasma-feature reversal", ha="center", fontsize=8, color="#b71c1c")
     fig.tight_layout()
     save(fig, "z_dense.png")
 
@@ -269,44 +305,82 @@ def fig_zabs_dense(by_sd):
 
 
 def fig_fres():
-    fig, ax = plt.subplots(figsize=(6.6, 3.9))
-    ax.plot([0], [1.846], "o", color=SD_COLORS[0], ms=10, label=r"$S_d=0$: $1.846$ MHz")
-    ax.plot([2], [0.655], "s", color=SD_COLORS[2], ms=10, label=r"$S_d=2$: $0.655$ MHz")
+    fig, ax = plt.subplots(figsize=(6.8, 4.0))
+    ax.plot([0], [1.846], "o", color=SD_COLORS[0], ms=10, label=r"$S_d=0$: $1.846$ MHz (plasma-loaded)")
+    ax.plot([2], [0.655], "s", color=SD_COLORS[2], ms=10, label=r"$S_d=2$: $0.655$ MHz (single inductive sample)")
+    # Upper limits plotted at the bound with downward arrows; do not invent values below.
     ax.errorbar(
         [4, 6, 8],
         [1.50, 1.50, 1.50],
-        yerr=0.12,
+        yerr=[[0.55, 0.55, 0.55], [0, 0, 0]],
         uplims=True,
-        fmt="none",
-        ecolor="0.25",
+        fmt="D",
+        color="0.35",
+        ms=7,
+        ecolor="0.35",
         capsize=0,
-        label=r"$S_d=4,6,8$: $<1.50$ MHz",
+        label=r"$S_d=4,6,8$: upper bound $<1.50$ MHz only",
     )
     ax.errorbar(
         [10],
         [0.50],
-        yerr=0.08,
+        yerr=[[0.18], [0]],
         uplims=True,
-        fmt="none",
+        fmt="P",
+        color=SD_COLORS[10],
+        ms=9,
         ecolor=SD_COLORS[10],
         capsize=0,
-        label=r"$S_d=10$: $\leq 0.50$ MHz",
+        label=r"$S_d=10$: upper bound $\leq 0.50$ MHz",
     )
-    ax.plot([4, 6, 8], [1.50, 1.50, 1.50], "D", color="0.25", ms=7)
-    ax.plot([10], [0.50], "P", color=SD_COLORS[10], ms=9)
+    ax.axhline(1.50, color="0.7", ls=":", lw=1)
     ax.set_xlim(-0.5, 10.8)
-    ax.set_ylim(0.2, 2.15)
+    ax.set_ylim(0.15, 2.15)
     ax.set_xlabel(r"Sheath width $S_d$ (cells)")
     ax.set_ylabel(r"$f_{\mathrm{res}}$ (MHz)")
-    ax.set_title(r"Im$\{Z\}$ $+\to-$ crossing versus $S_d$")
-    ax.legend(loc="upper right")
+    ax.set_title(r"Im$\{Z\}$ $+\to-$ crossings (bounds are not slope points)")
+    ax.legend(loc="upper right", fontsize=7)
     fig.tight_layout()
     save(fig, "fres_vs_sd.png")
 
 
+def fig_im_vs_sd(by_sd):
+    """Primary loading evidence: Im{Z}(Sd) at fixed frequencies."""
+    fig, axes = plt.subplots(1, 2, figsize=(10.2, 4.0))
+    sds = [2, 4, 6, 8, 10]
+
+    ax = axes[0]
+    for f_mhz, ls in ((1.60, "-"), (1.70, "--"), (1.80, ":")):
+        ims = []
+        for sd in sds:
+            pts = [p for p in by_sd[sd] if abs(p[0] - f_mhz * 1e6) < 1]
+            ims.append(pts[0][2] if pts else float("nan"))
+        ax.plot(sds, ims, marker="o", ls=ls, ms=7, label=rf"{f_mhz:.2f} MHz")
+    ax.axhline(0, color="k", ls="--", lw=0.8)
+    ax.set_xlabel(r"$S_d$ (cells)")
+    ax.set_ylabel(r"Im$\{Z\}$ ($\Omega$)")
+    ax.set_title(r"(a) Low dense band: thicker $\Rightarrow$ more capacitive")
+    ax.legend()
+
+    ax = axes[1]
+    for f_mhz, ls in ((2.00, "-"), (2.10, "--"), (2.20, ":")):
+        ims = []
+        for sd in [0] + sds:
+            pts = [p for p in by_sd[sd] if abs(p[0] - f_mhz * 1e6) < 1]
+            ims.append(pts[0][2] if pts else float("nan"))
+        ax.plot([0] + sds, ims, marker="o", ls=ls, ms=6, label=rf"{f_mhz:.2f} MHz")
+    ax.axhline(0, color="k", ls="--", lw=0.8)
+    ax.set_xlabel(r"$S_d$ (cells)")
+    ax.set_ylabel(r"Im$\{Z\}$ ($\Omega$)")
+    ax.set_title(r"(b) Near $f_p$: ordering reverses (plasma feature)")
+    ax.legend()
+    fig.tight_layout()
+    save(fig, "imz_vs_sd.png")
+
+
 def fig_ceff_freq(ceff_by_sd):
     fig, ax = plt.subplots(figsize=(6.8, 4.0))
-    ax.axvspan(0.8, 1.2, color="0.88", zorder=0, label="low-$f$ average window")
+    ax.axvspan(0.8, 1.2, color="0.88", zorder=0, label="diagnostic window (not flat)")
     for sd in (2, 10):
         pts = [(f, c) for f, c in ceff_by_sd[sd] if f <= 1.5e6]
         ax.plot(
@@ -318,65 +392,146 @@ def fig_ceff_freq(ceff_by_sd):
             label=rf"$S_d={sd}$",
         )
     ax.axvline(0.60, color=SD_COLORS[2], ls=":", lw=1)
-    ax.text(0.62, 32, r"$S_d=2$ inductive island", fontsize=8, color=SD_COLORS[2])
+    ax.text(0.62, 32, r"$S_d=2$ inductive sample", fontsize=8, color=SD_COLORS[2])
     ax.set_xlabel("Frequency (MHz)")
-    ax.set_ylabel(r"$C_{\mathrm{eff}}$ (pF)")
+    ax.set_ylabel(r"$C_{\mathrm{eff}}=-1/(\omega\mathrm{Im}\{Z\})$ (pF)")
     ax.set_ylim(0, 40)
+    ax.set_title(r"$C_{\mathrm{eff}}(f)$ is mixed and frequency-dependent")
     ax.legend()
     fig.tight_layout()
     save(fig, "ceff_vs_frequency.png")
 
 
-def fig_ceff_sd(lowf_means, high_means):
-    fig, axes = plt.subplots(1, 2, figsize=(10.2, 4.0))
+def fig_ceff_sd(lowf_means):
+    fig, axes = plt.subplots(1, 2, figsize=(10.4, 4.1))
 
     ax = axes[0]
-    sds = [2, 4, 6, 8, 10]
-    im16 = high_means["im16"]
-    ax.plot(sds, [im16[s] for s in sds], "o-", color="#1a5276", ms=8)
-    ax.axhline(0, color="k", ls="--", lw=0.8)
-    ax.set_xlabel(r"$S_d$ (cells)")
-    ax.set_ylabel(r"Im$\{Z\}$ at $1.60$ MHz ($\Omega$)")
-    ax.set_title("(a) All dense-band widths")
-
-    ax = axes[1]
     s_cont = list(range(1, 11))
     ax.plot(
         s_cont,
-        [coax_c(s) * 1e12 for s in s_cont],
+        [coax_monopole(s) * 1e12 for s in s_cont],
         "k--",
-        label=rf"coax $r_{{\mathrm{{eff}}}}=0.23\Delta x$",
-    )
-    ax.errorbar(
-        [2, 10],
-        [lowf_means[s][0] * 1e12 for s in (2, 10)],
-        yerr=[lowf_means[s][1] * 1e12 for s in (2, 10)],
-        fmt="o",
-        ms=9,
-        color=SD_COLORS[2],
-        capsize=3,
-        label=r"low-$f$ mean ($0.8$–$1.2$ MHz)",
+        lw=1.2,
+        label=r"monopole $C_{\mathrm{sh}}$ (Liu form)",
     )
     ax.plot(
-        [4, 6, 8, 10],
-        [high_means["ceff17"][s] * 1e12 for s in (4, 6, 8, 10)],
-        "D",
-        ms=8,
-        color=SD_COLORS[4],
-        label=r"dense-band mean ($1.50$–$1.70$ MHz)",
+        s_cont,
+        [coax_dipole(s) * 1e12 for s in s_cont],
+        "k-",
+        lw=1.8,
+        label=r"dipole $C_{\mathrm{sh}}=C_{\mathrm{mono}}/4$",
     )
+    ax.plot(
+        s_cont,
+        [coax_dipole(s, R_STAIR) * 1e12 for s in s_cont],
+        color="0.45",
+        ls=":",
+        lw=1.4,
+        label=r"dipole, $r_{\mathrm{eff}}=0.5\Delta x$",
+    )
+    if lowf_means:
+        ax.errorbar(
+            [2, 10],
+            [lowf_means[s][0] * 1e12 for s in (2, 10)],
+            yerr=[lowf_means[s][1] * 1e12 for s in (2, 10)],
+            fmt="o",
+            ms=9,
+            color=SD_COLORS[2],
+            capsize=3,
+            label=r"band $C_{\mathrm{eff}}$ $0.8$–$1.2$ MHz (diagnostic)",
+        )
     ax.set_xlabel(r"$S_d$ (cells)")
     ax.set_ylabel("Capacitance (pF)")
-    ax.set_title(r"(b) $C_{\mathrm{eff}}$ versus coaxial $C_{\mathrm{sh}}$")
+    ax.set_title(r"(a) Analytic coax: monopole vs dipole")
+    ax.legend(fontsize=7)
+
+    ax = axes[1]
+    # Ratio to dipole coax in the diagnostic window
+    if lowf_means:
+        for sd in (2, 10):
+            m, s, _ = lowf_means[sd]
+            cd = coax_dipole(sd)
+            ax.errorbar(
+                [sd],
+                [m / cd],
+                yerr=[s / cd],
+                fmt=SD_MARKERS[sd],
+                color=SD_COLORS[sd],
+                ms=10,
+                capsize=3,
+                label=rf"$S_d={sd}$: $C_{{\mathrm{{eff}}}}/C_{{\mathrm{{dip}}}}$",
+            )
+        ax.axhline(1.0, color="k", ls="--", lw=1, label="unity (dipole formula)")
+        ax.axhline(0.25, color="0.5", ls=":", lw=1, label="monopole would look like ~0.25")
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 1.6)
+    ax.set_xlabel(r"$S_d$ (cells)")
+    ax.set_ylabel(r"$C_{\mathrm{eff}}/C_{\mathrm{sh}}^{\mathrm{(dipole)}}$")
+    ax.set_title(r"(b) Diagnostic ratio after dipole correction")
     ax.legend(fontsize=7)
     fig.tight_layout()
     save(fig, "ceff_vs_sd.png")
-    # Keep the old filename used by the previous draft as an alias.
     shutil.copy2(FIGDIR / "ceff_vs_sd.png", FIGDIR / "ceff_vs_coax.png")
     shutil.copy2(FIGDIR / "ceff_vs_sd.png", DRAFTFIG / "ceff_vs_coax.png")
 
 
-def write_tables(rows, ceff_by_sd, lowf_means, high_means):
+def fig_circuit_overlay(by_sd):
+    """Test Zin ≈ Z(Sd=0) + 1/(j ω C_dipole) against measured sheathed Z."""
+    fig, axes = plt.subplots(1, 2, figsize=(10.4, 4.1))
+    freqs = [1.6e6, 1.7e6, 1.8e6]
+    sds = [2, 4, 6, 8, 10]
+
+    z0 = {}
+    for f in freqs:
+        pts = [p for p in by_sd[0] if abs(p[0] - f) < 1]
+        if pts:
+            z0[f] = complex(pts[0][1], pts[0][2])
+
+    ax = axes[0]
+    for f in freqs:
+        if f not in z0:
+            continue
+        meas, model = [], []
+        for sd in sds:
+            pts = [p for p in by_sd[sd] if abs(p[0] - f) < 1]
+            if not pts:
+                continue
+            c = coax_dipole(sd)
+            z_m = z0[f] + 1.0 / (1j * 2 * math.pi * f * c)
+            meas.append(pts[0][2])
+            model.append(z_m.imag)
+        ax.plot(sds, meas, "o-", ms=7, label=rf"meas {f/1e6:.2f} MHz")
+        ax.plot(sds, model, "s--", ms=5, alpha=0.75, label=rf"model {f/1e6:.2f} MHz")
+    ax.axhline(0, color="k", ls="--", lw=0.8)
+    ax.set_xlabel(r"$S_d$ (cells)")
+    ax.set_ylabel(r"Im$\{Z\}$ ($\Omega$)")
+    ax.set_title(r"(a) Im$\{Z\}$: measured vs $Z(S_d{=}0)+1/(j\omega C_{\mathrm{dip}})$")
+    ax.legend(fontsize=6, ncol=2)
+
+    ax = axes[1]
+    for f in freqs:
+        if f not in z0:
+            continue
+        meas, model = [], []
+        for sd in sds:
+            pts = [p for p in by_sd[sd] if abs(p[0] - f) < 1]
+            if not pts:
+                continue
+            c = coax_dipole(sd)
+            z_m = z0[f] + 1.0 / (1j * 2 * math.pi * f * c)
+            meas.append(pts[0][1])
+            model.append(z_m.real)
+        ax.plot(sds, meas, "o-", ms=7, label=rf"meas {f/1e6:.2f} MHz")
+        ax.plot(sds, model, "s--", ms=5, alpha=0.75, label=rf"model {f/1e6:.2f} MHz")
+    ax.set_xlabel(r"$S_d$ (cells)")
+    ax.set_ylabel(r"Re$\{Z\}$ ($\Omega$)")
+    ax.set_title(r"(b) Re$\{Z\}$: lossless series $C$ cannot explain drop")
+    ax.legend(fontsize=6, ncol=2)
+    fig.tight_layout()
+    save(fig, "circuit_overlay.png")
+
+
+def write_tables(rows, ceff_by_sd, lowf_means, by_sd):
     DATADIR.mkdir(parents=True, exist_ok=True)
     lines = ["# Sd\tFreq_Hz\tRe_Z\tIm_Z\tAbs_Z\tC_eff_pF\n"]
     for sd, fr, re, im, az in rows:
@@ -386,46 +541,78 @@ def write_tables(rows, ceff_by_sd, lowf_means, high_means):
     (DATADIR / "ceff_vs_frequency.txt").write_text("".join(lines), encoding="utf-8")
 
     summary = [
-        "# C_eff vs coax. Low-f window 0.8-1.2 MHz (Sd=2,10). Dense window 1.50-1.70 MHz (Sd>=2).\n",
-        "# Sd\tt_sh_m\tC_lowf_pF\tC_lowf_std\tn_lowf\tC_dense_pF\tC_dense_std\tn_dense\tC_coax_pF\tratio_lowf\tratio_dense\n",
+        "# C_eff diagnostic vs coax. Low-f window 0.8-1.2 MHz only (Sd=2,10).\n",
+        "# Dipole C_sh = monopole/4 (two arms in series). Monopole kept for legacy comparison.\n",
+        "# Sd\tt_sh_m\tC_eff_pF\tC_eff_std\tn\tC_mono_pF\tC_dip_pF\tratio_mono\tratio_dip\n",
     ]
     for sd in (2, 4, 6, 8, 10):
         t = sd * DX
-        cc = coax_c(sd) * 1e12
+        cm = coax_monopole(sd) * 1e12
+        cd = coax_dipole(sd) * 1e12
         if sd in lowf_means:
             m, s, n = lowf_means[sd]
-            low = f"{m*1e12:.4f}\t{s*1e12:.4f}\t{n}"
-            rlow = f"{m*1e12/cc:.4f}"
+            summary.append(
+                f"{sd}\t{t:.4f}\t{m*1e12:.4f}\t{s*1e12:.4f}\t{n}\t"
+                f"{cm:.4f}\t{cd:.4f}\t{m*1e12/cm:.4f}\t{m*1e12/cd:.4f}\n"
+            )
         else:
-            low = "nan\tnan\t0"
-            rlow = "nan"
-        if sd in high_means["ceff17_full"]:
-            m, s, n = high_means["ceff17_full"][sd]
-            dense = f"{m*1e12:.4f}\t{s*1e12:.4f}\t{n}"
-            rden = f"{m*1e12/cc:.4f}"
-        else:
-            dense = "nan\tnan\t0"
-            rden = "nan"
-        summary.append(f"{sd}\t{t:.4f}\t{low}\t{dense}\t{cc:.4f}\t{rlow}\t{rden}\n")
+            summary.append(f"{sd}\t{t:.4f}\tnan\tnan\t0\t{cm:.4f}\t{cd:.4f}\tnan\tnan\n")
     (DATADIR / "ceff_vs_coax_summary.txt").write_text("".join(summary), encoding="utf-8")
 
     (DATADIR / "fres_summary.txt").write_text(
         "# Sd\tf_res_MHz\tnote\n"
-        "0\t1.846\tIm +to- in dense band\n"
-        "2\t0.655\tIm +to- in low-f band\n"
-        "4\t<1.50\tall Im<0 in dense band; no low-f run\n"
-        "6\t<1.50\tall Im<0 in dense band; no low-f run\n"
-        "8\t<1.50\tall Im<0 in dense band; no low-f run\n"
-        "10\t<=0.50\tall Im<0 in 0.50-2.30 MHz\n",
+        "0\t1.846\tIm +to- in dense band (plasma-loaded resonance; not a sheath marker)\n"
+        "2\t0.655\tIm +to- in low-f band; rests on single inductive sample at 0.60 MHz\n"
+        "4\t<1.50\tupper bound only; all Im<0 in dense band; no low-f run\n"
+        "6\t<1.50\tupper bound only; all Im<0 in dense band; no low-f run\n"
+        "8\t<1.50\tupper bound only; all Im<0 in dense band; no low-f run\n"
+        "10\t<=0.50\tupper bound; all Im<0 in 0.50-2.30 MHz\n",
         encoding="utf-8",
     )
+
+    # Fixed-frequency Im{Z} table — primary loading evidence
+    im_lines = ["# Sd\tf_MHz\tIm_Z\n"]
+    for f_mhz in (1.60, 1.70, 1.80, 2.00, 2.10, 2.20):
+        for sd in (0, 2, 4, 6, 8, 10):
+            pts = [p for p in by_sd[sd] if abs(p[0] - f_mhz * 1e6) < 1]
+            if pts:
+                im_lines.append(f"{sd}\t{f_mhz:.2f}\t{pts[0][2]:.6f}\n")
+    (DATADIR / "imz_vs_sd.txt").write_text("".join(im_lines), encoding="utf-8")
+
+    # Circuit overlay residuals at 1.60 MHz
+    circ = ["# Sd\tf_Hz\tIm_meas\tIm_model\tRe_meas\tRe_model\tC_dip_pF\n"]
+    f = 1.6e6
+    pts0 = [p for p in by_sd[0] if abs(p[0] - f) < 1]
+    if pts0:
+        z0 = complex(pts0[0][1], pts0[0][2])
+        for sd in (2, 4, 6, 8, 10):
+            pts = [p for p in by_sd[sd] if abs(p[0] - f) < 1]
+            if not pts:
+                continue
+            c = coax_dipole(sd)
+            zm = z0 + 1.0 / (1j * 2 * math.pi * f * c)
+            circ.append(
+                f"{sd}\t{f:.1f}\t{pts[0][2]:.6f}\t{zm.imag:.6f}\t"
+                f"{pts[0][1]:.6f}\t{zm.real:.6f}\t{c*1e12:.4f}\n"
+            )
+    (DATADIR / "circuit_overlay_1600kHz.txt").write_text("".join(circ), encoding="utf-8")
+
+
+def load_all_rows():
+    paper1 = DATADIR / "ceff_vs_frequency.txt"
+    lowf_path = P0 / "data" / "cw_lowf_summary.txt"
+    dense_path = P0 / "data" / "cw_tu_summary.txt"
+    if lowf_path.exists() and dense_path.exists():
+        return merge_unique(load_rows(lowf_path, True), load_rows(dense_path, False))
+    if paper1.exists():
+        print("WARNING: paper0 summaries missing; using paper1/analysis/data/ceff_vs_frequency.txt")
+        return load_from_paper1_table(paper1)
+    raise FileNotFoundError("No CW phasor tables found under paper0 or paper1 analysis/data")
 
 
 def main():
     setup_style()
-    lowf = load_rows(P0 / "data" / "cw_lowf_summary.txt", has_abs=True)
-    dense = load_rows(P0 / "data" / "cw_tu_summary.txt", has_abs=False)
-    rows = merge_unique(lowf, dense)
+    rows = load_all_rows()
 
     by_sd = {sd: [] for sd in (0, 2, 4, 6, 8, 10)}
     ceff_by_sd = {sd: [] for sd in (0, 2, 4, 6, 8, 10)}
@@ -441,22 +628,6 @@ def main():
         if stats:
             lowf_means[sd] = stats
 
-    high_means = {"im16": {}, "ceff17": {}, "ceff17_full": {}}
-    for sd in (2, 4, 6, 8, 10):
-        im16 = [im for f, re, im, az in by_sd[sd] if abs(f - 1.6e6) < 1]
-        if im16:
-            high_means["im16"][sd] = im16[0]
-        stats = band_mean(ceff_by_sd[sd], 1.5e6, 1.7e6)
-        if stats:
-            high_means["ceff17_full"][sd] = stats
-            if sd != 2:
-                high_means["ceff17"][sd] = stats[0]
-            else:
-                # Sd=2 dense-band C_eff is inflated (Im Z approaching 0); omit from overlay.
-                pass
-        if sd == 10 and stats:
-            high_means["ceff17"][sd] = stats[0]
-
     fig_geometry()
     fig_n0_profile()
     fig_z_lowf(by_sd)
@@ -464,17 +635,19 @@ def main():
     fig_z_combined(by_sd)
     fig_zabs_dense(by_sd)
     fig_fres()
+    fig_im_vs_sd(by_sd)
     fig_ceff_freq(ceff_by_sd)
-    fig_ceff_sd(lowf_means, high_means)
-    write_tables(rows, ceff_by_sd, lowf_means, high_means)
+    fig_ceff_sd(lowf_means)
+    fig_circuit_overlay(by_sd)
+    write_tables(rows, ceff_by_sd, lowf_means, by_sd)
 
-    print("Low-f C_eff (0.8-1.2 MHz):")
+    print("Low-f C_eff diagnostic (0.8-1.2 MHz):")
     for sd, (m, s, n) in lowf_means.items():
-        print(f"  Sd={sd}: {m*1e12:.2f} +/- {s*1e12:.2f} pF (n={n}); coax={coax_c(sd)*1e12:.2f}")
-    print("Dense-band C_eff (1.50-1.70 MHz):")
-    for sd, (m, s, n) in high_means["ceff17_full"].items():
-        note = "  [near Im~0]" if sd == 2 else ""
-        print(f"  Sd={sd}: {m*1e12:.2f} +/- {s*1e12:.2f} pF (n={n}); coax={coax_c(sd)*1e12:.2f}{note}")
+        print(
+            f"  Sd={sd}: {m*1e12:.2f} +/- {s*1e12:.2f} pF (n={n}); "
+            f"C_mono={coax_monopole(sd)*1e12:.2f}; C_dip={coax_dipole(sd)*1e12:.2f}; "
+            f"ratio_dip={m/coax_dipole(sd):.2f}"
+        )
     print("Wrote", FIGDIR)
     print("Copied to", DRAFTFIG)
 

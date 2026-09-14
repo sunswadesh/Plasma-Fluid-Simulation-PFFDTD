@@ -1,23 +1,26 @@
 # Paper 1 — Plan checklist
 
-Last updated: 2026-09-13
+Last updated: 2026-09-14
 
-## Near term
+## Review response (2026-09-14)
 
-- [ ] Free-space CW resonance on the same dipole (`scripts/` + new result tag)
-- [x] Script: extract \(C_\mathrm{eff}(S_d)\) from low-\(f\) Im\(\{Z\}\) → `analysis/make_ceff_products.py`
-- [x] Table: \(C_\mathrm{eff}\) vs \(C_\mathrm{sh}^\mathrm{(coax)}\) for \(S_d=2,10\) (low-\(f\)) and \(S_d=4,6,8,10\) (dense band)
-- [x] Note staircasing / \(r_\mathrm{eff}\) choice in `analysis/ceff_notes.md`
-- [x] Figures: \(C_\mathrm{eff}(S_d)\); coax overlay → `analysis/figures/`
+- [x] Fix coax comparison: dipole \(C_\mathrm{sh}=C_\mathrm{mono}/4\) (was falsely “scale factor 0.3”)
+- [x] Primary evidence = \(\mathrm{Im}\{Z\}(S_d)\) at fixed \(f\); report near-\(f_p\) reversal
+- [x] Circuit overlay \(Z(S_d=0)+1/(j\omega C_\mathrm{dip})\); show \(\mathrm{Re}\{Z\}\) failure
+- [x] Tone down \(f_\mathrm{res}(S_d)\) claims (bounds only for \(S_d=4,6,8\); provisional \(S_d=2\))
+- [x] Complete methods: \(\nu\), species, \(T\), \(\Delta t\), ABC, hard \(E_z\), \(V/I\) definition, domain size
+- [x] Bibliography: Brooks DOI; Mlodnosky & Garriott; Galejs; Lee (Radio Science)
+- [x] Drop internal Paper 0 cite from manuscript body
+- [ ] Free-space CW on the same dipole (`analysis/FREE_SPACE_CONTROL.md`)
+- [ ] Low-\(f\) CW for \(S_d=4,6,8\) + denser \(S_d=2\) tones (`analysis/LOWF_INTERMEDIATE_PLAN.md`)
+- [ ] Fill author list, affiliations, corresponding address
+- [ ] Replace Open Research with archival DOI
 
 ## Manuscript scaffolding
 
-- [x] Radio Science / AGU draft: `draft/paper1_radioscience.tex` (+ compiled PDF)
-- [x] Cite key figures from Paper 0 low-f campaign + new \(C_\mathrm{eff}\) figures
+- [x] Radio Science / AGU draft: `draft/paper1_radioscience.tex` (+ PDF rebuild)
 - [x] Explicit “not Tu dynamic fidelity” disclaimer in Discussion
-- [ ] Fill author list, affiliations, corresponding address
-- [ ] Replace internal Paper 0 cite with archival DOI; finalize Open Research
-- [ ] Optional: Song static \(C(r_s)\) formula overlay figure
+- [x] Series-jacket geometry + all \(S_d\) in the dense band
 
 ## Done (campaign inheritance)
 

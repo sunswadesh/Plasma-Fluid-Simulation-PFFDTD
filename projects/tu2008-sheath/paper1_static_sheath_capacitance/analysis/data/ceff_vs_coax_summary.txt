@@ -1,7 +1,8 @@
-# C_eff vs coax. Low-f window 0.8-1.2 MHz (Sd=2,10). Dense window 1.50-1.70 MHz (Sd>=2).
-# Sd	t_sh_m	C_lowf_pF	C_lowf_std	n_lowf	C_dense_pF	C_dense_std	n_dense	C_coax_pF	ratio_lowf	ratio_dense
-2	0.0800	7.3510	1.1177	5	18.2895	6.8261	3	24.4896	0.3002	0.7468
-4	0.1600	nan	nan	0	7.0642	0.6334	3	19.1054	nan	0.3697
-6	0.2400	nan	nan	0	5.3876	0.2388	3	16.8632	nan	0.3195
-8	0.3200	nan	nan	0	4.7577	0.1327	3	15.5508	nan	0.3059
-10	0.4000	4.2707	1.8345	5	4.4340	0.0764	3	14.6594	0.2913	0.3025
+# C_eff diagnostic vs coax. Low-f window 0.8-1.2 MHz only (Sd=2,10).
+# Dipole C_sh = monopole/4 (two arms in series). Monopole kept for legacy comparison.
+# Sd	t_sh_m	C_eff_pF	C_eff_std	n	C_mono_pF	C_dip_pF	ratio_mono	ratio_dip
+2	0.0800	7.3510	1.1177	5	24.4896	6.1224	0.3002	1.2007
+4	0.1600	nan	nan	0	19.1054	4.7763	nan	nan
+6	0.2400	nan	nan	0	16.8632	4.2158	nan	nan
+8	0.3200	nan	nan	0	15.5508	3.8877	nan	nan
+10	0.4000	4.2707	1.8345	5	14.6594	3.6649	0.2913	1.1653

@@ -1,7 +1,7 @@
 # Sd	f_res_MHz	note
-0	1.846	Im +to- in dense band
-2	0.655	Im +to- in low-f band
-4	<1.50	all Im<0 in dense band; no low-f run
-6	<1.50	all Im<0 in dense band; no low-f run
-8	<1.50	all Im<0 in dense band; no low-f run
-10	<=0.50	all Im<0 in 0.50-2.30 MHz
+0	1.846	Im +to- in dense band (plasma-loaded resonance; not a sheath marker)
+2	0.655	Im +to- in low-f band; rests on single inductive sample at 0.60 MHz
+4	<1.50	upper bound only; all Im<0 in dense band; no low-f run
+6	<1.50	upper bound only; all Im<0 in dense band; no low-f run
+8	<1.50	upper bound only; all Im<0 in dense band; no low-f run
+10	<=0.50	upper bound; all Im<0 in 0.50-2.30 MHz

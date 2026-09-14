@@ -1,6 +1,36 @@
 \begin{thebibliography}{}
 
 \bibitem [\protect \citeauthoryear {%
+Adachi%
+, Ishizone%
+\BCBL {}\ \BBA {} Mushiake%
+}{%
+Adachi%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {1977}}%
+}]{%
+adachi1977}
+\APACinsertmetastar {%
+adachi1977}%
+\begin{APACrefauthors}%
+Adachi, S.%
+, Ishizone, T.%
+\BCBL {}\ \BBA {} Mushiake, Y.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1977}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Transmission line theory of antenna impedance in a
+  magnetoplasma} {Transmission line theory of antenna impedance in a
+  magnetoplasma}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Radio Science}{12}{1}{23--31}.
+\newblock
+\begin{APACrefDOI} \doi{10.1029/RS012i001p00023} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Balmain%
 }{%
 Balmain%
@@ -76,9 +106,37 @@ Brooks, J\BPBI W.%
 {\BBOQ}\APACrefatitle {Uncertainty analysis of the plasma impedance probe}
   {Uncertainty analysis of the plasma impedance probe}.{\BBCQ}
 \newblock
-\APACjournalVolNumPages{Physics of Plasmas}{}{}{}.
+\APACjournalVolNumPages{Physics of Plasmas}{31}{5}{053514}.
 \newblock
-\APACrefnote{NRL preprint dated 19 February 2024}
+\begin{APACrefDOI} \doi{10.1063/5.0203675} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Galejs%
+}{%
+Galejs%
+}{%
+{\protect \APACyear {1966}}%
+}]{%
+galejs1966}
+\APACinsertmetastar {%
+galejs1966}%
+\begin{APACrefauthors}%
+Galejs, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1966}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Impedance of a finite insulated cylindrical antenna in a
+  cold plasma with a longitudinal magnetic field} {Impedance of a finite
+  insulated cylindrical antenna in a cold plasma with a longitudinal magnetic
+  field}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE Transactions on Antennas and
+  Propagation}{14}{6}{727--736}.
+\newblock
+\begin{APACrefDOI} \doi{10.1109/TAP.1966.1138795} \end{APACrefDOI}
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
@@ -134,29 +192,34 @@ Liu, A.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
-Neshragh%
+Mlodnosky%
+\ \BBA {} Garriott%
 }{%
-Neshragh%
+Mlodnosky%
+\ \BBA {} Garriott%
 }{%
-{\protect \APACyear {2026}}%
+{\protect \APACyear {1962}}%
 }]{%
-paper0}
+mlodnosky1962}
 \APACinsertmetastar {%
-paper0}%
+mlodnosky1962}%
 \begin{APACrefauthors}%
-Neshragh, S.%
+Mlodnosky, R\BPBI F.%
+\BCBT {}\ \BBA {} Garriott, O\BPBI K.%
 \end{APACrefauthors}%
 \unskip\
 \newblock
-\APACrefYearMonthDay{2026}{}{}.
+\APACrefYearMonthDay{1962}{}{}.
 \newblock
-\APACrefbtitle {{PF-FDTD} sheath campaign chronicle and coupling diagnostics}
-  {{PF-FDTD} sheath campaign chronicle and coupling diagnostics}\
-  \APACbVolEdTR{}{\BTR{}}.
+{\BBOQ}\APACrefatitle {The {VLF} admittance of a dipole in the lower
+  ionosphere} {The {VLF} admittance of a dipole in the lower
+  ionosphere}.{\BBCQ}
 \newblock
-\APACaddressInstitution{}{PF-FDTD collaboration}.
+\BIn{} \APACrefbtitle {Proceedings of the International Conference on the
+  Ionosphere} {Proceedings of the international conference on the ionosphere}\
+  (\BPGS\ 484--491).
 \newblock
-\APACrefnote{Internal report; replace with a persistent DOI when archived}
+\APACaddressPublisher{London}{Institute of Physics and the Physical Society}.
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%

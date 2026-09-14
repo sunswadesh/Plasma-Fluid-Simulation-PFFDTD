@@ -19,6 +19,6 @@ xelatex -interaction=nonstopmode paper1_radioscience.tex
 xelatex -interaction=nonstopmode paper1_radioscience.tex
 ```
 
-**Before submission:** fill real author list / affiliations / corresponding address; replace internal `paper0` citation with a DOI; add Open Research repository link; optionally switch `\documentclass` from `draft` to `published` per AGU checklist.
+**Before submission:** fill real author list / affiliations / corresponding address; add Open Research repository DOI; optionally switch `\documentclass` from `draft` to `published` per AGU checklist; run open controls in `../analysis/FREE_SPACE_CONTROL.md` and `../analysis/LOWF_INTERMEDIATE_PLAN.md`.
 
-Supporting analysis: [`../analysis/`](../analysis/) (`ceff_notes.md`, tables, `make_ceff_products.py`).
+Supporting analysis: [`../analysis/`](../analysis/) (`ceff_notes.md`, dipole coax tables, circuit overlay, `make_ceff_products.py`).
