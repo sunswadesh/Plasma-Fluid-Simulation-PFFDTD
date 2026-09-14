@@ -78,4 +78,5 @@ paper3_self_consistent_sheath/
 
 - **Hard:** Paper 1 closed scoreboard (\(C_\mathrm{eff}\), series-\(C\) language).  
 - **Strongly recommended:** Paper 2 go/no-go on dynamic coupling.  
-- **Literature:** Song 2007, Tu 2008 PDFs in [`../docs/references/`](../docs/references/).
+- **Literature:** Song 2007, Tu 2008 PDFs in [`../docs/references/`](../docs/references/).  
+- **Not a substitute for Paper 3:** voltage→current feed switch — see [`../docs/VOLTAGE_VS_CURRENT_DRIVE.md`](../docs/VOLTAGE_VS_CURRENT_DRIVE.md).
