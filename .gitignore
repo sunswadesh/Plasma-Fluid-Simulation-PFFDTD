@@ -52,6 +52,10 @@ tmp/
 !projects/tu2008-sheath/paper0_sheath_campaign/analysis/figures/*.png
 !projects/tu2008-sheath/paper2_oscillating_sheath_boundary/analysis/figures/
 !projects/tu2008-sheath/paper2_oscillating_sheath_boundary/analysis/figures/*.png
+!projects/tu2008-sheath/paper1_static_sheath_capacitance/analysis/figures/
+!projects/tu2008-sheath/paper1_static_sheath_capacitance/analysis/figures/*.png
+!projects/tu2008-sheath/paper1_static_sheath_capacitance/draft/figures/
+!projects/tu2008-sheath/paper1_static_sheath_capacitance/draft/figures/*.png
 !projects/tu2008-sheath/validation/**/figures/*.png
 
 # Collab archives (local only)
@@ -60,6 +64,7 @@ projects/tu2008-sheath/archive/legacy_root/
 
 # Campaign analysis text summaries
 !projects/tu2008-sheath/analysis/data/*.txt
+!projects/tu2008-sheath/paper1_static_sheath_capacitance/analysis/data/*.txt
 projects/tu2008-sheath/analysis/data/*.dat
 projects/tu2008-sheath/analysis/AGENT_HANDOFF.md
 

@@ -1,0 +1,4 @@
+# Sd	f_res_MHz	note
+0	1.846	Im +to- August band
+2	0.655	Im +to- low-f
+10	<=0.50	all Im<0 in 0.5-1.5 MHz

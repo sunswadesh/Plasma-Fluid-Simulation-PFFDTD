@@ -2,8 +2,9 @@
 
 **Working title.** *Series sheath loading of a plasma-immersed dipole in 3D fluid FDTD: volumetric \(S_d\) versus analytic coaxial \(C_\mathrm{sh}\).*
 
-**Status:** Prior campaign complete (Phases 0–8). Paper-task analysis open.  
-**Guide:** [`../PROJECT_GUIDE.md`](../PROJECT_GUIDE.md)
+**Status:** Manuscript draft in Radio Science / AGU format. \(C_\mathrm{eff}\) analysis complete for \(S_d=2,10\). Free-space CW still open.  
+**Guide:** [`../PROJECT_GUIDE.md`](../PROJECT_GUIDE.md)  
+**Draft PDF:** [`draft/paper1_radioscience.pdf`](draft/paper1_radioscience.pdf)
 
 ---
 
@@ -43,11 +44,11 @@ This is the **quasi-static bridge**: sampling different sheath thicknesses the w
 
 ## Work plan
 
-1. Free-space CW on the same dipole grid (open item in `STATUS.md`).  
-2. Post-process Paper 0 low-\(f\) capacitive asymptotes → table of \(C_\mathrm{eff}(S_d)\) in **this** folder’s `analysis/`.  
-3. Compare to coax estimate; document \(r_\mathrm{eff}\) / staircasing assumptions.  
+1. Free-space CW on the same dipole grid (still open).  
+2. ~~Post-process Paper 0 low-\(f\) capacitive asymptotes → table of \(C_\mathrm{eff}(S_d)\)~~ **Done** (`analysis/`).  
+3. ~~Compare to coax estimate; document \(r_\mathrm{eff}\)~~ **Done** (`analysis/ceff_notes.md`).  
 4. Optional: denser tones near \(S_d=2\) (~0.55–0.75 MHz).  
-5. Draft paper Methods/Results citing Paper 0 for campaign path; Song static branch as related; Tu only as motivation/context.
+5. ~~Draft paper Methods/Results~~ **Done** (`draft/paper1_radioscience.tex` / `.pdf`).
 
 ## Folder layout (this paper)
 

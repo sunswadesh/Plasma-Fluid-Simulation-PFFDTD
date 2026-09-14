@@ -1,0 +1,4 @@
+# Band-averaged C_eff (0.8–1.2 MHz, ImZ<0 only)
+# Sd	t_sh_m	C_eff_mean_pF	C_eff_std_pF	n	C_coax_pF	ratio	r_eff_m	L_m
+2	0.0800	7.3510	1.1177	5	24.4896	0.3002	0.009200	1.0000
+10	0.4000	4.2707	1.8345	5	14.6594	0.2913	0.009200	1.0000
