@@ -1,0 +1,249 @@
+\begin{thebibliography}{}
+
+\bibitem [\protect \citeauthoryear {%
+Balmain%
+}{%
+Balmain%
+}{%
+{\protect \APACyear {1964}}%
+}]{%
+balmain1964}
+\APACinsertmetastar {%
+balmain1964}%
+\begin{APACrefauthors}%
+Balmain, K\BPBI G.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1964}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The impedance of a short dipole antenna in a
+  magnetoplasma} {The impedance of a short dipole antenna in a
+  magnetoplasma}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE Transactions on Antennas and
+  Propagation}{12}{5}{605--617}.
+\newblock
+\begin{APACrefDOI} \doi{10.1109/TAP.1964.1138278} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Balmain%
+}{%
+Balmain%
+}{%
+{\protect \APACyear {1969}}%
+}]{%
+balmain1969}
+\APACinsertmetastar {%
+balmain1969}%
+\begin{APACrefauthors}%
+Balmain, K\BPBI G.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1969}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Dipole admittance for magnetoplasma diagnostics} {Dipole
+  admittance for magnetoplasma diagnostics}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE Transactions on Antennas and
+  Propagation}{17}{3}{389--392}.
+\newblock
+\begin{APACrefDOI} \doi{10.1109/TAP.1969.1139426} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Brooks%
+\ \BBA {} Paliwoda%
+}{%
+Brooks%
+\ \BBA {} Paliwoda%
+}{%
+{\protect \APACyear {2024}}%
+}]{%
+brooks2024}
+\APACinsertmetastar {%
+brooks2024}%
+\begin{APACrefauthors}%
+Brooks, J\BPBI W.%
+\BCBT {}\ \BBA {} Paliwoda, M\BPBI C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Uncertainty analysis of the plasma impedance probe}
+  {Uncertainty analysis of the plasma impedance probe}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Physics of Plasmas}{}{}{}.
+\newblock
+\APACrefnote{NRL preprint dated 19 February 2024}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Holland%
+\ \BBA {} Simpson%
+}{%
+Holland%
+\ \BBA {} Simpson%
+}{%
+{\protect \APACyear {1981}}%
+}]{%
+holland1981}
+\APACinsertmetastar {%
+holland1981}%
+\begin{APACrefauthors}%
+Holland, R.%
+\BCBT {}\ \BBA {} Simpson, L.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1981}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Finite-difference analysis of {EMP} coupling to thin
+  struts and wires} {Finite-difference analysis of {EMP} coupling to thin
+  struts and wires}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE Transactions on Electromagnetic
+  Compatibility}{EMC-23}{2}{88--97}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Liu%
+\ \protect \BOthers {.}}{%
+Liu%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2025}}%
+}]{%
+liu_pip}
+\APACinsertmetastar {%
+liu_pip}%
+\begin{APACrefauthors}%
+Liu, A.%
+\BCBT {}\ \BOthersPeriod {.}
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2025}{}{}.
+\newblock
+\APACrefbtitle {Sheath-aware measurement uncertainty for plasma impedance
+  probes.} {Sheath-aware measurement uncertainty for plasma impedance probes.}
+\newblock
+\APACrefnote{Manuscript under review}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Neshragh%
+}{%
+Neshragh%
+}{%
+{\protect \APACyear {2026}}%
+}]{%
+paper0}
+\APACinsertmetastar {%
+paper0}%
+\begin{APACrefauthors}%
+Neshragh, S.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2026}{}{}.
+\newblock
+\APACrefbtitle {{PF-FDTD} sheath campaign chronicle and coupling diagnostics}
+  {{PF-FDTD} sheath campaign chronicle and coupling diagnostics}\
+  \APACbVolEdTR{}{\BTR{}}.
+\newblock
+\APACaddressInstitution{}{PF-FDTD collaboration}.
+\newblock
+\APACrefnote{Internal report; replace with a persistent DOI when archived}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Song%
+\ \protect \BOthers {.}}{%
+Song%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2007}}%
+}]{%
+song2007}
+\APACinsertmetastar {%
+song2007}%
+\begin{APACrefauthors}%
+Song, P.%
+, Reinisch, B\BPBI W.%
+, Paznukhov, V.%
+, Sales, G.%
+, Cooke, D.%
+, Tu, J\BHBI N.%
+\BDBL {}Galkin, I.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2007}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {High-voltage antenna--plasma interaction in whistler
+  wave transmission: Plasma sheath effects} {High-voltage antenna--plasma
+  interaction in whistler wave transmission: Plasma sheath effects}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Geophysical Research}{112}{A3}{A03205}.
+\newblock
+\begin{APACrefDOI} \doi{10.1029/2006JA011683} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Tu%
+, Song%
+\BCBL {}\ \BBA {} Reinisch%
+}{%
+Tu%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2008}}%
+}]{%
+tu2008}
+\APACinsertmetastar {%
+tu2008}%
+\begin{APACrefauthors}%
+Tu, J.%
+, Song, P.%
+\BCBL {}\ \BBA {} Reinisch, B\BPBI W.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2008}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Plasma sheath structures around a radio frequency
+  antenna} {Plasma sheath structures around a radio frequency antenna}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Geophysical Research}{113}{A7}{A07223}.
+\newblock
+\begin{APACrefDOI} \doi{10.1029/2008JA013097} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Ward%
+}{%
+Ward%
+}{%
+{\protect \APACyear {2006}}%
+}]{%
+ward2006}
+\APACinsertmetastar {%
+ward2006}%
+\begin{APACrefauthors}%
+Ward, J\BPBI D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{2006}.
+\unskip\
+\newblock
+\APACrefbtitle {Plasma frequency probe design and implementation} {Plasma
+  frequency probe design and implementation}\ \APACtypeAddressSchool
+  {\BUPhD}{}{}.
+\unskip\
+\newblock
+\APACaddressSchool {Logan, Utah}{Utah State University}.
+\PrintBackRefs{\CurrentBib}
+
+\end{thebibliography}

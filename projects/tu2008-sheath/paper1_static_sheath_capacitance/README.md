@@ -2,7 +2,7 @@
 
 **Working title.** *Series sheath loading of a plasma-immersed dipole in 3D fluid FDTD: volumetric \(S_d\) versus analytic coaxial \(C_\mathrm{sh}\).*
 
-**Status:** Manuscript draft in Radio Science / AGU format. \(C_\mathrm{eff}\) analysis complete for \(S_d=2,10\). Free-space CW still open.  
+**Status:** Radio Science draft revised (series-jacket geometry + all \(S_d\) in the dense band). Free-space CW still open.  
 **Guide:** [`../PROJECT_GUIDE.md`](../PROJECT_GUIDE.md)  
 **Draft PDF:** [`draft/paper1_radioscience.pdf`](draft/paper1_radioscience.pdf)
 

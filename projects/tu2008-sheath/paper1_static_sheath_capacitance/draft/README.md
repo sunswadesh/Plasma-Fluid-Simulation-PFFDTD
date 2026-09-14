@@ -5,13 +5,16 @@
 | File | Role |
 |------|------|
 | [`paper1_radioscience.tex`](paper1_radioscience.tex) | Main manuscript |
+| [`references.bib`](references.bib) | BibTeX sources (`apacite`) |
 | [`paper1_radioscience.pdf`](paper1_radioscience.pdf) | Compiled PDF (AGU `agujournal2025` class) |
 | `agujournal2025.cls`, `wiley-macros.tex`, … | Official AGU 2025 template files |
 | [`figures/`](figures/) | Manuscript figures |
 
-**Build** (from this folder; AGU 2025 class requires **XeLaTeX**):
+**Build** (from this folder; AGU 2025 class requires **XeLaTeX** + BibTeX/`apacite`):
 
 ```powershell
+xelatex -interaction=nonstopmode paper1_radioscience.tex
+bibtex paper1_radioscience
 xelatex -interaction=nonstopmode paper1_radioscience.tex
 xelatex -interaction=nonstopmode paper1_radioscience.tex
 ```

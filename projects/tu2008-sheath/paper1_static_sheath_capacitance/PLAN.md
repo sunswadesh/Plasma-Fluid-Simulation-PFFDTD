@@ -1,12 +1,12 @@
 # Paper 1 — Plan checklist
 
-Last updated: 2026-09-10
+Last updated: 2026-09-13
 
 ## Near term
 
 - [ ] Free-space CW resonance on the same dipole (`scripts/` + new result tag)
 - [x] Script: extract \(C_\mathrm{eff}(S_d)\) from low-\(f\) Im\(\{Z\}\) → `analysis/make_ceff_products.py`
-- [x] Table: \(C_\mathrm{eff}\) vs \(C_\mathrm{sh}^\mathrm{(coax)}\) for \(S_d=2,10\) → `analysis/data/`
+- [x] Table: \(C_\mathrm{eff}\) vs \(C_\mathrm{sh}^\mathrm{(coax)}\) for \(S_d=2,10\) (low-\(f\)) and \(S_d=4,6,8,10\) (dense band)
 - [x] Note staircasing / \(r_\mathrm{eff}\) choice in `analysis/ceff_notes.md`
 - [x] Figures: \(C_\mathrm{eff}(S_d)\); coax overlay → `analysis/figures/`
 
