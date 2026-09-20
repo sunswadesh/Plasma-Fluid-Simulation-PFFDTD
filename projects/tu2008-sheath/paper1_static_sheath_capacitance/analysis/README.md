@@ -11,6 +11,8 @@
 | [`ceff_notes.md`](ceff_notes.md) | Method notes after review revision |
 | [`FREE_SPACE_CONTROL.md`](FREE_SPACE_CONTROL.md) | Open free-space CW plan |
 | [`LOWF_INTERMEDIATE_PLAN.md`](LOWF_INTERMEDIATE_PLAN.md) | Open low-\(f\) plan for \(S_d=4,6,8\) and dense \(S_d=2\) |
+| [`fig6_continuity.md`](fig6_continuity.md) | Combined-band stitch check (low-\(f\) ↔ dense) |
+| [`check_fig6_continuity.py`](check_fig6_continuity.py) | Continuity diagnostics |
 | [`make_ceff_products.py`](make_ceff_products.py) | Regenerator |
 
 ```powershell
