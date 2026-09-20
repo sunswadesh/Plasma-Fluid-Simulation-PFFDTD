@@ -6,7 +6,7 @@
 
 ## Correct analytic object
 
-Liu-style **monopole** coax
+Standard **single-arm monopole** coax
 \[
 C_\mathrm{sh}^\mathrm{(mono)}=\frac{2\pi\varepsilon_0 L}{\ln(1+S_d\Delta x/r_\mathrm{eff})}
 \]

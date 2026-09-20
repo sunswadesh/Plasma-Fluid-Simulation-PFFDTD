@@ -1,6 +1,11 @@
 # Paper 1 — Plan checklist
 
-Last updated: 2026-09-14
+Last updated: 2026-09-15
+
+## Manuscript policy (editorial)
+
+- **Do not cite or name Liu et al. in the Radio Science manuscript** while that work remains unpublished. Keep internal comparison in `docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md` only.
+- **Public lineage:** series coax sheath from Mlodnosky \& Garriott (1962) through Balmain-era gap/jacket models (Galejs, Adachi, …) to modern probe analyses (Brooks \& Paliwoda 2024).
 
 ## Review response (2026-09-14)
 

@@ -168,30 +168,6 @@ Holland, R.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
-Liu%
-\ \protect \BOthers {.}}{%
-Liu%
-\ \protect \BOthers {.}}{%
-{\protect \APACyear {2025}}%
-}]{%
-liu_pip}
-\APACinsertmetastar {%
-liu_pip}%
-\begin{APACrefauthors}%
-Liu, A.%
-\BCBT {}\ \BOthersPeriod {.}
-\end{APACrefauthors}%
-\unskip\
-\newblock
-\APACrefYearMonthDay{2025}{}{}.
-\newblock
-\APACrefbtitle {Sheath-aware measurement uncertainty for plasma impedance
-  probes.} {Sheath-aware measurement uncertainty for plasma impedance probes.}
-\newblock
-\APACrefnote{Manuscript under review}
-\PrintBackRefs{\CurrentBib}
-
-\bibitem [\protect \citeauthoryear {%
 Mlodnosky%
 \ \BBA {} Garriott%
 }{%

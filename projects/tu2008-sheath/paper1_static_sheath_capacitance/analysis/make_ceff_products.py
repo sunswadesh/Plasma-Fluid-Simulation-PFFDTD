@@ -3,7 +3,7 @@
 Primary observables:
   - dense-band Z(f) ordering with Sd
   - Im{Z}(Sd) at fixed frequencies (including near-fp reversal)
-  - dipole coaxial C_sh (two arms in series), not Liu monopole
+  - dipole coaxial C_sh (two arms in series), not single-arm monopole coax
   - circuit overlay Z_pl(Sd=0) + 1/(j omega C_dipole)
   - optional C_eff as a mixed diagnostic only
 
@@ -50,7 +50,7 @@ SD_MARKERS = {0: "o", 2: "s", 4: "D", 6: "^", 8: "v", 10: "P"}
 
 
 def coax_monopole(sd: int, r_eff: float = R_EFF) -> float:
-    """Liu-style monopole coax (wrong object for this center-fed dipole)."""
+    """Single-arm monopole coax (wrong object for this center-fed dipole)."""
     return 2.0 * math.pi * EPS0 * L / math.log(1.0 + sd * DX / r_eff)
 
 
@@ -412,7 +412,7 @@ def fig_ceff_sd(lowf_means):
         [coax_monopole(s) * 1e12 for s in s_cont],
         "k--",
         lw=1.2,
-        label=r"monopole $C_{\mathrm{sh}}$ (Liu form)",
+        label=r"single-arm monopole $C_{\mathrm{sh}}$",
     )
     ax.plot(
         s_cont,
