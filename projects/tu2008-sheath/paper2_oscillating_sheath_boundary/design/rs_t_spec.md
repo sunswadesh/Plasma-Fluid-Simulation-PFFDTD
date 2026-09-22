@@ -1,6 +1,6 @@
 # Design: kinematic \(r_s(t)\) sheath mask
 
-**Status:** Implemented in `src/physics/plasma.cpp` (2026-09-10).  
+**Status:** Soft-edge update added 2026-09-22 (default). Hard staircase retained via `soft_edge=0`.  
 **Paper:** Paper 2 — oscillating sheath boundary.
 
 ---
@@ -19,35 +19,41 @@ r_s(t) = r_{s0} + \Delta r\,\sin(2\pi f_\mathrm{osc} t + \phi)
 | \(\Delta r\) | `argv[12]` → `SheathDeltaR` | Oscillation amplitude (cells, float OK) |
 | \(\phi\) | `argv[13]` → `SheathPhaseDeg` | Phase (degrees → radians internally) |
 | \(f_\mathrm{osc}\) | `argv[14]` → `SheathFosc` | Oscillation frequency (Hz); **0 = use drive `Spar[1]`** |
+| soft edge | `argv[15]` → `SheathSoftEdge` | Transition width (cells); **0 = hard staircase**; default **1** |
 
 Feature enable: `SheathOscEnable = (SheathDeltaR > 0)`.  
 When \(\Delta r = 0\), only static `ApplySheath()` runs — **Paper 1 bit-match path**.
 
 ## Discrete update
 
-1. **Once at init:** build PEC-seeded integer distance field out to  
-   \(S_\mathrm{max} = \lceil r_{s0} + |\Delta r|\rceil\).
-2. **Each time step:**  
-   \(S_d(t) = \mathrm{round}\bigl(r_{s0} + \Delta r\sin(\ldots)\bigr)\), clamped to \([0, S_\mathrm{max}]\).
-3. **Apply only when integer \(S_d\) changes** (staircased radial threshold — no full distance rebuild).
-4. For cells with \(0 < d \le S_\mathrm{max}\):  
-   - \(d \le S_d(t)\): \(N_0 \leftarrow N_\mathrm{bulk}\,N_\mathrm{min}\) (kinematic vacuum)  
-   - else: \(N_0 \leftarrow N_\mathrm{bulk}\) (restore)  
-5. When the sheath expands, floor dynamic \(N\) inside the new hole to the density floor (stability).
+### Soft edge (default, `SheathSoftEdge > 0`)
+
+1. **Once at init:** PEC-seeded integer distance field out to \(S_\mathrm{max}=\lceil r_{s0}+|\Delta r|+\mathrm{soft}\rceil\).
+2. **Each step** (when \(r_s\) moves by \(\ge 0.01\) cell): set
+   \[
+   N_0 = N_\mathrm{bulk}\bigl[N_\min + (1-N_\min)\,w\bigr],\quad
+   w=\mathrm{clamp}\bigl(\tfrac{d-r_s}{\mathrm{soft}}+0.5,\,0,\,1\bigr).
+   \]
+3. **No hard floor of dynamic \(N\)** on update (avoids impulsive feed-current spikes from staircasing).
+
+### Hard staircase (`SheathSoftEdge = 0`, original pilot)
+
+1. \(S_d(t)=\mathrm{round}[r_s(t)]\); apply only when integer changes.
+2. Step profile + floor \(N\) inside newly covered cells.
 
 ## Diagnostics (pilot)
 
 | Quantity | Where |
 |----------|--------|
 | Feed \(V,I\) → \(Z\) | `.vc` as in Paper 0/1 CW |
-| Integer \(S_d(t)\) changes | solver log (optional sparse) |
 | Controls | static \(r_{s0}\) and static \(r_{s0}+\lceil\Delta r\rceil\) brackets |
+| Soft re-test | `results/paper2_rs_t_pilot_soft/` via `-OutTag soft -SoftEdge 1` |
 
 ## Non-claims
 
 - Not self-consistent charging (Paper 3).  
 - Not Song’s exact \(r_s^2(t)\) or orbit-limited collection.  
-- Staircasing + fluid response may wash out a clean \(\dot{r}_s\) signature; a null result still gates Paper 3.
+- Soft edge reduces staircasing artifacts; surviving out-of-bracket \(\Delta Z\) is stronger evidence for kinematic coupling.
 
 ## API
 

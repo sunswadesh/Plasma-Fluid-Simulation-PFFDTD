@@ -52,8 +52,19 @@ def rms(x):
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser(description="Analyze Paper 2 rs(t) pilot")
+    ap.add_argument("--results", default="paper2_rs_t_pilot",
+                    help="subdir under results/ (default paper2_rs_t_pilot)")
+    ap.add_argument("--tag", default="",
+                    help="suffix for output files (e.g. soft)")
+    ap.add_argument("--freq", type=float, default=F_DRIVE)
+    args = ap.parse_args()
+    f_drive = args.freq
+    tag = ("_" + args.tag) if args.tag else ""
+
     root = pffdtd_root()
-    base = os.path.join(root, "results", "paper2_rs_t_pilot")
+    base = os.path.join(root, "results", args.results)
     out_dir = os.path.join(project_root(), "paper2_oscillating_sheath_boundary", "analysis")
     fig_dir = os.path.join(out_dir, "figures")
     data_dir = os.path.join(out_dir, "data")
@@ -74,8 +85,8 @@ def main():
             continue
         n0 = int(len(t) * TRIM_FRAC)
         t_ss, v_ss, i_ss = t[n0:], v[n0:], i[n0:]
-        V = extract_phasor(t_ss, v_ss, F_DRIVE)
-        I = extract_phasor(t_ss, i_ss, F_DRIVE)
+        V = extract_phasor(t_ss, v_ss, f_drive)
+        I = extract_phasor(t_ss, i_ss, f_drive)
         Z = V / I if abs(I) > 0 else np.nan + 1j * np.nan
         rows.append({
             "name": name,
@@ -100,7 +111,7 @@ def main():
         sys.exit(1)
 
     # Table
-    table_path = os.path.join(data_dir, "pilot_phasor_Z.tsv")
+    table_path = os.path.join(data_dir, "pilot_phasor_Z%s.tsv" % tag)
     with open(table_path, "w") as f:
         f.write("case\tReZ_ohm\tImZ_ohm\t|Z|_ohm\targZ_deg\t|V|\t|I|\tVrms\tIrms\tt_end_s\tn\n")
         for r in rows:
@@ -116,14 +127,11 @@ def main():
         z0 = by["static_rs0"]["Z_re"] + 1j * by["static_rs0"]["Z_im"]
         z1 = by["static_rsmax"]["Z_re"] + 1j * by["static_rsmax"]["Z_im"]
         zo = by["osc_rs_t"]["Z_re"] + 1j * by["osc_rs_t"]["Z_im"]
-        # Midpoint of static brackets in complex plane
         z_mid = 0.5 * (z0 + z1)
         d_brackets = abs(z1 - z0)
         d_osc_mid = abs(zo - z_mid)
         d_osc_0 = abs(zo - z0)
         d_osc_1 = abs(zo - z1)
-        # Is osc outside the segment? distance to segment
-        # Project zo onto line z0--z1
         w = z1 - z0
         if abs(w) > 0:
             tau = np.real(np.conj(w) * (zo - z0)) / (abs(w) ** 2)
@@ -144,7 +152,7 @@ def main():
                 "rel_to_bracket": d_to_seg / d_brackets if d_brackets > 0 else float("nan"),
             }
         )
-        metric_path = os.path.join(data_dir, "pilot_deltaZ_metrics.tsv")
+        metric_path = os.path.join(data_dir, "pilot_deltaZ_metrics%s.tsv" % tag)
         with open(metric_path, "w") as f:
             f.write("d_brackets\td_osc_to_mid\td_osc_to_rs0\td_osc_to_rsmax\td_osc_to_segment\ttau_proj\trel_to_bracket\n")
             m = findings[0]
@@ -173,18 +181,21 @@ def main():
         )
     ax.set_xlabel(r"Re$\{Z\}$ ($\Omega$)")
     ax.set_ylabel(r"Im$\{Z\}$ ($\Omega$)")
-    ax.set_title(r"Paper 2 pilot phasor $Z$ at $f=700$ kHz")
+    title = r"Paper 2 phasor $Z$ at $f=%.0f$ kHz" % (f_drive / 1e3)
+    if args.tag:
+        title += " [%s]" % args.tag
+    ax.set_title(title)
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=8)
     fig.tight_layout()
-    zpath = os.path.join(fig_dir, "pilot_Z_complex.png")
+    zpath = os.path.join(fig_dir, "pilot_Z_complex%s.png" % tag)
     fig.savefig(zpath, dpi=160)
     plt.close(fig)
     print("Wrote", zpath)
 
     # Late-time V/I overlay (last few cycles)
     fig, axes = plt.subplots(2, 1, figsize=(7.2, 5.0), sharex=True)
-    t_win = 5.0 / F_DRIVE
+    t_win = 5.0 / f_drive
     for name, label in CASES:
         if name not in series:
             continue
@@ -196,12 +207,12 @@ def main():
     axes[0].set_ylabel("$V$ (V)")
     axes[1].set_ylabel("$I$ ($\\mu$A)")
     axes[1].set_xlabel("$t$ ($\\mu$s)")
-    axes[0].set_title("Last ~5 drive cycles")
+    axes[0].set_title("Last ~5 drive cycles" + ((" [%s]" % args.tag) if args.tag else ""))
     axes[0].legend(fontsize=8, loc="upper right")
     axes[0].grid(True, alpha=0.3)
     axes[1].grid(True, alpha=0.3)
     fig.tight_layout()
-    tpath = os.path.join(fig_dir, "pilot_VI_last_cycles.png")
+    tpath = os.path.join(fig_dir, "pilot_VI_last_cycles%s.png" % tag)
     fig.savefig(tpath, dpi=160)
     plt.close(fig)
     print("Wrote", tpath)
@@ -210,30 +221,29 @@ def main():
     fig, ax = plt.subplots(figsize=(6.0, 3.8))
     names = [r["name"] for r in rows]
     x = np.arange(len(names))
-    w = 0.25
-    ax.bar(x - w, [r["Z_re"] for r in rows], w, label="Re Z")
-    ax.bar(x, [r["Z_im"] for r in rows], w, label="Im Z")
-    ax.bar(x + w, [r["Z_mag"] for r in rows], w, label="|Z|")
+    wbar = 0.25
+    ax.bar(x - wbar, [r["Z_re"] for r in rows], wbar, label="Re Z")
+    ax.bar(x, [r["Z_im"] for r in rows], wbar, label="Im Z")
+    ax.bar(x + wbar, [r["Z_mag"] for r in rows], wbar, label="|Z|")
     ax.set_xticks(x)
     ax.set_xticklabels(names, rotation=15)
     ax.set_ylabel(r"$Z$ ($\Omega$)")
-    ax.set_title(r"Phasor components at $700$ kHz")
+    ax.set_title(r"Phasor components" + ((" [%s]" % args.tag) if args.tag else ""))
     ax.legend(fontsize=8)
     ax.grid(True, axis="y", alpha=0.3)
     fig.tight_layout()
-    bpath = os.path.join(fig_dir, "pilot_Z_bars.png")
+    bpath = os.path.join(fig_dir, "pilot_Z_bars%s.png" % tag)
     fig.savefig(bpath, dpi=160)
     plt.close(fig)
     print("Wrote", bpath)
 
     # Findings markdown
-    note = os.path.join(out_dir, "pilot_findings.md")
+    note = os.path.join(out_dir, "pilot_findings%s.md" % tag)
     with open(note, "w") as f:
-        f.write("# Paper 2 pilot findings\n\n")
-        f.write("**Date:** 2026-09-10  \n")
-        f.write("**Data:** `results/paper2_rs_t_pilot/`  \n")
-        f.write("**Drive:** $f=700$ kHz, $f_p=2$ MHz, $r_{s0}=4$, $\\Delta r=1$, $\\phi=0$  \n")
-        f.write("**Method:** phasor $Z=V/I$ on last 50% of `.vc` traces.\n\n")
+        f.write("# Paper 2 pilot findings%s\n\n" % ((" (%s)" % args.tag) if args.tag else ""))
+        f.write("**Data:** `results/%s/`  \n" % args.results)
+        f.write("**Drive:** $f=%.0f$ kHz  \n" % (f_drive / 1e3))
+        f.write("**Method:** phasor $Z=V/I$ on last 50%% of `.vc` traces.\n\n")
         f.write("## Phasor table\n\n")
         f.write("| Case | Re$Z$ ($\\Omega$) | Im$Z$ ($\\Omega$) | $|Z|$ | arg$Z$ (deg) |\n")
         f.write("|------|----------------:|----------------:|------:|-------------:|\n")
@@ -254,31 +264,29 @@ def main():
                 % (m["d_to_seg"], m["rel_to_bracket"])
             )
             f.write(
-                "Projection parameter $\\tau$ along $Z_4\\to Z_5$ "
-                "(0 at $r_{s0}$, 1 at $r_{s\\max}$): **%.3f**.\n\n" % m["tau"]
+                "Projection parameter $\\tau$ along $Z_4\\to Z_5$: **%.3f**.\n\n" % m["tau"]
             )
             if m["rel_to_bracket"] < 0.05 and 0.0 <= m["tau"] <= 1.0:
                 verdict = (
                     "The oscillating phasor lies **on/near the static bracket segment** "
-                    "(quasi-static thickness sampling). No clear out-of-bracket "
-                    "$\\dot{r}_s$ signature at this amplitude/tone."
+                    "(quasi-static thickness sampling)."
                 )
             elif m["rel_to_bracket"] < 0.15 and 0.0 <= m["tau"] <= 1.0:
                 verdict = (
                     "The oscillating phasor is **close to the static bracket line** "
-                    "with modest residual. Weak/ambiguous $\\dot{r}_s$ evidence at this pilot point."
+                    "with modest residual."
                 )
             else:
                 verdict = (
                     "The oscillating phasor is **offset from the static bracket segment**, "
-                    "consistent with a possible kinematic/moving-boundary contribution "
-                    "beyond quasi-static $S_d$ alone. Confirm with $\\Delta r$ scan and phase controls."
+                    "consistent with a kinematic/moving-boundary contribution beyond "
+                    "quasi-static $S_d$ alone."
                 )
             f.write("**Verdict:** " + verdict + "\n\n")
         f.write("## Figures\n\n")
-        f.write("- `figures/pilot_Z_complex.png`\n")
-        f.write("- `figures/pilot_Z_bars.png`\n")
-        f.write("- `figures/pilot_VI_last_cycles.png`\n")
+        f.write("- `figures/pilot_Z_complex%s.png`\n" % tag)
+        f.write("- `figures/pilot_Z_bars%s.png`\n" % tag)
+        f.write("- `figures/pilot_VI_last_cycles%s.png`\n" % tag)
     print("Wrote", note)
     for r in rows:
         print(

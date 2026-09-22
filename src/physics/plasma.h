@@ -50,8 +50,10 @@ extern int SheathOscEnable;                     // 1 when SheathDeltaR > 0
 extern double SheathDeltaR;                     // amplitude in cells
 extern double SheathPhase;                      // radians
 extern double SheathFosc;                       // Hz; <=0 → use drive frequency
+extern double SheathSoftEdge;                   // transition width in cells; 0 = hard staircase
 extern int SheathSdMax;                         // ceil(Sd + |Δr|)
-extern int SheathSdApplied;                     // last staircased width
+extern int SheathSdApplied;                     // last staircased width (hard mode)
+extern double SheathRsApplied;                  // last continuous rs (soft mode)
 
 // Externs for Field Arrays used in plasma.cpp
 extern double *EX, *EY, *EZ;

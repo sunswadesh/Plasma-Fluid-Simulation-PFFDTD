@@ -21,6 +21,8 @@ param(
   [int]$T = 100,
   [int]$MaxParallel = 3,
   [int]$OmpThreads = 2,
+  [double]$SoftEdge = 1.0,
+  [string]$OutTag = '',
   [switch]$SkipCompleted,
   [switch]$DryRun
 )
@@ -37,6 +39,9 @@ if (-not (Test-Path $strTemplate)) {
 }
 
 $outbase = Join-Path $root 'results\paper2_rs_t_pilot'
+if ($OutTag -and $OutTag.Trim().Length -gt 0) {
+  $outbase = Join-Path $root ("results\paper2_rs_t_pilot_" + $OutTag.Trim())
+}
 New-Item -ItemType Directory -Path $outbase -Force | Out-Null
 $masterLog = Join-Path $outbase 'pilot_master.log'
 
@@ -58,6 +63,7 @@ function Start-PilotCase {
     [int]$Sd,
     [double]$DeltaR,
     [double]$Phase,
+    [double]$SoftEdge,
     [int]$F,
     [int]$MaxIter,
     [double]$Fp,
@@ -66,7 +72,7 @@ function Start-PilotCase {
     [int]$OmpThreads
   )
   return Start-Job -ScriptBlock {
-    param($Root, $ExePath, $StrTemplate, $OutDir, $Name, $Sd, $DeltaR, $Phase, $F, $MaxIter, $Fp, $T, $VcRate, $OmpThreads)
+    param($Root, $ExePath, $StrTemplate, $OutDir, $Name, $Sd, $DeltaR, $Phase, $SoftEdge, $F, $MaxIter, $Fp, $T, $VcRate, $OmpThreads)
     Set-Location $Root
     $env:OMP_NUM_THREADS = "$OmpThreads"
     New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
@@ -88,11 +94,14 @@ function Start-PilotCase {
     if (Test-Path "$outfile.fd") { Remove-Item "$outfile.fd" -Force -ErrorAction SilentlyContinue }
     if (Test-Path $vc) { Remove-Item $vc -Force -ErrorAction SilentlyContinue }
 
+    # Soft edge only applies to oscillating case; static uses ApplySheath (ignore soft).
+    $edgeArg = if ($DeltaR -gt 0) { $SoftEdge } else { 0.0 }
+
     $t0 = Get-Date
-    "START $(Get-Date -Format s) $Name Sd=$Sd dR=$DeltaR phi=$Phase MaxIter=$MaxIter OMP=$OmpThreads" |
+    "START $(Get-Date -Format s) $Name Sd=$Sd dR=$DeltaR phi=$Phase soft=$edgeArg MaxIter=$MaxIter OMP=$OmpThreads" |
       Set-Content $logfile
 
-    & $ExePath $inputBase $outfile $Fp 0.1 0 0 0 $T $Sd $VcRate $MaxIter $DeltaR $Phase 0 *> $null
+    & $ExePath $inputBase $outfile $Fp 0.1 0 0 0 $T $Sd $VcRate $MaxIter $DeltaR $Phase 0 $edgeArg *> $null
     $code = $LASTEXITCODE
     $mins = [math]::Round(((Get-Date) - $t0).TotalMinutes, 2)
     $vcBytes = if (Test-Path $vc) { (Get-Item $vc).Length } else { 0 }
@@ -101,7 +110,7 @@ function Start-PilotCase {
     return [PSCustomObject]@{
       Name = $Name; ExitCode = $code; Minutes = $mins; VcBytes = $vcBytes
     }
-  } -ArgumentList $Root, $ExePath, $StrTemplate, $OutDir, $Name, $Sd, $DeltaR, $Phase, $F, $MaxIter, $Fp, $T, $VcRate, $OmpThreads
+  } -ArgumentList $Root, $ExePath, $StrTemplate, $OutDir, $Name, $Sd, $DeltaR, $Phase, $SoftEdge, $F, $MaxIter, $Fp, $T, $VcRate, $OmpThreads
 }
 
 $maxIter = Get-MaxIterForFrequency -Frequency $FrequencyHz -MinIter $MinIter
@@ -117,13 +126,13 @@ $summary = Join-Path $outbase 'pilot_summary.txt'
 $startAll = Get-Date
 @(
   "Paper 2 rs(t) pilot  $($startAll.ToString('s'))",
-  "f=$FrequencyHz Hz  fp=$Fp  rs0=$Rs0  dR=$DeltaR  phi=$PhaseDeg deg  MaxIter=$maxIter",
-  "MaxParallel=$MaxParallel OmpThreads=$OmpThreads",
+  "f=$FrequencyHz Hz  fp=$Fp  rs0=$Rs0  dR=$DeltaR  phi=$PhaseDeg deg  soft=$SoftEdge  MaxIter=$maxIter",
+  "MaxParallel=$MaxParallel OmpThreads=$OmpThreads outbase=$outbase",
   "exe=$exepath",
   ""
 ) | Set-Content $summary
 @(
-  "[$($startAll.ToString('s'))] Paper 2 pilot: $($cases.Count) cases, MaxParallel=$MaxParallel, OMP=$OmpThreads"
+  "[$($startAll.ToString('s'))] Paper 2 pilot: $($cases.Count) cases, MaxParallel=$MaxParallel, OMP=$OmpThreads soft=$SoftEdge"
 ) | Set-Content $masterLog
 
 if ($DryRun) {
@@ -155,7 +164,7 @@ while ($queue.Count -gt 0 -or $running.Count -gt 0) {
       Tee-Object -FilePath $summary -Append
     "[$(Get-Date -Format s)] START $($c.Name)" | Add-Content $masterLog
     $job = Start-PilotCase -Root $root -ExePath $exepath -StrTemplate $strTemplate `
-      -OutDir $outDir -Name $c.Name -Sd $c.Sd -DeltaR $c.DeltaR -Phase $c.Phase `
+      -OutDir $outDir -Name $c.Name -Sd $c.Sd -DeltaR $c.DeltaR -Phase $c.Phase -SoftEdge $SoftEdge `
       -F $FrequencyHz -MaxIter $maxIter -Fp $Fp -T $T -VcRate $VcRate -OmpThreads $OmpThreads
     $running += ,@{ Name = $c.Name; Job = $job }
   }

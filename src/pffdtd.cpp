@@ -156,6 +156,7 @@ int main(int argc, char*argv[])
   SheathDeltaR = 0.0;
   SheathPhase = 0.0;
   SheathFosc = 0.0;
+  SheathSoftEdge = 1.0;
   SheathOscEnable = 0;
 
   // Welcome
@@ -212,7 +213,7 @@ int main(int argc, char*argv[])
 	vc_rate = 1;
       if (argc > 11)
 	cli_fail_safe = atoi(argv[11]);
-      // Paper 2: oscillating sheath — argv[12]=Δr(cells), [13]=phase(deg), [14]=fosc(Hz; 0=drive)
+      // Paper 2: argv[12]=Δr(cells), [13]=phase(deg), [14]=fosc(Hz; 0=drive), [15]=soft_edge(cells; 0=hard)
       if (argc > 12)
 	SheathDeltaR = atof(argv[12]);
       if (argc > 13) {
@@ -221,6 +222,8 @@ int main(int argc, char*argv[])
       }
       if (argc > 14)
 	SheathFosc = atof(argv[14]);
+      if (argc > 15)
+	SheathSoftEdge = atof(argv[15]);
       SheathOscEnable = (SheathDeltaR > 0.0) ? 1 : 0;
     }
   else      	
@@ -325,8 +328,8 @@ int main(int argc, char*argv[])
       df = dt*FREQ_PLASMA; 
       printf("\t N_0 -> %5.3f, %5.3f, %5.3f 1/cc\n",N_0[0]*1e-6,N_0[1]*1e-6,N_0[2]*1e-6);
       if (SheathOscEnable)
-        printf("\t Sheath OSC: rs0=%d Δr=%.3f Smax=%d φ=%.1f deg\n",
-               Sd, SheathDeltaR, SheathSdMax, sheath_phase_deg);
+        printf("\t Sheath OSC: rs0=%d Δr=%.3f Smax=%d soft=%.3f φ=%.1f deg\n",
+               Sd, SheathDeltaR, SheathSdMax, SheathSoftEdge, sheath_phase_deg);
       else if (Sd > 0)
         printf("\t Sheath: Sd=%d cells (step profile)\n", Sd);
     }

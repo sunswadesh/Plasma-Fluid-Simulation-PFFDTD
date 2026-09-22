@@ -36,8 +36,10 @@ int SheathOscEnable = 0;
 double SheathDeltaR = 0.0;
 double SheathPhase = 0.0;
 double SheathFosc = 0.0;
+double SheathSoftEdge = 1.0;            // cells; 0 disables soft edge (hard staircase)
 int SheathSdMax = 0;
 int SheathSdApplied = -1;
+double SheathRsApplied = -1.0e99;
 static int *sheath_dist = NULL;         // PEC distance field (cells); owned by oscillating path
 
 // Externs for Field Arrays (defined in pffdtd.cpp or field modules, declared in plasma.h used here)
@@ -215,6 +217,40 @@ static void ApplySheathWidthFromDist(int sd_now, int floor_N)
           }
       }
   SheathSdApplied = sd_now;
+  SheathRsApplied = (double)sd_now;
+}
+
+/* Soft continuous radius: blend N0 across ~SheathSoftEdge cells around rs.
+ * Does not hard-floor dynamic N (avoids impulsive current spikes). */
+static void ApplySheathSoftRadius(double rs)
+{
+  int i, j, k, m;
+  double edge, w, ratio;
+  if (!sheath_dist || SheathSdMax <= 0)
+    return;
+  edge = SheathSoftEdge;
+  if (edge < 1.0e-6)
+    edge = 1.0e-6;
+  if (rs < 0.0)
+    rs = 0.0;
+
+  #pragma omp parallel for private(j,k,m,w,ratio)
+  for (i=0;i<=sx;i++)
+    for (j=0;j<=sy;j++)
+      for (k=0;k<=sz;k++) {
+          int d = sheath_dist[IDX3(i,j,k)];
+          if (d <= 0 || d > SheathSdMax)
+            continue;
+          /* w=0 deep inside sheath, w=1 in bulk. Linear ramp over `edge` cells. */
+          w = (((double)d - rs) / edge) + 0.5;
+          if (w < 0.0) w = 0.0;
+          if (w > 1.0) w = 1.0;
+          ratio = N_MIN_RATIO + (1.0 - N_MIN_RATIO) * w;
+          for (m=0; m<NS; m++)
+              N0_SPATIAL[IDX_N0(i,j,k,m)] = N_0[m] * ratio;
+      }
+  SheathRsApplied = rs;
+  SheathSdApplied = (int)lround(rs);
 }
 
 void InitOscillatingSheath()
@@ -229,7 +265,7 @@ void InitOscillatingSheath()
   if (!SheathOscEnable)
     return;
 
-  max_r = (double)Sd + fabs(SheathDeltaR);
+  max_r = (double)Sd + fabs(SheathDeltaR) + ((SheathSoftEdge > 0.0) ? SheathSoftEdge : 0.0);
   SheathSdMax = (int)ceil(max_r);
   if (SheathSdMax < Sd)
     SheathSdMax = Sd;
@@ -272,9 +308,13 @@ void InitOscillatingSheath()
   }
 
   SheathSdApplied = -1;
-  ApplySheathWidthFromDist(Sd, 0);
-  printf("\tSheath OSC: rs0=%d Δr=%.3f cells, Smax=%d, φ=%.1f deg, fosc=%s (PEC seeds=%d)\n",
-         Sd, SheathDeltaR, SheathSdMax, SheathPhase * 180.0 / PI,
+  SheathRsApplied = -1.0e99;
+  if (SheathSoftEdge > 0.0)
+    ApplySheathSoftRadius((double)Sd);
+  else
+    ApplySheathWidthFromDist(Sd, 0);
+  printf("\tSheath OSC: rs0=%d Δr=%.3f cells, Smax=%d, soft=%.3f, φ=%.1f deg, fosc=%s (PEC seeds=%d)\n",
+         Sd, SheathDeltaR, SheathSdMax, SheathSoftEdge, SheathPhase * 180.0 / PI,
          (SheathFosc > 0.0) ? "CLI" : "drive", pec_seeds);
 }
 
@@ -292,6 +332,16 @@ void UpdateOscillatingSheath(double timev, double f_drive_hz)
 
   phase = 2.0 * PI * f * timev + SheathPhase;
   rs = (double)Sd + SheathDeltaR * sin(phase);
+  if (rs < 0.0)
+    rs = 0.0;
+
+  if (SheathSoftEdge > 0.0) {
+      if (fabs(rs - SheathRsApplied) < 0.01)
+        return;
+      ApplySheathSoftRadius(rs);
+      return;
+  }
+
   sd_now = (int)lround(rs);
   if (sd_now < 0)
     sd_now = 0;
@@ -311,6 +361,7 @@ void FreeOscillatingSheath()
       sheath_dist = NULL;
   }
   SheathSdApplied = -1;
+  SheathRsApplied = -1.0e99;
   SheathSdMax = 0;
 }
 
