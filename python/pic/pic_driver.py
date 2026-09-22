@@ -1,10 +1,12 @@
 import numpy as np
 from .boris_push import boris_push
-from .grid_particle import particle_to_grid_charge
+from .grid_particle import scatter_charge_to_grid
 
 
-def run_pic_single_step(positions, v_half, charges, masses, dt, grid_shape, grid_origin=(0,0,0), grid_spacing=(1.0,1.0,1.0)):
-    """Run a simple file-coupled PIC single step.
+def run_pic_single_step(positions, v_half, charges, masses, dt, grid_shape,
+                        grid_origin=(0, 0, 0), grid_spacing=(1.0, 1.0, 1.0),
+                        E_field=None, B_field=None):
+    """Run a simple file-coupled PIC single step (vectorized).
 
     - positions: (N,3) array of particle positions
     - v_half: (N,3) velocities at half-step
@@ -14,60 +16,36 @@ def run_pic_single_step(positions, v_half, charges, masses, dt, grid_shape, grid
     - grid_shape: (nx,ny,nz)
     - grid_origin: world coords of grid (defaults to 0)
     - grid_spacing: cell sizes (dx,dy,dz)
+    - E_field: (3,) or (N,3) electric field (defaults to zero)
+    - B_field: (3,) or (N,3) magnetic field (defaults to zero)
 
     Returns:
       rho: charge density grid (same shape as grid_shape)
       positions_new: updated positions after full step
       v_half_new: updated half-step velocities
     """
-    positions = np.asarray(positions, dtype=float)
-    v_half = np.asarray(v_half, dtype=float)
-    charges = np.asarray(charges, dtype=float)
-    masses = np.asarray(masses, dtype=float)
+    positions = np.asarray(positions, dtype=float).reshape(-1, 3)
+    v_half = np.asarray(v_half, dtype=float).reshape(-1, 3)
+    charges = np.asarray(charges, dtype=float).reshape(-1)
+    masses = np.asarray(masses, dtype=float).reshape(-1)
+    n = positions.shape[0]
+    if not (v_half.shape[0] == charges.shape[0] == masses.shape[0] == n):
+        raise ValueError("positions, v_half, charges and masses must agree on N")
 
-    nx, ny, nz = grid_shape
-    dx, dy, dz = grid_spacing
-    ox, oy, oz = grid_origin
+    if E_field is None:
+        E_field = np.zeros(3)
+    if B_field is None:
+        B_field = np.zeros(3)
 
-    rho = np.zeros(grid_shape, dtype=float)
+    # vectorized Boris push for all particles at once
+    v_half_new = boris_push(charges, masses, dt, v_half, E_field, B_field)
 
-    positions_new = positions.copy()
-    v_half_new = v_half.copy()
+    # vectorized position update (full step from half-step velocity)
+    positions_new = positions + v_half_new * dt
 
-    N = positions.shape[0]
-    for i in range(N):
-        pos = positions[i]
-        v_h = v_half[i]
-        q = charges[i]
-        m = masses[i]
-
-        # push velocity one step (Boris pusher requires E & B; we use zero E/B here placeholder)
-        E = np.zeros(3)
-        B = np.zeros(3)
-        v_h_new = boris_push(q, m, dt, v_h, E, B)
-
-        # update position using v_h_new (full step)
-        pos_new = pos + v_h_new * dt
-
-        # convert world position to grid indices and fractional coords
-        x_rel = (pos_new[0] - ox) / dx
-        y_rel = (pos_new[1] - oy) / dy
-        z_rel = (pos_new[2] - oz) / dz
-
-        # base index (lower corner)
-        xi = int(np.floor(x_rel))
-        yj = int(np.floor(y_rel))
-        zk = int(np.floor(z_rel))
-
-        pi = x_rel - xi
-        pj = y_rel - yj
-        pk = z_rel - zk
-
-        # scatter charge to grid
-        particle_to_grid_charge(rho, xi, yj, zk, pi, pj, pk, q)
-
-        positions_new[i] = pos_new
-        v_half_new[i] = v_h_new
+    # vectorized charge deposition
+    rho = scatter_charge_to_grid(grid_shape, positions_new, charges,
+                                 grid_origin, grid_spacing)
 
     return rho, positions_new, v_half_new
 

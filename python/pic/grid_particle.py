@@ -18,6 +18,105 @@ def compute_trilinear_weights(pi, pj, pk):
     return np.array([w1, w2, w3, w4, w5, w6, w7, w8], dtype=float)
 
 
+# Corner offsets matching the ordering used by g2p_weight /
+# compute_trilinear_weights: (0,0,0), (0,1,0), (1,0,0), (0,0,1),
+# (1,1,0), (1,0,1), (0,1,1), (1,1,1)
+_CORNER_OFFSETS = np.array(
+    [
+        [0, 0, 0],
+        [0, 1, 0],
+        [1, 0, 0],
+        [0, 0, 1],
+        [1, 1, 0],
+        [1, 0, 1],
+        [0, 1, 1],
+        [1, 1, 1],
+    ],
+    dtype=np.intp,
+)
+
+
+def _base_indices_and_fractions(positions, grid_shape, grid_origin, grid_spacing):
+    """Map (N,3) world positions to clamped base indices and fractions.
+
+    Base indices are clamped to [0, n-2] per axis so that base+1 stays
+    in-bounds, mirroring the scalar clamping behavior below.
+    """
+    positions = np.asarray(positions, dtype=float).reshape(-1, 3)
+    origin = np.asarray(grid_origin, dtype=float).reshape(3)
+    spacing = np.asarray(grid_spacing, dtype=float).reshape(3)
+    if np.any(spacing == 0):
+        raise ValueError("grid_spacing must be non-zero")
+
+    rel = (positions - origin) / spacing
+    base = np.floor(rel).astype(np.intp)
+    frac = rel - base
+    n = np.asarray(grid_shape, dtype=np.intp).reshape(3)
+    base = np.clip(base, 0, n - 2)
+    return base, frac
+
+
+def trilinear_weights_vec(frac):
+    """Vectorized shape-function weights.
+
+    Args:
+        frac: (N, 3) fractional coords in [0, 1].
+
+    Returns:
+        (N, 8) weight array with the same corner ordering as
+        `compute_trilinear_weights`.
+    """
+    frac = np.asarray(frac, dtype=float).reshape(-1, 3)
+    fi, fj, fk = frac[:, 0], frac[:, 1], frac[:, 2]
+    w = np.empty((frac.shape[0], 8), dtype=float)
+    w[:, 0] = (1 - fi) * (1 - fj) * (1 - fk)
+    w[:, 1] = (1 - fi) * fj * (1 - fk)
+    w[:, 2] = fi * (1 - fj) * (1 - fk)
+    w[:, 3] = (1 - fi) * (1 - fj) * fk
+    w[:, 4] = fi * fj * (1 - fk)
+    w[:, 5] = fi * (1 - fj) * fk
+    w[:, 6] = (1 - fi) * fj * fk
+    w[:, 7] = fi * fj * fk
+    return w
+
+
+def scatter_charge_to_grid(grid_shape, positions, charges,
+                           grid_origin=(0, 0, 0), grid_spacing=(1.0, 1.0, 1.0)):
+    """Deposit particle charges onto a grid (vectorized).
+
+    Replaces the per-particle loop over `particle_to_grid_charge` with a
+    single ``np.add.at`` scatter. Repeated node hits from different
+    particles accumulate correctly.
+
+    Args:
+        grid_shape: (nx, ny, nz) tuple.
+        positions: (N, 3) particle positions in world coordinates.
+        charges: (N,) particle charges.
+        grid_origin: world coords of grid origin.
+        grid_spacing: cell sizes (dx, dy, dz).
+
+    Returns:
+        np.ndarray: charge density grid of shape `grid_shape`.
+    """
+    positions = np.asarray(positions, dtype=float).reshape(-1, 3)
+    charges = np.asarray(charges, dtype=float).reshape(-1)
+    if positions.shape[0] != charges.shape[0]:
+        raise ValueError("positions and charges must have the same particle count")
+
+    rho = np.zeros(tuple(int(n) for n in grid_shape), dtype=float)
+    if positions.shape[0] == 0:
+        return rho
+
+    base, frac = _base_indices_and_fractions(positions, grid_shape,
+                                             grid_origin, grid_spacing)
+    w = trilinear_weights_vec(frac)  # (N, 8)
+    idx = base[:, None, :] + _CORNER_OFFSETS[None, :, :]  # (N, 8, 3)
+    np.add.at(rho,
+              (idx[..., 0], idx[..., 1], idx[..., 2]),
+              charges[:, None] * w)
+    return rho
+
+
 def grid_to_particle_scalar(grid, xi, yj, zk, pi, pj, pk):
     """Interpolate scalar grid value to particle using trilinear weights.
 
