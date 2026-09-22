@@ -91,4 +91,34 @@ shapes stay the same.
       implements the PIC half of the protocol (single-step and `--serve`
       persistent-worker modes).
 - [ ] C++ side: `pffdtd` does not yet write `fields.npz` / read
-      `sources.npz`. Needed before real coupled runs.
+      `sources.npz`. Implementation plan scoped below.
+
+## C++ implementation plan (scoped 2026-09-22, not yet implemented)
+
+Three pieces, ~2 days estimated:
+
+1. **`src/io/npz.h` / `npz.cpp`** (~300 lines, zero dependencies): minimal
+   uncompressed-zip reader/writer for `.npy` blobs (CRC32, npy header
+   build/parse, zip local + central directory records). Validates
+   `descr == '<f8'` and shapes on read.
+2. **Loop hooks in `src/pffdtd.cpp`**: after `Bcalc()` in the main
+   `while (Q_flag == 0)` loop, when `i % couple_rate == 0`:
+   write `fields.npz` → block-wait for `sources.npz` with matching
+   `step` → load `J`. Config via env vars `PIC_EXCHANGE_DIR` /
+   `PIC_COUPLE_RATE` (lockstep v1; lagged/pipelined later if needed).
+   Field packing repacks `EX[IDX4(i,j,k,1)]` etc. (level 1 = current;
+   on the `perf/ptr-rotation-timelevels` branch this is `tlE_cur`)
+   into `(3, nx, ny, nz)` C-order with `nx=sx+1`, `ny=sy+1`, `nz=sz+1`,
+   origin `(0,0,0)`, spacing `(dx,dy,dz)`.
+3. **Apply PIC current in the E update**: `Ecalcmod` already applies
+   `- C_MU * SIG[i][j][k] * JX` with `C_MU = dt/(2*EPSILON_0)`; the PIC
+   `J` slots in as an extra term next to the fluid `J`. Non-plasma
+   `Ecalc` needs the same term added (it currently has none).
+
+Open physics decisions (needed before implementing): Yee-staggering
+convention for the exchanged components (document half-cell offsets vs.
+interpolate to cell centers); additive vs. replacement `J`; what `rho`
+feeds (fluid density vs. diagnostics-only); coupling rate.
+
+Test plan: synthetic uniform `J` → E should respond linearly;
+round-trip `fields.npz`/`sources.npz` against the Python side.
