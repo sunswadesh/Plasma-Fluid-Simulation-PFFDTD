@@ -141,6 +141,123 @@ def _scatter_kernel(rho, px, py, pz, charges, ox, oy, oz, sx, sy, sz,
         rho[bx + 1, by + 1, bz + 1] += q * w7
 
 
+@njit(cache=True)
+def _gather_kernel(out, grid, px, py, pz, ox, oy, oz, sx, sy, sz,
+                   nx, ny, nz):
+    """Trilinear gather of a scalar grid to particle positions.
+
+    Read-only on ``grid``, so the loop is race-free and uses prange.
+    Index clamping and weight ordering match ``_scatter_kernel``.
+    ``out`` is (N,), ``grid`` is (nx, ny, nz).
+    """
+    n = px.shape[0]
+    for p in prange(n):
+        rx = (px[p] - ox) / sx
+        ry = (py[p] - oy) / sy
+        rz = (pz[p] - oz) / sz
+        bx = int(np.floor(rx))
+        by = int(np.floor(ry))
+        bz = int(np.floor(rz))
+        fx = rx - bx
+        fy = ry - by
+        fz = rz - bz
+        if bx < 0:
+            bx = 0
+        elif bx > nx - 2:
+            bx = nx - 2
+        if by < 0:
+            by = 0
+        elif by > ny - 2:
+            by = ny - 2
+        if bz < 0:
+            bz = 0
+        elif bz > nz - 2:
+            bz = nz - 2
+
+        v = (grid[bx, by, bz] * (1 - fx) * (1 - fy) * (1 - fz)
+             + grid[bx, by + 1, bz] * (1 - fx) * fy * (1 - fz)
+             + grid[bx + 1, by, bz] * fx * (1 - fy) * (1 - fz)
+             + grid[bx, by, bz + 1] * (1 - fx) * (1 - fy) * fz
+             + grid[bx + 1, by + 1, bz] * fx * fy * (1 - fz)
+             + grid[bx + 1, by, bz + 1] * fx * (1 - fy) * fz
+             + grid[bx, by + 1, bz + 1] * (1 - fx) * fy * fz
+             + grid[bx + 1, by + 1, bz + 1] * fx * fy * fz)
+        out[p] = v
+
+
+@njit(cache=True)
+def _scatter_vector_kernel(jx, jy, jz, px, py, pz, vx, vy, vz, charges,
+                           ox, oy, oz, sx, sy, sz, nx, ny, nz):
+    """Fused current deposition: J = q*v scattered with trilinear weights.
+
+    Serial loop (shared grid, same as ``_scatter_kernel``). Weights and
+    clamping identical to the scalar scatter.
+    """
+    n = px.shape[0]
+    for p in range(n):
+        rx = (px[p] - ox) / sx
+        ry = (py[p] - oy) / sy
+        rz = (pz[p] - oz) / sz
+        bx = int(np.floor(rx))
+        by = int(np.floor(ry))
+        bz = int(np.floor(rz))
+        fx = rx - bx
+        fy = ry - by
+        fz = rz - bz
+        if bx < 0:
+            bx = 0
+        elif bx > nx - 2:
+            bx = nx - 2
+        if by < 0:
+            by = 0
+        elif by > ny - 2:
+            by = ny - 2
+        if bz < 0:
+            bz = 0
+        elif bz > nz - 2:
+            bz = nz - 2
+
+        q = charges[p]
+        jx_p = q * vx[p]
+        jy_p = q * vy[p]
+        jz_p = q * vz[p]
+        w0 = (1 - fx) * (1 - fy) * (1 - fz)
+        w1 = (1 - fx) * fy * (1 - fz)
+        w2 = fx * (1 - fy) * (1 - fz)
+        w3 = (1 - fx) * (1 - fy) * fz
+        w4 = fx * fy * (1 - fz)
+        w5 = fx * (1 - fy) * fz
+        w6 = (1 - fx) * fy * fz
+        w7 = fx * fy * fz
+
+        jx[bx, by, bz] += jx_p * w0
+        jx[bx, by + 1, bz] += jx_p * w1
+        jx[bx + 1, by, bz] += jx_p * w2
+        jx[bx, by, bz + 1] += jx_p * w3
+        jx[bx + 1, by + 1, bz] += jx_p * w4
+        jx[bx + 1, by, bz + 1] += jx_p * w5
+        jx[bx, by + 1, bz + 1] += jx_p * w6
+        jx[bx + 1, by + 1, bz + 1] += jx_p * w7
+
+        jy[bx, by, bz] += jy_p * w0
+        jy[bx, by + 1, bz] += jy_p * w1
+        jy[bx + 1, by, bz] += jy_p * w2
+        jy[bx, by, bz + 1] += jy_p * w3
+        jy[bx + 1, by + 1, bz] += jy_p * w4
+        jy[bx + 1, by, bz + 1] += jy_p * w5
+        jy[bx, by + 1, bz + 1] += jy_p * w6
+        jy[bx + 1, by + 1, bz + 1] += jy_p * w7
+
+        jz[bx, by, bz] += jz_p * w0
+        jz[bx, by + 1, bz] += jz_p * w1
+        jz[bx + 1, by, bz] += jz_p * w2
+        jz[bx, by, bz + 1] += jz_p * w3
+        jz[bx + 1, by + 1, bz] += jz_p * w4
+        jz[bx + 1, by, bz + 1] += jz_p * w5
+        jz[bx, by + 1, bz + 1] += jz_p * w6
+        jz[bx + 1, by + 1, bz + 1] += jz_p * w7
+
+
 def boris_push_numba(q, m, dt, v_prev_half, E_field, B_field):
     """Numba version of :func:`pic.boris_push.boris_push`.
 
@@ -215,3 +332,78 @@ def scatter_charge_to_grid_numba(grid_shape, positions, charges,
                     charges, origin[0], origin[1], origin[2],
                     spacing[0], spacing[1], spacing[2], nx, ny, nz)
     return rho
+
+
+def gather_field_to_particles(field, positions,
+                              grid_origin=(0, 0, 0),
+                              grid_spacing=(1.0, 1.0, 1.0)):
+    """Trilinear gather of grid field(s) to particle positions (numba).
+
+    Args:
+        field: (nx, ny, nz) scalar field or (3, nx, ny, nz) vector field.
+        positions: (N, 3) particle positions in world coordinates.
+
+    Returns:
+        (N,) for scalar input, (N, 3) for vector input. Same clamping
+        semantics as the scatter kernels.
+    """
+    positions = np.ascontiguousarray(positions, dtype=float).reshape(-1, 3)
+    origin = np.asarray(grid_origin, dtype=float).reshape(3)
+    spacing = np.asarray(grid_spacing, dtype=float).reshape(3)
+    if np.any(spacing == 0):
+        raise ValueError("grid_spacing must be non-zero")
+
+    field = np.ascontiguousarray(field, dtype=float)
+    vector = (field.ndim == 4)
+    if vector:
+        if field.shape[0] != 3:
+            raise ValueError("vector field must have shape (3, nx, ny, nz)")
+        nx, ny, nz = (int(n) for n in field.shape[1:])
+    elif field.ndim == 3:
+        nx, ny, nz = (int(n) for n in field.shape)
+    else:
+        raise ValueError("field must be (nx, ny, nz) or (3, nx, ny, nz)")
+
+    n = positions.shape[0]
+    args = (positions[:, 0], positions[:, 1], positions[:, 2],
+            origin[0], origin[1], origin[2],
+            spacing[0], spacing[1], spacing[2], nx, ny, nz)
+    if not vector:
+        out = np.empty(n, dtype=float)
+        _gather_kernel(out, field, *args)
+        return out
+    out = np.empty((n, 3), dtype=float)
+    for c in range(3):
+        _gather_kernel(out[:, c], field[c], *args)
+    return out
+
+
+def scatter_current_to_grid_numba(grid_shape, positions, velocities, charges,
+                                  grid_origin=(0, 0, 0),
+                                  grid_spacing=(1.0, 1.0, 1.0)):
+    """Deposit J = q*v onto the grid (numba).
+
+    Returns (3, nx, ny, nz) float64. Same weights/clamping as the charge
+    scatter, so ``J[c].sum() == (charges * velocities[:, c]).sum()``.
+    """
+    positions = np.ascontiguousarray(positions, dtype=float).reshape(-1, 3)
+    velocities = np.ascontiguousarray(velocities, dtype=float).reshape(-1, 3)
+    charges = np.ascontiguousarray(charges, dtype=float).reshape(-1)
+    n = positions.shape[0]
+    if not (velocities.shape[0] == charges.shape[0] == n):
+        raise ValueError("positions, velocities and charges must agree on N")
+    origin = np.asarray(grid_origin, dtype=float).reshape(3)
+    spacing = np.asarray(grid_spacing, dtype=float).reshape(3)
+    if np.any(spacing == 0):
+        raise ValueError("grid_spacing must be non-zero")
+
+    nx, ny, nz = (int(v) for v in grid_shape)
+    J = np.zeros((3, nx, ny, nz), dtype=float)
+    if n == 0:
+        return J
+    _scatter_vector_kernel(J[0], J[1], J[2],
+                           positions[:, 0], positions[:, 1], positions[:, 2],
+                           velocities[:, 0], velocities[:, 1], velocities[:, 2],
+                           charges, origin[0], origin[1], origin[2],
+                           spacing[0], spacing[1], spacing[2], nx, ny, nz)
+    return J

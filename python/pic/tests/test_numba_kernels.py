@@ -81,3 +81,79 @@ def test_full_step_numba_matches_numpy(particles):
     np.testing.assert_array_equal(r1, r2)
     np.testing.assert_allclose(pos1, pos2, rtol=1e-12, atol=1e-14)
     np.testing.assert_allclose(v1, v2, rtol=1e-12, atol=1e-14)
+
+
+def _gather_reference(field, positions, origin=(0, 0, 0), spacing=(1, 1, 1)):
+    """Pure-numpy trilinear gather reference (scalar field)."""
+    from pic.grid_particle import _base_indices_and_fractions, trilinear_weights_vec
+    base, frac = _base_indices_and_fractions(positions, field.shape, origin, spacing)
+    w = trilinear_weights_vec(frac)
+    offs = np.array([[0, 0, 0], [0, 1, 0], [1, 0, 0], [0, 0, 1],
+                     [1, 1, 0], [1, 0, 1], [0, 1, 1], [1, 1, 1]])
+    idx = base[:, None, :] + offs[None, :, :]
+    return (w * field[idx[..., 0], idx[..., 1], idx[..., 2]]).sum(axis=1)
+
+
+def test_gather_scalar_matches_reference():
+    from pic.numba_kernels import gather_field_to_particles
+    rng = np.random.default_rng(7)
+    grid = rng.random((16, 16, 16))
+    pos = rng.random((500, 3)) * 20 - 2  # some out-of-bounds (clamp)
+    a = _gather_reference(grid, pos)
+    b = gather_field_to_particles(grid, pos)
+    assert b.shape == (500,)
+    np.testing.assert_allclose(a, b, rtol=1e-12, atol=1e-14)
+
+
+def test_gather_vector_matches_reference():
+    from pic.numba_kernels import gather_field_to_particles
+    rng = np.random.default_rng(11)
+    field = rng.random((3, 16, 16, 16))
+    pos = rng.random((500, 3)) * 14 + 1
+    b = gather_field_to_particles(field, pos)
+    assert b.shape == (500, 3)
+    for c in range(3):
+        np.testing.assert_allclose(_gather_reference(field[c], pos), b[:, c],
+                                   rtol=1e-12, atol=1e-14)
+
+
+def test_gather_matches_scalar_helper():
+    from pic.numba_kernels import gather_field_to_particles
+    from pic.grid_particle import grid_to_particle_scalar, _base_indices_and_fractions
+    rng = np.random.default_rng(13)
+    grid = rng.random((10, 10, 10))
+    pos = rng.random((20, 3)) * 8 + 1
+    base, frac = _base_indices_and_fractions(pos, grid.shape, (0, 0, 0), (1, 1, 1))
+    got = gather_field_to_particles(grid, pos)
+    for p in range(20):
+        xi, yj, zk = (int(v) for v in base[p])
+        expect = grid_to_particle_scalar(grid, xi, yj, zk, *frac[p])
+        assert got[p] == pytest.approx(expect)
+
+
+def test_scatter_current_conservation_and_matches_numpy():
+    from pic.numba_kernels import scatter_current_to_grid_numba
+    from pic.pic_driver import _scatter_current_numpy
+    rng = np.random.default_rng(17)
+    n = 3000
+    pos = rng.random((n, 3)) * 60 - 5
+    vel = rng.random((n, 3)) - 0.5
+    q = rng.random(n) + 0.5
+    J = scatter_current_to_grid_numba((32, 32, 32), pos, vel, q)
+    assert J.shape == (3, 32, 32, 32)
+    for c in range(3):  # charge-weighted momentum conservation
+        assert J[c].sum() == pytest.approx((q * vel[:, c]).sum())
+    Jn = _scatter_current_numpy((32, 32, 32), pos, vel, q, (0, 0, 0), (1, 1, 1))
+    np.testing.assert_array_equal(J, Jn)  # bit-identical
+
+
+def test_driver_return_current(particles):
+    p = particles
+    kw = dict(charges=p["q"], masses=p["m"], dt=p["dt"], grid_shape=(32, 32, 32),
+              E_field=p["E"], B_field=p["B"], return_current=True)
+    out = run_pic_single_step(p["positions"], p["v"], use_numba=True, **kw)
+    assert len(out) == 4
+    rho, pos, vel, J = out
+    assert J.shape == (3, 32, 32, 32)
+    for c in range(3):
+        assert J[c].sum() == pytest.approx((p["q"] * vel[:, c]).sum())
