@@ -19,4 +19,15 @@
  // Size: (sx+1)*(sy+1)*(sz+1)*2
  #define IDX4(i,j,k,l) ( (((i)*(sy+1) + (j))*(sz+1) + (k))*2 + (l) )
 
+// Time-level rotation indices.
+//
+// The field/plasma updates used to copy whole grids every step just to keep
+// time history ("save old values"). Instead, these indices rotate which level
+// slot means "old"/"current", so no copies are needed:
+//   - 2-level E/B fields: *_old holds the previous step, *_cur the newest.
+//   - 3-level U/N fields: *_0 oldest, *_1 middle, *_2 newest.
+// Each kernel swaps/rotates its own indices once per step, after its update.
+extern int tlE_old, tlE_cur, tlB_old, tlB_cur;
+extern int tlU_0, tlU_1, tlU_2, tlN_0, tlN_1, tlN_2;
+
 #endif // CONSTANTS_H

@@ -26,6 +26,12 @@ double *N;					// Density (Flat 1D)
 double *SIG;					// Conductivity (Flat 1D)
 double *QF;                                   // Charging Factor (Flat 1D)
 
+// Time-level rotation indices for the 3-level plasma arrays
+// (declared extern in constants.h). The per-step "save old values" copies
+// are gone: each kernel writes the new value into the oldest slot (tl*_0)
+// and the (oldest, middle, newest) roles rotate once per step.
+int tlU_0 = 0, tlU_1 = 1, tlU_2 = 2, tlN_0 = 0, tlN_1 = 1, tlN_2 = 2;
+
 // Externs for Field Arrays (defined in pffdtd.cpp or field modules, declared in plasma.h used here)
 // They are included via plasma.h
 
@@ -131,52 +137,53 @@ void Ucalc()
   double EeY = UZ_0 * BX_0 - UX_0 * BZ_0;
   double EeZ = UX_0 * BY_0 - UY_0 * BX_0;
 
-  #pragma omp parallel for private(j,k,m,ABX,ABY,ABZ,EeX,EeY,EeZ)
+  #pragma omp parallel for private(j,k,m,ABX,ABY,ABZ)
   for (i=4;i<sx-3;i++)
     for (j=4;j<sy-3;j++)
       for (k=4;k<sz-3;k++)
+      {
 	for (m=0;m<NS;m++)
 	{
-	  // Save Old Values
-	  UX[IDX5(i,j,k,0,m)] = UX[IDX5(i,j,k,1,m)];
-	  UX[IDX5(i,j,k,1,m)] = UX[IDX5(i,j,k,2,m)];
-	  UY[IDX5(i,j,k,0,m)] = UY[IDX5(i,j,k,1,m)];
-	  UY[IDX5(i,j,k,1,m)] = UY[IDX5(i,j,k,2,m)];
-	  UZ[IDX5(i,j,k,0,m)] = UZ[IDX5(i,j,k,1,m)];
-	  UZ[IDX5(i,j,k,1,m)] = UZ[IDX5(i,j,k,2,m)];
-	  
-	  // Calculate averages(using linear techniques set B1=0)
-	  ABX = (BX[IDX4(i,j,k,0)] + BX[IDX4(i,j+1,k,0)] + BX[IDX4(i,j+1,k+1,0)] + BX[IDX4(i,j,k+1,0)]
-	        + BX[IDX4(i,j,k,1)] + BX[IDX4(i,j+1,k,1)] + BX[IDX4(i,j+1,k+1,1)] + BX[IDX4(i,j,k+1,1)])/8;
-	  ABY = (BY[IDX4(i,j,k,0)] + BY[IDX4(i+1,j,k,0)] + BY[IDX4(i+1,j,k+1,0)] + BY[IDX4(i,j,k+1,0)]
-	        + BY[IDX4(i,j,k,1)] + BY[IDX4(i+1,j,k,1)] + BY[IDX4(i+1,j,k+1,1)] + BY[IDX4(i,j,k+1,1)])/8;
-	  ABZ = (BZ[IDX4(i,j,k,0)] + BZ[IDX4(i+1,j,k,0)] + BZ[IDX4(i+1,j+1,k,0)] + BZ[IDX4(i,j+1,k,0)]
-	        + BZ[IDX4(i,j,k,1)] + BZ[IDX4(i+1,j,k,1)] + BZ[IDX4(i+1,j+1,k,1)] + BZ[IDX4(i,j+1,k,1)])/8;
+	  // Time-level rotation: no "save old values" copies. The new value is
+	  // written into the oldest slot (tlU_0); the (oldest, middle, newest)
+	  // roles rotate once per step after the loop below.
+
+	  // Calculate averages (using linear techniques set B1=0)
+	  ABX = (BX[IDX4(i,j,k,tlB_old)] + BX[IDX4(i,j+1,k,tlB_old)] + BX[IDX4(i,j+1,k+1,tlB_old)] + BX[IDX4(i,j,k+1,tlB_old)]
+		+ BX[IDX4(i,j,k,tlB_cur)] + BX[IDX4(i,j+1,k,tlB_cur)] + BX[IDX4(i,j+1,k+1,tlB_cur)] + BX[IDX4(i,j,k+1,tlB_cur)])/8;
+	  ABY = (BY[IDX4(i,j,k,tlB_old)] + BY[IDX4(i+1,j,k,tlB_old)] + BY[IDX4(i+1,j,k+1,tlB_old)] + BY[IDX4(i,j,k+1,tlB_old)]
+		+ BY[IDX4(i,j,k,tlB_cur)] + BY[IDX4(i+1,j,k,tlB_cur)] + BY[IDX4(i+1,j,k+1,tlB_cur)] + BY[IDX4(i,j,k+1,tlB_cur)])/8;
+	  ABZ = (BZ[IDX4(i,j,k,tlB_old)] + BZ[IDX4(i+1,j,k,tlB_old)] + BZ[IDX4(i+1,j+1,k,tlB_old)] + BZ[IDX4(i,j+1,k,tlB_old)]
+		+ BZ[IDX4(i,j,k,tlB_cur)] + BZ[IDX4(i+1,j,k,tlB_cur)] + BZ[IDX4(i+1,j+1,k,tlB_cur)] + BZ[IDX4(i,j+1,k,tlB_cur)])/8;
 
 	  // Assuming plasma remains consant at boundary (i.e. delta n = 0) so warm plasma equaitions can be used throughout
 	  // Note:NE is at time [2] since density has not been calculated yet
 	  // Calculate UX
-	  UX[IDX5(i,j,k,2,m)] = UX[IDX5(i,j,k,0,m)] + (QF[IDX3(i,j,k)] * (Q[m]*dt * ( EX[IDX4(i,j,k,1)] + EX[IDX4(i+1,j,k,1)] )
-							         + Q[m]*C_U_1 * ( UY[IDX5(i,j,k,1,m)] * BZ_0 + UY_0 * ABZ
-										- UZ[IDX5(i,j,k,1,m)] * BY_0 - UZ_0 * ABY
+	  UX[IDX5(i,j,k,tlU_0,m)] = UX[IDX5(i,j,k,tlU_1,m)] + (QF[IDX3(i,j,k)] * (Q[m]*dt * ( EX[IDX4(i,j,k,tlE_cur)] + EX[IDX4(i+1,j,k,tlE_cur)] )
+							         + Q[m]*C_U_1 * ( UY[IDX5(i,j,k,tlU_2,m)] * BZ_0 + UY_0 * ABZ
+										- UZ[IDX5(i,j,k,tlU_2,m)] * BY_0 - UZ_0 * ABY
 										+ EeX) )
-						  - C_U_TX * ( N[IDX5(i+1,j,k,2,m)] - N[IDX5(i-1,j,k,2,m)] ) / N_0[m] ) / M[m]
-	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UX[IDX5(i,j,k,1,m)] - UX_0 );
+						  - C_U_TX * ( N[IDX5(i+1,j,k,tlN_2,m)] - N[IDX5(i-1,j,k,tlN_2,m)] ) / N_0[m] ) / M[m]
+	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UX[IDX5(i,j,k,tlU_2,m)] - UX_0 );
 	  // Calculate UY
-	  UY[IDX5(i,j,k,2,m)] = UY[IDX5(i,j,k,0,m)] + (QF[IDX3(i,j,k)] * (Q[m]*dt * ( EY[IDX4(i,j,k,1)] + EY[IDX4(i,j+1,k,1)] )
-								 + Q[m]*C_U_1 * ( UZ[IDX5(i,j,k,1,m)] * BX_0 + UZ_0 * ABX
-										- UX[IDX5(i,j,k,1,m)] * BZ_0 - UX_0 * ABZ
+	  UY[IDX5(i,j,k,tlU_0,m)] = UY[IDX5(i,j,k,tlU_1,m)] + (QF[IDX3(i,j,k)] * (Q[m]*dt * ( EY[IDX4(i,j,k,tlE_cur)] + EY[IDX4(i,j+1,k,tlE_cur)] )
+								 + Q[m]*C_U_1 * ( UZ[IDX5(i,j,k,tlU_2,m)] * BX_0 + UZ_0 * ABX
+										- UX[IDX5(i,j,k,tlU_2,m)] * BZ_0 - UX_0 * ABZ
 								                + EeY) )
-						  - C_U_TY * ( N[IDX5(i,j+1,k,2,m)] - N[IDX5(i,j-1,k,2,m)] ) / N_0[m] ) / M[m]
-	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UY[IDX5(i,j,k,1,m)] - UY_0 );
+						  - C_U_TY * ( N[IDX5(i,j+1,k,tlN_2,m)] - N[IDX5(i,j-1,k,tlN_2,m)] ) / N_0[m] ) / M[m]
+	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UY[IDX5(i,j,k,tlU_2,m)] - UY_0 );
 	  // Calculate UZ
-	  UZ[IDX5(i,j,k,2,m)] = UZ[IDX5(i,j,k,0,m)] + (QF[IDX3(i,j,k)] * (Q[m]*dt * ( EZ[IDX4(i,j,k,1)] + EZ[IDX4(i,j,k+1,1)] )
-								 + Q[m]*C_U_1 * ( UX[IDX5(i,j,k,1,m)] * BY_0 + UX_0 * ABY
-										- UY[IDX5(i,j,k,1,m)] * BX_0 - UY_0 * ABX
+	  UZ[IDX5(i,j,k,tlU_0,m)] = UZ[IDX5(i,j,k,tlU_1,m)] + (QF[IDX3(i,j,k)] * (Q[m]*dt * ( EZ[IDX4(i,j,k,tlE_cur)] + EZ[IDX4(i,j,k+1,tlE_cur)] )
+								 + Q[m]*C_U_1 * ( UX[IDX5(i,j,k,tlU_2,m)] * BY_0 + UX_0 * ABY
+										- UY[IDX5(i,j,k,tlU_2,m)] * BX_0 - UY_0 * ABX
 										+ EeZ ) )
-						  - C_U_TZ * ( N[IDX5(i,j,k+1,2,m)] - N[IDX5(i,j,k-1,2,m)] ) / N_0[m] ) / M[m]
-	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UZ[IDX5(i,j,k,1,m)] - UZ_0 );
-	}
+						  - C_U_TZ * ( N[IDX5(i,j,k+1,tlN_2,m)] - N[IDX5(i,j,k-1,tlN_2,m)] ) / N_0[m] ) / M[m]
+	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UZ[IDX5(i,j,k,tlU_2,m)] - UZ_0 );
+	} // end species loop
+      } // end k-loop block
+
+  // Rotate the U time-level roles for the next step (no data copies).
+  { int t = tlU_0; tlU_0 = tlU_1; tlU_1 = tlU_2; tlU_2 = t; }
 }
 
 void Ncalc()
@@ -192,21 +199,24 @@ void Ncalc()
       for(k=5;k<sz-4;k++)
 	  for(m=0;m<NS;m++)
 	  {
-	      // Save Old Values
-	      N[IDX5(i,j,k,0,m)] = N[IDX5(i,j,k,1,m)];
-	      N[IDX5(i,j,k,1,m)] = N[IDX5(i,j,k,2,m)];
+	      // Time-level rotation: no "save old values" copies. The new value
+	      // is written into the oldest slot (tlN_0); roles rotate once per
+	      // step after the loop below.
 
 	      // Calculate Body (Expanded 1st order terms)
 	      // Note: the Time difference in the density (last half of the equation) is due to the fact that the cells
 	      // "ahead" of the current calculation have not been updated in time
-	      N[IDX5(i,j,k,2,m)] = N[IDX5(i,j,k,0,m)] - ( N_0[m] * ( ( UX[IDX5(i+1,j,k,1,m)] - UX[IDX5(i-1,j,k,1,m)] ) * C_N_tx
-								 + ( UY[IDX5(i,j+1,k,1,m)] - UY[IDX5(i,j-1,k,1,m)] ) * C_N_ty
-								 + ( UZ[IDX5(i,j,k+1,1,m)] - UZ[IDX5(i,j,k-1,1,m)] ) * C_N_tz )
-						      + UX_0 * ( N[IDX5(i+1,j,k,1,m)] - N[IDX5(i-1,j,k,1,m)] ) * C_N_tx
-						      + UY_0 * ( N[IDX5(i,j+1,k,1,m)] - N[IDX5(i,j-1,k,1,m)] ) * C_N_ty
-						      + UZ_0 * ( N[IDX5(i,j,k+1,1,m)] - N[IDX5(i,j,k-1,1,m)] ) * C_N_tz );
+	      N[IDX5(i,j,k,tlN_0,m)] = N[IDX5(i,j,k,tlN_1,m)] - ( N_0[m] * ( ( UX[IDX5(i+1,j,k,tlU_1,m)] - UX[IDX5(i-1,j,k,tlU_1,m)] ) * C_N_tx
+								 + ( UY[IDX5(i,j+1,k,tlU_1,m)] - UY[IDX5(i,j-1,k,tlU_1,m)] ) * C_N_ty
+								 + ( UZ[IDX5(i,j,k+1,tlU_1,m)] - UZ[IDX5(i,j,k-1,tlU_1,m)] ) * C_N_tz )
+						      + UX_0 * ( N[IDX5(i+1,j,k,tlN_1,m)] - N[IDX5(i-1,j,k,tlN_1,m)] ) * C_N_tx
+						      + UY_0 * ( N[IDX5(i,j+1,k,tlN_1,m)] - N[IDX5(i,j-1,k,tlN_1,m)] ) * C_N_ty
+						      + UZ_0 * ( N[IDX5(i,j,k+1,tlN_1,m)] - N[IDX5(i,j,k-1,tlN_1,m)] ) * C_N_tz );
 	      
 	}
+
+  // Rotate the N time-level roles for the next step (no data copies).
+  { int t = tlN_0; tlN_0 = tlN_1; tlN_1 = tlN_2; tlN_2 = t; }
 }
 
 void Ecalcmod()
@@ -218,15 +228,19 @@ void Ecalcmod()
   double C_MU = dt/(2*EPSILON_0);
   double JX, JY, JZ;
 
+  // Rotate the E time levels first: *_old is the buffer to read (previous
+  // step), *_cur the buffer to write. After the update below, *_cur holds
+  // the newest values for the rest of this step (no data copies).
+  { int t = tlE_old; tlE_old = tlE_cur; tlE_cur = t; }
+
   #pragma omp parallel for private(j,k,m,JX,JY,JZ)
   for (i=2;i<sx;i++)
     for (j=2;j<sy;j++)
       for (k=2;k<sz;k++)
 	{
-	  // Save old E
-	  EX[IDX4(i,j,k,0)] = EX[IDX4(i,j,k,1)];
-	  EY[IDX4(i,j,k,0)] = EY[IDX4(i,j,k,1)];
-	  EZ[IDX4(i,j,k,0)] = EZ[IDX4(i,j,k,1)];
+	  // Time-level rotation: read the previous E level, write the current
+	  // one. The old per-step "save old E" copies are eliminated; the level
+	  // pair was swapped once at the start of this function (see above).
 
 	  // Calculate current from plasma
 	  JX = 0.0;
@@ -234,26 +248,26 @@ void Ecalcmod()
 	  JZ = 0.0;
 	  for (m=0;m<NS;m++)
 	  {
-	      JX = JX + Q[m] * ( N_0[m] * (UX[IDX5(i,j,k,2,m)] + UX[IDX5(i-1,j,k,2,m)]) +  UX_0 * ( N[IDX5(i,j,k,2,m)] + N[IDX5(i-1,j,k,2,m)]) + 2 * N_0[m] * UX_0 );
-	      JY = JY + Q[m] * ( N_0[m] * (UY[IDX5(i,j,k,2,m)] + UY[IDX5(i,j-1,k,2,m)]) +  UY_0 * ( N[IDX5(i,j,k,2,m)] + N[IDX5(i,j-1,k,2,m)]) + 2 * N_0[m] * UY_0 );
-	      JZ = JZ + Q[m] * ( N_0[m] * (UZ[IDX5(i,j,k,2,m)] + UZ[IDX5(i,j,k-1,2,m)]) +  UZ_0 * ( N[IDX5(i,j,k,2,m)] + N[IDX5(i,j,k-1,2,m)]) + 2 * N_0[m] * UZ_0 );
+	      JX = JX + Q[m] * ( N_0[m] * (UX[IDX5(i,j,k,tlU_2,m)] + UX[IDX5(i-1,j,k,tlU_2,m)]) +  UX_0 * ( N[IDX5(i,j,k,tlN_2,m)] + N[IDX5(i-1,j,k,tlN_2,m)]) + 2 * N_0[m] * UX_0 );
+	      JY = JY + Q[m] * ( N_0[m] * (UY[IDX5(i,j,k,tlU_2,m)] + UY[IDX5(i,j-1,k,tlU_2,m)]) +  UY_0 * ( N[IDX5(i,j,k,tlN_2,m)] + N[IDX5(i,j-1,k,tlN_2,m)]) + 2 * N_0[m] * UY_0 );
+	      JZ = JZ + Q[m] * ( N_0[m] * (UZ[IDX5(i,j,k,tlU_2,m)] + UZ[IDX5(i,j,k-1,tlU_2,m)]) +  UZ_0 * ( N[IDX5(i,j,k,tlN_2,m)] + N[IDX5(i,j,k-1,tlN_2,m)]) + 2 * N_0[m] * UZ_0 );
 	  }
 
 
 	  // Calculate the body
 	  // Calculate Ex
-	  EX[IDX4(i,j,k,1)] = EX[IDX4(i,j,k,0)] + ( ( BZ[IDX4(i,j+1,k,1)] - BZ[IDX4(i,j,k,1)] ) * C_dy
-					    - ( BY[IDX4(i,j,k+1,1)] - BY[IDX4(i,j,k,1)] ) * C_dz
+	  EX[IDX4(i,j,k,tlE_cur)] = EX[IDX4(i,j,k,tlE_old)] + ( ( BZ[IDX4(i,j+1,k,tlB_cur)] - BZ[IDX4(i,j,k,tlB_cur)] ) * C_dy
+					    - ( BY[IDX4(i,j,k+1,tlB_cur)] - BY[IDX4(i,j,k,tlB_cur)] ) * C_dz
 					    - C_MU * SIG[IDX3(i,j,k)] * JX ) * ERX[IDX3(i,j,k)];
 		
 	  // Calculate Ey
-	  EY[IDX4(i,j,k,1)] = EY[IDX4(i,j,k,0)] + ( ( BX[IDX4(i,j,k+1,1)] - BX[IDX4(i,j,k,1)] ) * C_dz
-					    - ( BZ[IDX4(i+1,j,k,1)] - BZ[IDX4(i,j,k,1)] ) * C_dx
+	  EY[IDX4(i,j,k,tlE_cur)] = EY[IDX4(i,j,k,tlE_old)] + ( ( BX[IDX4(i,j,k+1,tlB_cur)] - BX[IDX4(i,j,k,tlB_cur)] ) * C_dz
+					    - ( BZ[IDX4(i+1,j,k,tlB_cur)] - BZ[IDX4(i,j,k,tlB_cur)] ) * C_dx
 					    - C_MU * SIG[IDX3(i,j,k)] * JY ) * ERY[IDX3(i,j,k)];
 		
 	  // Calculate Ez
-	  EZ[IDX4(i,j,k,1)] = EZ[IDX4(i,j,k,0)] + ( ( BY[IDX4(i+1,j,k,1)] - BY[IDX4(i,j,k,1)] ) * C_dx
-					    - ( BX[IDX4(i,j+1,k,1)] - BX[IDX4(i,j,k,1)] ) * C_dy
+	  EZ[IDX4(i,j,k,tlE_cur)] = EZ[IDX4(i,j,k,tlE_old)] + ( ( BY[IDX4(i+1,j,k,tlB_cur)] - BY[IDX4(i,j,k,tlB_cur)] ) * C_dx
+					    - ( BX[IDX4(i,j+1,k,tlB_cur)] - BX[IDX4(i,j,k,tlB_cur)] ) * C_dy
 					    - C_MU * SIG[IDX3(i,j,k)] * JZ ) * ERZ[IDX3(i,j,k)];
 	}
 }
