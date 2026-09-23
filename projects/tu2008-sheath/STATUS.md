@@ -21,7 +21,7 @@ Last updated: 2026-09-10
 |-------|--------|-------|
 | 0 — Campaign chronicle | **Complete (archive)** | Phases 0–8 evidence under `paper0_.../analysis/` |
 | 1 — Static \(C_\mathrm{sh}\) | **Active** | Radio Science draft + \(C_\mathrm{eff}\) done; free-space still open |
-| 2 — Oscillating boundary | **Soft-edge re-test** | Hard pilot done; soft \(r_s\) update implemented; re-run in progress |
+| 2 — Oscillating boundary | **Soft confirmed** | Out-of-bracket \(Z\) survives soft edge; \(\Delta r\) scan next |
 | 3 — Self-consistent | Gated | No implementation until Paper 1 (+ ideally 2) |
 
 ## Campaign phases (raw archive in `validation/`)
@@ -76,5 +76,5 @@ Last updated: 2026-09-10
 ## Next actions
 
 1. Free-space CW + author metadata for Paper 1 submission polish
-2. Paper 2 soft-edge pilot (`-OutTag soft`); if offset survives → \(\Delta r\)/phase scan
+2. Paper 2 soft \(\Delta r\) scan; then phase; refine Radio Science draft
 3. Paper 3 remains gated

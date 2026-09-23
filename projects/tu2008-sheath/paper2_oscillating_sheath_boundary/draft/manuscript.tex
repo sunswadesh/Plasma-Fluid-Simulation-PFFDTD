@@ -103,13 +103,16 @@ The pilot reported here uses \(f=700\,\mathrm{kHz}\), \(r_{s0}=4\), \(\Delta r=1
 \section{Results}
 \label{sec:results}
 
-Table~\ref{tab:pilotZ} lists fundamental-frequency phasors.
-The two static jackets differ modestly (\(|Z_5-Z_4|\approx 6.0\times 10^{3}\,\Omega\)), as expected for a one-cell thickness change.
+\subsection{Hard-staircase pilot}
+\label{sec:hard}
+
+Table~\ref{tab:pilotZ} lists fundamental-frequency phasors for the original integer-threshold update.
+The two static jackets differ modestly (\(|Z_5-Z_4|\approx 6.0\times 10^{3}\,\Omega\)).
 The oscillating case does \emph{not} fall between them: \(\mathrm{Re}\{Z\}\) increases by a factor of about four relative to the static mean radius, while \(\arg(Z)\) moves from \(\approx -70^\circ\) to \(\approx -31^\circ\).
-In the complex plane (Figure~\ref{fig:Zcomplex}), the distance from the oscillating phasor to the static bracket segment is \(\approx 5.6\times 10^{4}\,\Omega\), about nine times the bracket span.
+In the complex plane (Figure~\ref{fig:Zcomplex}), the distance from the oscillating phasor to the static bracket segment is about nine times the bracket span.
 
 \begin{table}
-\caption{Pilot phasor feed impedance at \(700\,\mathrm{kHz}\) (last 50\% of each trace).}
+\caption{Hard-staircase pilot phasor \(Z\) at \(700\,\mathrm{kHz}\) (last 50\% of each trace).}
 \label{tab:pilotZ}
 \centering
 \begin{tabular}{lcccc}
@@ -118,53 +121,77 @@ Case & \(\mathrm{Re}\{Z\}\) ($\Omega$) & \(\mathrm{Im}\{Z\}\) ($\Omega$) & $|Z|$
 \hline
 Static $r_{s0}=4$ & $1.76\times 10^{4}$ & $-4.75\times 10^{4}$ & $5.06\times 10^{4}$ & $-69.7$ \\
 Static $r_{s0}+1=5$ & $1.42\times 10^{4}$ & $-4.26\times 10^{4}$ & $4.49\times 10^{4}$ & $-71.6$ \\
-Oscillating $\Delta r=1$ & $7.31\times 10^{4}$ & $-4.32\times 10^{4}$ & $8.49\times 10^{4}$ & $-30.6$ \\
+Oscillating $\Delta r=1$ (hard) & $7.31\times 10^{4}$ & $-4.32\times 10^{4}$ & $8.49\times 10^{4}$ & $-30.6$ \\
 \hline
 \end{tabular}
 \end{table}
 
 \begin{figure}
 \noindent\includegraphics[width=\textwidth]{pilot_Z_complex.png}
-\caption{Complex-plane phasor \(Z\) at \(700\,\mathrm{kHz}\). The dashed line is the static bracket between \(r_{s0}=4\) and \(r_{s0}+1=5\). The oscillating point lies far off that segment.}
+\caption{Hard pilot: complex-plane phasor \(Z\) at \(700\,\mathrm{kHz}\). The oscillating point lies far off the static bracket.}
 \label{fig:Zcomplex}
 \end{figure}
 
-Figure~\ref{fig:VI} shows the last few drive cycles.
-Voltage waveforms overlay (voltage drive).
-Static currents remain nearly sinusoidal; the oscillating-sheath current develops large high-frequency spikes coincident with integer radius updates.
-Component bars (Figure~\ref{fig:Zbars}) emphasize that the primary excursion is in \(\mathrm{Re}\{Z\}\) and \(|Z|\), not a small interpolation of the static reactances.
+Figure~\ref{fig:VI} shows late-time feed current with large spikes at integer radius updates.
 
 \begin{figure}
 \noindent\includegraphics[width=\textwidth]{pilot_VI_last_cycles.png}
-\caption{Late-time feed voltage and current. Oscillating-sheath current shows staircasing-related spikes absent in the static controls.}
+\caption{Hard pilot: late-time \(V\) and \(I\). Oscillating current shows staircasing spikes.}
 \label{fig:VI}
+\end{figure}
+
+\subsection{Soft-edge re-test}
+\label{sec:soft}
+
+To test whether the offset is only a staircasing artifact, we re-ran the same trio with a one-cell soft \(N_0\) blend and no hard density floor on updates (Table~\ref{tab:pilotZsoft}, Figure~\ref{fig:Zsoft}).
+Static controls reproduce the hard campaign.
+The oscillating soft phasor shifts somewhat (\(\mathrm{Re}\{Z\}\approx 6.65\times 10^{4}\,\Omega\), \(\arg Z\approx -41^\circ\)) but remains \(\approx 8.4\times\) the bracket span off the static segment.
+Feed-current RMS moves closer to the static cases, so soft edge reduces impulsive loading while preserving the qualitative out-of-bracket result.
+
+\begin{table}
+\caption{Soft-edge pilot phasor \(Z\) at \(700\,\mathrm{kHz}\).}
+\label{tab:pilotZsoft}
+\centering
+\begin{tabular}{lcccc}
+\hline
+Case & \(\mathrm{Re}\{Z\}\) ($\Omega$) & \(\mathrm{Im}\{Z\}\) ($\Omega$) & $|Z|$ ($\Omega$) & $\arg Z$ (deg) \\
+\hline
+Static $r_{s0}=4$ & $1.76\times 10^{4}$ & $-4.75\times 10^{4}$ & $5.06\times 10^{4}$ & $-69.7$ \\
+Static $r_{s0}+1=5$ & $1.42\times 10^{4}$ & $-4.26\times 10^{4}$ & $4.49\times 10^{4}$ & $-71.6$ \\
+Oscillating $\Delta r=1$ (soft) & $6.65\times 10^{4}$ & $-5.79\times 10^{4}$ & $8.82\times 10^{4}$ & $-41.0$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}
+\noindent\includegraphics[width=\textwidth]{pilot_Z_complex_soft.png}
+\caption{Soft-edge pilot: oscillating \(Z\) remains far from the static bracket.}
+\label{fig:Zsoft}
 \end{figure}
 
 \begin{figure}
 \noindent\includegraphics[width=0.85\textwidth]{pilot_Z_bars.png}
-\caption{Phasor \(\mathrm{Re}\{Z\}\), \(\mathrm{Im}\{Z\}\), and \(|Z|\) for the three pilot cases.}
+\caption{Hard-pilot phasor components (for reference).}
 \label{fig:Zbars}
 \end{figure}
 
 \section{Discussion}
 \label{sec:discussion}
 
-The pilot rejects the null hypothesis that kinematic \(r_s(t)\) is indistinguishable from quasi-static sampling of \(r_{s0}\) and \(r_{s0}+\Delta r\) at this tone and amplitude.
-That is the central Paper~2 question in miniature: prescribed boundary motion changes the feed diagnostic beyond thickness brackets.
+Both hard and soft pilots reject the null that kinematic \(r_s(t)\) is indistinguishable from quasi-static sampling of \(r_{s0}\) and \(r_{s0}+\Delta r\) at this tone and amplitude.
+Soft edge changes the oscillating point and reduces impulsive current relative to hard staircasing, but the out-of-bracket signature \emph{survives}.
+That strengthens the claim that prescribed boundary motion matters in this engine beyond thickness brackets alone.
 
-Two caveats are essential.
-First, the staircased integer mask injects impulsive current structure (Figure~\ref{fig:VI}); part of the fundamental phasor shift may be numerical rather than a clean Song \(\dot{r}_s\) continuum current.
-Second, the fluid density floor is not a strictly electron-free sheath, and no self-consistent bias is solved.
-Therefore we interpret the result as \emph{evidence that kinematics matter in this engine}, not as quantitative validation of Song~\cite{song2007} or Tu et al.~\cite{tu2008}.
-
-Next steps are a \(\Delta r\) amplitude scan, phase sweeps, optional sub-cell or filtered radius updates to reduce staircasing noise, and only then a go/no-go decision on self-consistent charging (Paper~3).
+Caveats remain: residual high-frequency structure in soft \(I(t)\), fluid density floor (not a strictly electron-free sheath), and no self-consistent bias.
+We therefore treat the result as evidence that kinematics matter, not as quantitative Song~\cite{song2007}/Tu~\cite{tu2008} validation.
+Next steps are soft-edge \(\Delta r\) and phase scans, then a Paper~3 go/no-go.
 
 \section{Conclusions}
 \label{sec:conclusions}
 
 We implemented a prescribed oscillating sheath boundary in three-dimensional PF-FDTD and compared it to static radius brackets at \(700\,\mathrm{kHz}\).
-The oscillating feed impedance lies well outside the static bracket segment, with a large increase in \(\mathrm{Re}\{Z\}\) and reduced phase lag, while time-domain current shows staircased update spikes.
-Kinematic sheath motion is therefore detectable in this solver; quantitative Song/Tu fidelity and the role of staircasing remain open and motivate controlled parameter scans before self-consistent extensions.
+Hard- and soft-edge updates both place the oscillating feed impedance well outside the static bracket segment.
+Kinematic sheath motion is therefore detectable and not solely a staircasing artifact; quantitative Song/Tu fidelity still requires amplitude/phase scans before self-consistent extensions.
 
 %%
 
