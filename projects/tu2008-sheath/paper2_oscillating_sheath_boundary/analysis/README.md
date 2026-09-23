@@ -1,13 +1,12 @@
-# Placeholder for Paper 2 analysis products.
-
-Pilot products (2026-09-10):
+# Paper 2 analysis products
 
 | Product | Path |
 |---------|------|
-| Findings | [`pilot_findings.md`](pilot_findings.md) |
-| Phasor table | [`data/pilot_phasor_Z.tsv`](data/pilot_phasor_Z.tsv) |
-| Bracket metrics | [`data/pilot_deltaZ_metrics.tsv`](data/pilot_deltaZ_metrics.tsv) |
+| Hard findings | [`pilot_findings.md`](pilot_findings.md) |
+| Soft findings | [`pilot_findings_soft.md`](pilot_findings_soft.md) |
+| Hard vs soft | [`hard_vs_soft.md`](hard_vs_soft.md) |
+| Tables | [`data/`](data/) |
 | Figures | [`figures/`](figures/) |
 
-Raw `.vc` data: repo-root `results/paper2_rs_t_pilot/` (gitignored).  
-Analyzer: [`../../scripts/analyze_paper2_pilot.py`](../../scripts/analyze_paper2_pilot.py).
+Raw `.vc`: `results/paper2_rs_t_pilot/`, `results/paper2_rs_t_pilot_soft/`, `results/paper2_delta_r_soft/`.  
+Analyzer: `../../scripts/analyze_paper2_pilot.py`.
