@@ -142,19 +142,19 @@ void outputfd(FILE *file_fd, int a, double timev)
       for (k = floc[0][2]; k <= floc[1][2]; k++)
 	{
 	  if (fout[0] == 1)
-	    fprintf(file_fd,"\t%e\t%e\t%e",EX[IDX4(i,j,k,1)], EY[IDX4(i,j,k,1)], EZ[IDX4(i,j,k,1)]);
+	    fprintf(file_fd,"\t%e\t%e\t%e",EX[IDX4(i,j,k,tlE_cur)], EY[IDX4(i,j,k,tlE_cur)], EZ[IDX4(i,j,k,tlE_cur)]);
 	  if (fout[1] == 1)
-	    fprintf(file_fd,"\t%e\t%e\t%e",BX[IDX4(i,j,k,1)], BY[IDX4(i,j,k,1)], BZ[IDX4(i,j,k,1)]);
+	    fprintf(file_fd,"\t%e\t%e\t%e",BX[IDX4(i,j,k,tlB_cur)], BY[IDX4(i,j,k,tlB_cur)], BZ[IDX4(i,j,k,tlB_cur)]);
 	  if (plasma == 1)
 	    {
 	      if (fout[2] == 1)
-		fprintf(file_fd,"\t%e\t%e\t%e",UX[IDX5(i,j,k,1,0)], UY[IDX5(i,j,k,1,0)], UZ[IDX5(i,j,k,1,0)]);
+		fprintf(file_fd,"\t%e\t%e\t%e",UX[IDX5(i,j,k,tlU_1,0)], UY[IDX5(i,j,k,tlU_1,0)], UZ[IDX5(i,j,k,tlU_1,0)]);
 	      if (fout[3]== 1)
-		fprintf(file_fd,"\t%e",(N[IDX5(i,j,k,1,0)]-N_0[0]));
+		fprintf(file_fd,"\t%e",(N[IDX5(i,j,k,tlN_1,0)]-N_0[0]));
 	      if (fout[4] == 1)
-	      	fprintf(file_fd,"\t%e\t%e\t%e",UX[IDX5(i,j,k,1,1)], UY[IDX5(i,j,k,1,1)], UZ[IDX5(i,j,k,1,1)]);
+	      	fprintf(file_fd,"\t%e\t%e\t%e",UX[IDX5(i,j,k,tlU_1,1)], UY[IDX5(i,j,k,tlU_1,1)], UZ[IDX5(i,j,k,tlU_1,1)]);
 	      if (fout[5]== 1)
-	      	fprintf(file_fd,"\t%e",(N[IDX5(i,j,k,1,1)]-N_0[1]));
+	      	fprintf(file_fd,"\t%e",(N[IDX5(i,j,k,tlN_1,1)]-N_0[1]));
 	    }
 	}
 		
