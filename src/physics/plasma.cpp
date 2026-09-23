@@ -135,6 +135,16 @@ void Ucalc()
   for (i=4;i<sx-3;i++)
     for (j=4;j<sy-3;j++)
       for (k=4;k<sz-3;k++)
+      {
+	// B-field cell averages are species-independent: compute once per cell
+	// here instead of redundantly inside the species loop below.
+	ABX = (BX[IDX4(i,j,k,0)] + BX[IDX4(i,j+1,k,0)] + BX[IDX4(i,j+1,k+1,0)] + BX[IDX4(i,j,k+1,0)]
+	      + BX[IDX4(i,j,k,1)] + BX[IDX4(i,j+1,k,1)] + BX[IDX4(i,j+1,k+1,1)] + BX[IDX4(i,j,k+1,1)])/8;
+	ABY = (BY[IDX4(i,j,k,0)] + BY[IDX4(i+1,j,k,0)] + BY[IDX4(i+1,j,k+1,0)] + BY[IDX4(i,j,k+1,0)]
+	      + BY[IDX4(i,j,k,1)] + BY[IDX4(i+1,j,k,1)] + BY[IDX4(i+1,j,k+1,1)] + BY[IDX4(i,j,k+1,1)])/8;
+	ABZ = (BZ[IDX4(i,j,k,0)] + BZ[IDX4(i+1,j,k,0)] + BZ[IDX4(i+1,j+1,k,0)] + BZ[IDX4(i,j+1,k,0)]
+	      + BZ[IDX4(i,j,k,1)] + BZ[IDX4(i+1,j,k,1)] + BZ[IDX4(i+1,j+1,k,1)] + BZ[IDX4(i,j+1,k,1)])/8;
+
 	for (m=0;m<NS;m++)
 	{
 	  // Save Old Values
@@ -144,14 +154,6 @@ void Ucalc()
 	  UY[IDX5(i,j,k,1,m)] = UY[IDX5(i,j,k,2,m)];
 	  UZ[IDX5(i,j,k,0,m)] = UZ[IDX5(i,j,k,1,m)];
 	  UZ[IDX5(i,j,k,1,m)] = UZ[IDX5(i,j,k,2,m)];
-	  
-	  // Calculate averages(using linear techniques set B1=0)
-	  ABX = (BX[IDX4(i,j,k,0)] + BX[IDX4(i,j+1,k,0)] + BX[IDX4(i,j+1,k+1,0)] + BX[IDX4(i,j,k+1,0)]
-	        + BX[IDX4(i,j,k,1)] + BX[IDX4(i,j+1,k,1)] + BX[IDX4(i,j+1,k+1,1)] + BX[IDX4(i,j,k+1,1)])/8;
-	  ABY = (BY[IDX4(i,j,k,0)] + BY[IDX4(i+1,j,k,0)] + BY[IDX4(i+1,j,k+1,0)] + BY[IDX4(i,j,k+1,0)]
-	        + BY[IDX4(i,j,k,1)] + BY[IDX4(i+1,j,k,1)] + BY[IDX4(i+1,j,k+1,1)] + BY[IDX4(i,j,k+1,1)])/8;
-	  ABZ = (BZ[IDX4(i,j,k,0)] + BZ[IDX4(i+1,j,k,0)] + BZ[IDX4(i+1,j+1,k,0)] + BZ[IDX4(i,j+1,k,0)]
-	        + BZ[IDX4(i,j,k,1)] + BZ[IDX4(i+1,j,k,1)] + BZ[IDX4(i+1,j+1,k,1)] + BZ[IDX4(i,j+1,k,1)])/8;
 
 	  // Assuming plasma remains consant at boundary (i.e. delta n = 0) so warm plasma equaitions can be used throughout
 	  // Note:NE is at time [2] since density has not been calculated yet
@@ -176,7 +178,8 @@ void Ucalc()
 										+ EeZ ) )
 						  - C_U_TZ * ( N[IDX5(i,j,k+1,2,m)] - N[IDX5(i,j,k-1,2,m)] ) / N_0[m] ) / M[m]
 	                    - C_U_2 * FREQ_COL * FREQ_PLASMA * ( UZ[IDX5(i,j,k,1,m)] - UZ_0 );
-	}
+	} // end species loop
+      } // end k-loop block (B averages hoisted above species loop)
 }
 
 void Ncalc()
