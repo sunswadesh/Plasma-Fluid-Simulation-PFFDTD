@@ -1,6 +1,6 @@
 # Project Status Dashboard
 
-Last updated: 2026-09-10
+Last updated: 2026-09-24
 
 ## Program structure
 
@@ -21,7 +21,7 @@ Last updated: 2026-09-10
 |-------|--------|-------|
 | 0 — Campaign chronicle | **Complete (archive)** | Phases 0–8 evidence under `paper0_.../analysis/` |
 | 1 — Static \(C_\mathrm{sh}\) | **Active** | Radio Science draft + \(C_\mathrm{eff}\) done; free-space still open |
-| 2 — Oscillating boundary | **Active (physics plan)** | Motion loads beyond static; see `paper2_.../SCIENCE.md` for issues + next steps |
+| 2 — Oscillating boundary | **Active** | Soft-edge sensitivity running; sparse \(f\) next — `paper2_.../SCIENCE.md` §5 |
 | 3 — Self-consistent | Gated | No implementation until Paper 1 (+ ideally 2) |
 
 ## Campaign phases (raw archive in `validation/`)

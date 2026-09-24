@@ -52,6 +52,9 @@ Root [`../analysis/`](../analysis/) is a **redirect** only.
 |--------|---------|
 | `scripts/run_paper2_rs_t_pilot.ps1` | Paper 2: static vs oscillating \(r_s(t)\) single-tone pilot |
 | `scripts/analyze_paper2_pilot.py` | Paper 2: phasor \(Z\) + bracket metrics → `paper2_.../analysis/` |
+| `scripts/analyze_paper2_soft_edge.py` | Paper 2: soft-edge width sensitivity (0.5/1/2) vs soft-pilot brackets |
+| `scripts/run_paper2_soft_edge_sens.ps1` | Paper 2: osc soft-edge=0.5,2 at fixed \(\Delta r=1\) |
+| `scripts/run_paper2_sparse_f.ps1` | Paper 2: sparse-\(f\) soft pilot (500 kHz, 1.2 MHz) |
 | `scripts/run_sheath_cw_lowf.ps1` | Low-f CW 0.5–1.5 MHz, Sd=0,2,10 |
 | `scripts/run_sheath_sweep.ps1` | Broadband pulse Sd sweep |
 | `scripts/run_sheath_cw_tu.ps1` | Dense CW Tu band sweep |
