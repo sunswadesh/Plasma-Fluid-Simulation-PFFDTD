@@ -76,5 +76,5 @@ Last updated: 2026-09-10
 ## Next actions
 
 1. Free-space CW + author metadata for Paper 1 submission polish
-2. Paper 2 per `paper2_oscillating_sheath_boundary/SCIENCE.md` §5 (reframe draft; soft-edge sensitivity; sparse \(f\); phase)
+2. Paper 2: soft-edge sensitivity running; then sparse \(f\) and phase per `SCIENCE.md` §5
 3. Paper 3 remains gated

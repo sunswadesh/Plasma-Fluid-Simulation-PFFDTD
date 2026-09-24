@@ -33,11 +33,11 @@ Last updated: 2026-09-23
 
 ### Manuscript
 
-- [ ] Reframe draft: dynamic vs static loading; Song/Tu as motivation only ([`SCIENCE.md` §3.5](SCIENCE.md))
+- [x] Reframe draft: dynamic vs static loading; Song/Tu as motivation only ([`SCIENCE.md` §3.5](SCIENCE.md); [`draft/manuscript.tex`](draft/manuscript.tex))
 
 ### Numerics / \(\Delta r\)
 
-- [ ] Soft-edge sensitivity at fixed \(\Delta r=1\) (0.5 / 1 / 2 cell edge)
+- [ ] Soft-edge sensitivity at fixed \(\Delta r=1\) (0.5 / 1 / 2 cell edge) — **runs started**
 - [ ] Revisit \(\Delta r\) with matched soft policy (\(\mathrm{soft}\propto\Delta r\) or fixed fraction); prefer absolute \(\Delta Z\) plots over rel-to-bracket alone
 
 ### Physics scans

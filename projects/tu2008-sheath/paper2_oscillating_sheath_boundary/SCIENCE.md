@@ -232,8 +232,8 @@ Paper 2 does **not** replace Paper 1’s frequency map; it answers a different p
 
 ## 5. Suggested near-term sequence
 
-1. Reframe draft language (§3.5)—low compute cost, locks the story.  
-2. Soft-edge sensitivity at \(\Delta r=1\) (§2.2 / §3.4)—cheap relative to full scans.  
+1. ~~Reframe draft language (§3.5).~~  
+2. Soft-edge sensitivity at \(\Delta r=1\) (§2.2 / §3.4) — in progress.  
 3. Sparse frequency set (§3.1).  
 4. Phase scan (§3.2) + harmonic diagnostics (§3.3).  
 5. Revisit \(\Delta r\) with matched soft policy (§3.4).  

@@ -1,5 +1,5 @@
 % Radio Science (AGU) manuscript draft — Paper 2
-% Prefer agujournal2025.cls (copied from Paper 1 draft) or agujournal2019.cls from AGU.
+% Prefer agujournal2025.cls (from Paper 1 draft) or agujournal2019.cls from AGU.
 %
 \documentclass[draft]{agujournal2019}
 \usepackage{amsmath}
@@ -14,7 +14,7 @@
 
 \begin{document}
 
-\title{Kinematic Oscillating Sheath Boundary in Three-Dimensional Plasma Fluid FDTD: Isolating Song's Moving-Boundary Coupling Without Particle-in-Cell}
+\title{Prescribed Dynamic Sheath Versus Static Vacuum Jacket in Three-Dimensional Plasma Fluid FDTD: Measurable Dynamic Feed Loading}
 
 \authors{A. Author\affil{1}, B. Author\affil{1}}
 
@@ -23,45 +23,47 @@
 \correspondingauthor{A. Author}{author@example.edu}
 
 \begin{keypoints}
-\item A prescribed oscillating sheath radius is implemented in three-dimensional plasma fluid FDTD.
-\item At 700 kHz the oscillating feed impedance lies far outside the static radius brackets.
-\item Staircased kinematic motion can change feed loading beyond quasi-static sheath thickness.
+\item A time-varying depleted radius is imposed in three-dimensional plasma fluid FDTD without particle-in-cell.
+\item Oscillating sheath cases sit far outside static thickness brackets at 700 kHz (hard and soft updates).
+\item Dynamic loading is robust to soft-edge cleanup; amplitude scaling with sheath swing remains unsettled.
 \end{keypoints}
 
 \begin{abstract}
-High-voltage antennas in plasma develop electron-depleted sheaths whose radius can oscillate at the drive frequency.
-Song's analytic treatment links radiation and feed loading to the moving sheath boundary through a current proportional to the boundary velocity.
-Particle-in-cell (PIC) models recover related self-consistent sheath dynamics but are costly in three dimensions.
-Here we introduce a kinematic sheath in a plasma fluid finite-difference time-domain (PF-FDTD) solver: the depleted-radius history \(r_s(t)\) is prescribed, while Maxwell and fluid equations remain unchanged.
-A single-tone pilot at \(700\,\mathrm{kHz}\) (\(f_p=2\,\mathrm{MHz}\)) compares oscillating \(r_s(t)=4+\sin(\omega t)\) cells against static jackets of width 4 and 5 cells.
-Phasor feed impedance for the oscillating case is strongly offset from the static bracket segment in the complex plane (\(|\Delta Z|\) to the segment \(\sim 9\times\) the bracket span), with \(\mathrm{Re}\{Z\}\) rising from \(\sim 1.4\text{--}1.8\times 10^{4}\,\Omega\) (static) to \(\sim 7.3\times 10^{4}\,\Omega\) (oscillating).
-Time-domain current shows staircasing-related high-frequency structure absent in the static controls.
-The result indicates that prescribed boundary motion can change feed loading beyond quasi-static thickness sampling in this engine, motivating \(\Delta r\) scans and caution about staircased updates before self-consistent charging work.
+Radio-frequency antennas in plasma are surrounded by a depleted near-zone layer whose thickness need not be frozen over a drive cycle.
+Most three-dimensional fluid electromagnetic models either omit that layer or treat it as a static vacuum jacket.
+Here we keep the Maxwell--fluid core fixed and prescribe a kinematic sheath radius \(r_s(t)=r_{s0}+\Delta r\sin(\omega t+\phi)\), comparing feed diagnostics to static jackets at the mean and extreme thicknesses.
+At \(700\,\mathrm{kHz}\) (\(f_p=2\,\mathrm{MHz}\)), hard-staircase and soft-edge updates both place the oscillating phasor impedance far outside the static bracket segment in the complex plane.
+A soft-edge \(\Delta r\) scan keeps large out-of-bracket offsets at several amplitudes but does not yield a clean monotonic amplitude law.
+The results show that a changing prescribed density hole loads the feed differently from static thickness sampling in this engine.
+Song/Tu-type works motivate that real RF sheaths move; we do not treat their analytics or PIC reactance as a numerical scoreboard.
 \end{abstract}
 
 \section*{Plain Language Summary}
-Radio antennas in space plasmas are surrounded by a low-density sheath.
-When the antenna voltage is large, that sheath can breathe in and out each radio cycle, and the motion itself can help launch waves or change how the antenna loads.
-Fully kinetic particle simulations can capture this breathing but are expensive in three dimensions.
-We prescribe the sheath size as a known oscillating function of time inside an existing fluid electromagnetic code, then compare the antenna voltage and current to cases where the sheath thickness is fixed.
-In a first controlled test, the oscillating case produced a feed impedance clearly different from either fixed thickness, showing that boundary motion can matter even without self-consistent charging.
+Antennas in space plasmas sit inside a low-density sheath.
+In strong radio-frequency drive that sheath can breathe---growing and shrinking each cycle---instead of staying a fixed gap.
+We force that breathing as a known function of time inside a three-dimensional fluid electromagnetic code and compare the antenna voltage and current to cases with a fixed gap.
+The breathing cases look electrically different from the fixed gaps, even after we smooth the numerical sheath edge.
+That means sheath motion itself can matter for how the antenna loads, before any self-consistent charging model is added.
 
 \section{Introduction}
 \label{sec:intro}
 
 A depleted sheath between a metallic antenna and the ambient plasma inserts a largely reactive series impedance and can dominate feed behavior at ionospheric and magnetospheric radio frequencies
 \cite{balmain1964,liu_sheath,song2007,tu2008}.
-For high-voltage whistlers and related transmitters, Song~\cite{song2007} argued that the sheath is nearly electron-free and that the oscillating outer radius \(r_s(t)\) supplies a radiation current tied to \(\dot{r}_s\).
-Tu et al.~\cite{tu2008} later examined the same problem with one-dimensional PIC, improving reactance agreement relative to Song's analytics.
+Probe-oriented models often treat that layer as a quasi-steady coaxial (or related) capacitance in series with the plasma impedance
+\cite{liu_sheath}.
+High-voltage transmitting antennas, by contrast, are expected to develop a sheath whose outer radius moves with the drive
+\cite{song2007,tu2008}.
 
 Three-dimensional plasma fluid FDTD (PF-FDTD) can already impose a \emph{static} volumetric density hole of width \(S_d\) around a thin-wire dipole and measure feed impedance
 \cite{ward2006}.
-Campaign work with that prescribed jacket showed strong series-capacitance loading once the hole was seeded from the conductor surface rather than from a plasma-on mask
-(companion campaign chronicle; static capacitance study in preparation).
-Varying static \(S_d\) samples different quasi-steady thicknesses but does not represent Song's moving-boundary current.
+Companion campaign work showed strong series-capacitance loading once the hole was seeded from the conductor surface (static sheath capacitance study in preparation).
+Varying static \(S_d\) samples different quasi-steady thicknesses; it does not test whether \emph{time dependence} of the hole changes the feed beyond those thicknesses.
 
-This paper asks a narrower question: if \(r_s(t)\) is \emph{prescribed} to oscillate at the drive frequency inside the same Maxwell--fluid core, do feed diagnostics show \(\omega\)-locked differences attributable to \(\dot{r}_s\) beyond static jackets of thickness \(r_{s0}\) and \(r_{s0}+\Delta r\)?
-A positive signature would support investing in self-consistent charging; a controlled null result would still clarify the limits of kinematic sheath models in fluid FDTD.
+This paper asks a physics question about consequences of motion, not a reproduction of Song or Tu numerics:
+if \(r_s(t)\) is \emph{prescribed} to oscillate at the drive frequency inside the same Maxwell--fluid core, do feed diagnostics differ from static jackets at \(r_{s0}\) and \(r_{s0}+\Delta r\)?
+A positive answer means dynamic depletion is electromagnetically consequential in this solver class.
+We do not claim self-consistent charging, orbit-limited collection, or an electron-free ion sheath---only a kinematic density hole.
 
 \section{Model and Methods}
 \label{sec:methods}
@@ -69,36 +71,36 @@ A positive signature would support investing in self-consistent charging; a cont
 \subsection{Plasma fluid FDTD}
 \label{sec:pffdtd}
 
-We advance Maxwell's equations on a staggered Yee grid coupled to multi-species cold/warm fluid continuity and momentum equations following the PF-FDTD formulation of Ward~\cite{ward2006}.
-Plasma--Maxwell coupling is masked by a conductivity field \(\mathrm{SIG}\) on free-space cells; conductors are encoded by permittivity flags \(\mathrm{ER}_*=0\).
-Feed voltage and current are recorded at the dipole gap for impedance diagnostics.
-Unless noted, the plasma frequency, collision ratio, and grid match the companion static-sheath campaign (\(f_p=2\,\mathrm{MHz}\), \(\Delta x=0.04\,\mathrm{m}\)).
+We advance Maxwell's equations on a staggered Yee grid coupled to multi-species fluid continuity and momentum equations following Ward~\cite{ward2006}.
+Plasma--Maxwell coupling uses a conductivity mask \(\mathrm{SIG}\); conductors use permittivity flags \(\mathrm{ER}_*=0\).
+Feed voltage and current are recorded at the dipole gap.
+Unless noted, \(f_p=2\,\mathrm{MHz}\) and \(\Delta x=0.04\,\mathrm{m}\) match the companion static-sheath campaign.
 
 \subsection{Kinematic sheath radius}
 \label{sec:rst}
 
-The ambient density \(N_0(\mathbf{r})\) is depleted to a floor fraction inside a staircased neighborhood of the PEC antenna.
-For the oscillating case we adopt
+Ambient density \(N_0(\mathbf{r})\) is depleted inside a neighborhood of the PEC antenna measured by a PEC-seeded integer distance field.
+For oscillating runs,
 \begin{equation}
 r_s(t)=r_{s0}+\Delta r\sin(2\pi f_{\mathrm{osc}}t+\phi),
 \label{eq:rst}
 \end{equation}
-with \(r_{s0}\) and \(\Delta r\) expressed in grid cells.
-A PEC-seeded integer distance field is computed once out to \(S_{\max}=\lceil r_{s0}+|\Delta r|\rceil\).
-At each time step the integer threshold \(S_d(t)=\mathrm{round}[r_s(t)]\) is applied only when it changes, restoring bulk \(N_0\) outside the instantaneous hole and flooring fluid density inside newly covered cells.
-When \(\Delta r=0\), the static sheath path is unchanged, preserving continuity with prior static-\(S_d\) runs.
+with \(r_{s0}\) and \(\Delta r\) in grid cells and \(f_{\mathrm{osc}}\) defaulting to the RF drive.
 
-Oscillation frequency defaults to the RF drive; phase \(\phi\) is a free control.
-Song's \(r_s^2(t)\) law is deferred; the sinusoid is the minimal mechanism probe.
+Two update policies are compared.
+\emph{Hard staircase:} \(S_d(t)=\mathrm{round}[r_s(t)]\); apply a step density floor when the integer width changes (and floor dynamic density in newly covered cells).
+\emph{Soft edge (default for later runs):} blend \(N_0\) over a transition of width \(\mathrm{SheathSoftEdge}\) cells centered on continuous \(r_s(t)\), without hard-flooring dynamic \(N\) on each update.
+When \(\Delta r=0\), only the static sheath path runs, preserving the Paper~1-style jacket.
 
 \subsection{Experimental design}
 \label{sec:design}
 
-For a single CW tone below \(f_p\) we compare three runs: static \(r_{s0}\), static \(r_{s0}+\lceil\Delta r\rceil\), and oscillating equation~\eqref{eq:rst}.
-Success metrics are (i)~an \(\omega\)-locked difference in feed \(Z\) for the oscillating case relative to both static brackets, (ii)~sensible scaling with \(\Delta r\), and (iii)~phase relations between boundary motion and feed \(V\)/\(I\) where interpretable.
-Matching Tu PIC reactance is \emph{not} required.
+At each drive frequency we compare static \(r_{s0}\), static \(r_{s0}+\lceil\Delta r\rceil\), and oscillating equation~\eqref{eq:rst}.
+Primary observable: fundamental phasor \(Z=V/I\) on the last half of each CW record.
+Success is a clear out-of-bracket difference (dynamic vs static thickness), not a fit to Song/Tu reactance.
 
-The pilot reported here uses \(f=700\,\mathrm{kHz}\), \(r_{s0}=4\), \(\Delta r=1\), \(\phi=0\), \(4.3\times 10^{5}\) time steps, and phasor \(Z=V/I\) estimated from the last half of each voltage/current record.
+Baseline pilots use \(f=700\,\mathrm{kHz}\), \(r_{s0}=4\), \(\Delta r=1\), \(\phi=0\), and \(4.3\times 10^{5}\) steps.
+A soft-edge \(\Delta r\) scan extends amplitudes \(\{0.5,1,1.5,2\}\) with static brackets through \(S_d=6\).
 
 \section{Results}
 \label{sec:results}
@@ -106,10 +108,10 @@ The pilot reported here uses \(f=700\,\mathrm{kHz}\), \(r_{s0}=4\), \(\Delta r=1
 \subsection{Hard-staircase pilot}
 \label{sec:hard}
 
-Table~\ref{tab:pilotZ} lists fundamental-frequency phasors for the original integer-threshold update.
-The two static jackets differ modestly (\(|Z_5-Z_4|\approx 6.0\times 10^{3}\,\Omega\)).
-The oscillating case does \emph{not} fall between them: \(\mathrm{Re}\{Z\}\) increases by a factor of about four relative to the static mean radius, while \(\arg(Z)\) moves from \(\approx -70^\circ\) to \(\approx -31^\circ\).
-In the complex plane (Figure~\ref{fig:Zcomplex}), the distance from the oscillating phasor to the static bracket segment is about nine times the bracket span.
+Table~\ref{tab:pilotZ} and Figure~\ref{fig:Zcomplex} summarize the integer-threshold pilot.
+Static jackets differ modestly (\(|Z_5-Z_4|\approx 6\times 10^{3}\,\Omega\)).
+The oscillating case lies far off that segment (\(\sim 9\times\) the bracket span), with a large rise in \(\mathrm{Re}\{Z\}\) and a less capacitive \(\arg Z\).
+Late-time current shows strong spikes at radius updates (Figure~\ref{fig:VI}).
 
 \begin{table}
 \caption{Hard-staircase pilot phasor \(Z\) at \(700\,\mathrm{kHz}\) (last 50\% of each trace).}
@@ -128,11 +130,9 @@ Oscillating $\Delta r=1$ (hard) & $7.31\times 10^{4}$ & $-4.32\times 10^{4}$ & $
 
 \begin{figure}
 \noindent\includegraphics[width=\textwidth]{pilot_Z_complex.png}
-\caption{Hard pilot: complex-plane phasor \(Z\) at \(700\,\mathrm{kHz}\). The oscillating point lies far off the static bracket.}
+\caption{Hard pilot: complex-plane phasor \(Z\) at \(700\,\mathrm{kHz}\). Oscillating point lies far off the static bracket.}
 \label{fig:Zcomplex}
 \end{figure}
-
-Figure~\ref{fig:VI} shows late-time feed current with large spikes at integer radius updates.
 
 \begin{figure}
 \noindent\includegraphics[width=\textwidth]{pilot_VI_last_cycles.png}
@@ -143,10 +143,8 @@ Figure~\ref{fig:VI} shows late-time feed current with large spikes at integer ra
 \subsection{Soft-edge re-test}
 \label{sec:soft}
 
-To test whether the offset is only a staircasing artifact, we re-ran the same trio with a one-cell soft \(N_0\) blend and no hard density floor on updates (Table~\ref{tab:pilotZsoft}, Figure~\ref{fig:Zsoft}).
-Static controls reproduce the hard campaign.
-The oscillating soft phasor shifts somewhat (\(\mathrm{Re}\{Z\}\approx 6.65\times 10^{4}\,\Omega\), \(\arg Z\approx -41^\circ\)) but remains \(\approx 8.4\times\) the bracket span off the static segment.
-Feed-current RMS moves closer to the static cases, so soft edge reduces impulsive loading while preserving the qualitative out-of-bracket result.
+Repeating the trio with a one-cell soft \(N_0\) blend (Table~\ref{tab:pilotZsoft}, Figure~\ref{fig:Zsoft}) leaves static controls unchanged and keeps the oscillating phasor well outside the bracket (\(\sim 8.4\times\) the span).
+\(\mathrm{Re}\{Z\}\) and \(\arg Z\) shift relative to the hard run, and \(I_\mathrm{rms}\) moves closer to the static cases, so soft edge reduces impulsive current without removing the qualitative dynamic-loading signature.
 
 \begin{table}
 \caption{Soft-edge pilot phasor \(Z\) at \(700\,\mathrm{kHz}\).}
@@ -169,29 +167,40 @@ Oscillating $\Delta r=1$ (soft) & $6.65\times 10^{4}$ & $-5.79\times 10^{4}$ & $
 \label{fig:Zsoft}
 \end{figure}
 
+\subsection{Soft $\Delta r$ amplitude scan}
+\label{sec:deltar}
+
+Soft-edge oscillating runs at \(\Delta r\in\{0.5,1,1.5,2\}\) remain far from their static brackets, but the relative offset and \(|Z|\) are \emph{not} monotonic in \(\Delta r\) (Figure~\ref{fig:deltar}; companion analysis note).
+Dynamic loading is therefore robust across amplitudes, while a simple \(\propto\Delta r\) (or \(\propto\dot{r}_s\)) scaling is not established.
+
 \begin{figure}
-\noindent\includegraphics[width=0.85\textwidth]{pilot_Z_bars.png}
-\caption{Hard-pilot phasor components (for reference).}
-\label{fig:Zbars}
+\noindent\includegraphics[width=\textwidth]{delta_r_soft_scan.png}
+\caption{Soft \(\Delta r\) scan at \(700\,\mathrm{kHz}\): oscillating \(|Z|\) and \(\mathrm{Re}\{Z\}\), and complex-plane loci with static brackets.}
+\label{fig:deltar}
 \end{figure}
 
 \section{Discussion}
 \label{sec:discussion}
 
-Both hard and soft pilots reject the null that kinematic \(r_s(t)\) is indistinguishable from quasi-static sampling of \(r_{s0}\) and \(r_{s0}+\Delta r\) at this tone and amplitude.
-Soft edge changes the oscillating point and reduces impulsive current relative to hard staircasing, but the out-of-bracket signature \emph{survives}.
-That strengthens the claim that prescribed boundary motion matters in this engine beyond thickness brackets alone.
+Hard and soft pilots reject the null that kinematic \(r_s(t)\) is indistinguishable from static sampling of \(r_{s0}\) and \(r_{s0}+\Delta r\) at this tone.
+That is the changing-versus-static physics question for a prescribed density hole in 3D PF-FDTD.
 
-Caveats remain: residual high-frequency structure in soft \(I(t)\), fluid density floor (not a strictly electron-free sheath), and no self-consistent bias.
-We therefore treat the result as evidence that kinematics matter, not as quantitative Song~\cite{song2007}/Tu~\cite{tu2008} validation.
-Next steps are soft-edge \(\Delta r\) and phase scans, then a Paper~3 go/no-go.
+Caveats are first-class, not footnotes.
+(i)~Motion is imposed, not caused by charge---we test consequences of a moving hole, not sheath formation.
+(ii)~Soft \(I(t)\) is cleaner than hard staircase but still not purely sinusoidal; part of any single phasor may reflect residual mask updates.
+(iii)~The \(\Delta r\) response is non-monotonic; amplitude physics remains open.
+(iv)~The depleted region is a kinematic density floor, not a kinetic electron-free ion sheath
+\cite{song2007,tu2008}.
+
+Song~\cite{song2007} and Tu et al.~\cite{tu2008} motivate that RF sheaths move and that dynamics can matter; they are not used here as a fitting target.
+Next Paper~2 steps are soft-edge sensitivity, a sparse frequency set, phase and harmonic diagnostics, and matched soft policies for amplitude scans---not a jump to self-consistent charging unless those controls stay coherent.
 
 \section{Conclusions}
 \label{sec:conclusions}
 
-We implemented a prescribed oscillating sheath boundary in three-dimensional PF-FDTD and compared it to static radius brackets at \(700\,\mathrm{kHz}\).
-Hard- and soft-edge updates both place the oscillating feed impedance well outside the static bracket segment.
-Kinematic sheath motion is therefore detectable and not solely a staircasing artifact; quantitative Song/Tu fidelity still requires amplitude/phase scans before self-consistent extensions.
+A prescribed oscillating density hole in three-dimensional PF-FDTD produces feed impedance clearly outside static thickness brackets at \(700\,\mathrm{kHz}\), for both hard-staircase and soft-edge updates.
+A soft \(\Delta r\) scan keeps that qualitative conclusion across amplitudes without delivering clean monotonic scaling.
+Changing sheath geometry is therefore electromagnetically consequential in this model class; quantitative interpretation of the dynamic signature still requires cleaner currents and broader \((f,\phi,\Delta r)\) controls.
 
 %%
 
@@ -200,8 +209,8 @@ The authors thank collaborators on the PF-FDTD sheath campaign.
 Funding statement to be added.
 
 \section*{Open Research}
-Pilot inputs and analysis scripts are in the project repository under \texttt{projects/tu2008-sheath/} (solver binary \texttt{pffdtd\_parallel\_rs\_t}, script \texttt{run\_paper2\_rs\_t\_pilot.ps1}, analyzer \texttt{analyze\_paper2\_pilot.py}).
-Derived tables and figures are under \texttt{paper2\_oscillating\_sheath\_boundary/analysis/}.
+Inputs and scripts live under \texttt{projects/tu2008-sheath/} (binary \texttt{pffdtd\_parallel\_rs\_t}; pilots \texttt{run\_paper2\_rs\_t\_pilot.ps1}, \texttt{run\_paper2\_delta\_r\_scan.ps1}; analyzers \texttt{analyze\_paper2\_pilot.py}, \texttt{analyze\_paper2\_delta\_r.py}).
+Derived products are under \texttt{paper2\_oscillating\_sheath\_boundary/analysis/}.
 Public archival deposit will accompany journal submission.
 
 \bibliography{references}
