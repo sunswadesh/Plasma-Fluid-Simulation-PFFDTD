@@ -43,7 +43,7 @@ Last updated: 2026-09-24
 
 ### Physics scans
 
-- [ ] Sparse frequency set (2–3 tones, soft \(\Delta r=1\) + brackets) — not a full Paper 1 grid
+- [ ] Sparse frequency set (2–3 tones, soft \(\Delta r=1\) + brackets) — **runs started** (500 kHz, 1.2 MHz)
 - [ ] Phase scan \(\phi\) at 700 kHz
 - [ ] Cleaner diagnostics: harmonics of \(I\), cycle-averaged power; optional exterior \(E\) probe
 
