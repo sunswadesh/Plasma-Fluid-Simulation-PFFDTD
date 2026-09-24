@@ -1,6 +1,6 @@
 # Paper 2 — Science framing, outstanding issues, and forward plan
 
-**Last updated:** 2026-09-23  
+**Last updated:** 2026-09-24  
 **Scope:** Stay on Paper 2. Chase **actual physics of a changing sheath vs a static sheath**.  
 **Not a goal:** Numerical reproduction of Song (2007) formulas or Tu (2008) PIC reactance to a percent target.
 
@@ -63,11 +63,11 @@ and rewrite the ambient density hole to follow that law. Charge, potential, and 
 | Survives soft-edge width changes | Vanishes when edge → large or updates frozen |
 | Harmonics consistent with nonlinear \(C(t)\) | Broadband hash without phase coherence |
 
-**What we have.** Soft edge: out-of-bracket \(Z\) **survives** → not *only* hard staircasing. Residual roughness → cannot yet treat single-tone \(Z\) as a precision observable.
+**What we have.** Soft edge: out-of-bracket \(Z\) **survives** → not *only* hard staircasing. Soft-edge width scan at \(\Delta r=1\) ([`analysis/soft_edge_sensitivity.md`](analysis/soft_edge_sensitivity.md)): rel ≈ 3.0 / 8.4 / 4.7 for edge = 0.5 / 1 / 2 — all far outside; width moves the point but does not kill the signature. Residual roughness on \(I(t)\) remains; prefer edge=1 (lowest osc \(I_\mathrm{rms}\) among the three) for subsequent campaigns.
 
 **Work needed.**
 
-- Parameterize `SheathSoftEdge` (0.5, 1, 2 cells) at fixed \(\Delta r=1\); require qualitative stability of out-of-bracket conclusion.
+- ~~Parameterize `SheathSoftEdge` (0.5, 1, 2 cells) at fixed \(\Delta r=1\); require qualitative stability of out-of-bracket conclusion.~~ **Done.**
 - Optional: update threshold finer than 0.01 cell; or filter \(r_s(t)\) before applying \(N_0\).
 - Report time-domain and spectral diagnostics alongside phasors (see §3.3).
 
@@ -233,8 +233,8 @@ Paper 2 does **not** replace Paper 1’s frequency map; it answers a different p
 ## 5. Suggested near-term sequence
 
 1. ~~Reframe draft language (§3.5).~~  
-2. Soft-edge sensitivity at \(\Delta r=1\) (§2.2 / §3.4) — in progress.  
-3. Sparse frequency set (§3.1).  
+2. ~~Soft-edge sensitivity at \(\Delta r=1\) (§2.2 / §3.4).~~  
+3. Sparse frequency set (§3.1) — next.  
 4. Phase scan (§3.2) + harmonic diagnostics (§3.3).  
 5. Revisit \(\Delta r\) with matched soft policy (§3.4).  
 6. Optional stronger nulls (§3.6) before calling Paper 2 “complete.”

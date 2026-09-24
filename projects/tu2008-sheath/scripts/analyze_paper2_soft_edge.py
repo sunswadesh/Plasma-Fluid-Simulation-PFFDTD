@@ -228,8 +228,8 @@ def main():
                         (r["name"], r["edge"], r["Z_re"], r["Z_im"], r["Z_mag"],
                          r["Z_phase"], r["I_rms"], m["rel"]))
         f.write("\n## Verdict criteria (SCIENCE.md §2.2)\n\n")
-        f.write("- Out-of-bracket must **survive** across edge widths → more like physics.\n")
-        f.write("- If offset vanishes only at large edge → more like artifact.\n\n")
+        f.write("- Out-of-bracket must **survive** across edge widths -> more like physics.\n")
+        f.write("- If offset vanishes only at large edge -> more like artifact.\n\n")
         if len(osc_rows) >= 2:
             rels = [bracket_metrics(z0, z1, r["Z_re"] + 1j * r["Z_im"])["rel"] for r in osc_rows]
             all_out = all(x > 0.5 for x in rels)

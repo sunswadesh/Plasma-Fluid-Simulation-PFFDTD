@@ -25,7 +25,7 @@
 \begin{keypoints}
 \item A time-varying depleted radius is imposed in three-dimensional plasma fluid FDTD without particle-in-cell.
 \item Oscillating sheath cases sit far outside static thickness brackets at 700 kHz (hard and soft updates).
-\item Dynamic loading is robust to soft-edge cleanup; amplitude scaling with sheath swing remains unsettled.
+\item Dynamic loading survives soft-edge width changes; amplitude scaling with sheath swing remains unsettled.
 \end{keypoints}
 
 \begin{abstract}
@@ -33,6 +33,7 @@ Radio-frequency antennas in plasma are surrounded by a depleted near-zone layer 
 Most three-dimensional fluid electromagnetic models either omit that layer or treat it as a static vacuum jacket.
 Here we keep the Maxwell--fluid core fixed and prescribe a kinematic sheath radius \(r_s(t)=r_{s0}+\Delta r\sin(\omega t+\phi)\), comparing feed diagnostics to static jackets at the mean and extreme thicknesses.
 At \(700\,\mathrm{kHz}\) (\(f_p=2\,\mathrm{MHz}\)), hard-staircase and soft-edge updates both place the oscillating phasor impedance far outside the static bracket segment in the complex plane.
+Varying the soft blend width over \(0.5\)--\(2\) cells moves the oscillating point but keeps it out-of-bracket.
 A soft-edge \(\Delta r\) scan keeps large out-of-bracket offsets at several amplitudes but does not yield a clean monotonic amplitude law.
 The results show that a changing prescribed density hole loads the feed differently from static thickness sampling in this engine.
 Song/Tu-type works motivate that real RF sheaths move; we do not treat their analytics or PIC reactance as a numerical scoreboard.
@@ -179,6 +180,36 @@ Dynamic loading is therefore robust across amplitudes, while a simple \(\propto\
 \label{fig:deltar}
 \end{figure}
 
+\subsection{Soft-edge width sensitivity}
+\label{sec:softedge}
+
+At fixed \(\Delta r=1\), oscillating runs with \(\mathrm{SheathSoftEdge}\in\{0.5,1,2\}\) cells all remain far outside the static bracket (relative offsets \(\approx 3.0\), \(8.4\), \(4.7\); Table~\ref{tab:softedge}, Figure~\ref{fig:softedge}).
+Widening the blend moves the complex point and changes \(I_\mathrm{rms}\) (the half-cell edge elevates feed-current RMS), but does not collapse the signature onto the static segment.
+We therefore retain the one-cell soft edge as the default for sparse-\(f\) and phase campaigns.
+
+\begin{table}
+\caption{Soft-edge width sensitivity at \(700\,\mathrm{kHz}\), \(\Delta r=1\) (static brackets from soft pilot).}
+\label{tab:softedge}
+\centering
+\begin{tabular}{lccccc}
+\hline
+Case & edge (cells) & \(\mathrm{Re}\{Z\}\) & \(\mathrm{Im}\{Z\}\) & $|Z|$ & rel.\ to bracket \\
+\hline
+Static $r_{s0}=4$ & -- & $1.76\times 10^{4}$ & $-4.75\times 10^{4}$ & $5.06\times 10^{4}$ & -- \\
+Static $r=5$ & -- & $1.42\times 10^{4}$ & $-4.26\times 10^{4}$ & $4.49\times 10^{4}$ & -- \\
+Osc & $0.5$ & $3.44\times 10^{4}$ & $-5.45\times 10^{4}$ & $6.44\times 10^{4}$ & $3.04$ \\
+Osc & $1.0$ & $6.65\times 10^{4}$ & $-5.79\times 10^{4}$ & $8.82\times 10^{4}$ & $8.37$ \\
+Osc & $2.0$ & $4.34\times 10^{4}$ & $-5.89\times 10^{4}$ & $7.32\times 10^{4}$ & $4.72$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}
+\noindent\includegraphics[width=\textwidth]{soft_edge_Z_complex.png}
+\caption{Soft-edge sensitivity: oscillating \(Z\) for edge widths \(0.5\), \(1\), and \(2\) cells remains outside the static bracket.}
+\label{fig:softedge}
+\end{figure}
+
 \section{Discussion}
 \label{sec:discussion}
 
@@ -189,17 +220,19 @@ Caveats are first-class, not footnotes.
 (i)~Motion is imposed, not caused by charge---we test consequences of a moving hole, not sheath formation.
 (ii)~Soft \(I(t)\) is cleaner than hard staircase but still not purely sinusoidal; part of any single phasor may reflect residual mask updates.
 (iii)~The \(\Delta r\) response is non-monotonic; amplitude physics remains open.
-(iv)~The depleted region is a kinematic density floor, not a kinetic electron-free ion sheath
+(iv)~Soft-edge width moves the oscillating point without removing the out-of-bracket conclusion at \(\Delta r=1\).
+(v)~The depleted region is a kinematic density floor, not a kinetic electron-free ion sheath
 \cite{song2007,tu2008}.
 
 Song~\cite{song2007} and Tu et al.~\cite{tu2008} motivate that RF sheaths move and that dynamics can matter; they are not used here as a fitting target.
-Next Paper~2 steps are soft-edge sensitivity, a sparse frequency set, phase and harmonic diagnostics, and matched soft policies for amplitude scans---not a jump to self-consistent charging unless those controls stay coherent.
+Next Paper~2 steps are a sparse frequency set, phase and harmonic diagnostics, and matched soft policies for amplitude scans---not a jump to self-consistent charging unless those controls stay coherent.
 
 \section{Conclusions}
 \label{sec:conclusions}
 
 A prescribed oscillating density hole in three-dimensional PF-FDTD produces feed impedance clearly outside static thickness brackets at \(700\,\mathrm{kHz}\), for both hard-staircase and soft-edge updates.
-A soft \(\Delta r\) scan keeps that qualitative conclusion across amplitudes without delivering clean monotonic scaling.
+Soft-edge width sensitivity (\(0.5\)--\(2\) cells) keeps that qualitative conclusion.
+A soft \(\Delta r\) scan keeps it across amplitudes without delivering clean monotonic scaling.
 Changing sheath geometry is therefore electromagnetically consequential in this model class; quantitative interpretation of the dynamic signature still requires cleaner currents and broader \((f,\phi,\Delta r)\) controls.
 
 %%
