@@ -21,7 +21,7 @@ Last updated: 2026-09-10
 |-------|--------|-------|
 | 0 — Campaign chronicle | **Complete (archive)** | Phases 0–8 evidence under `paper0_.../analysis/` |
 | 1 — Static \(C_\mathrm{sh}\) | **Active** | Radio Science draft + \(C_\mathrm{eff}\) done; free-space still open |
-| 2 — Oscillating boundary | **Soft confirmed** | Out-of-bracket \(Z\) survives soft edge; \(\Delta r\) scan next |
+| 2 — Oscillating boundary | **Active (physics plan)** | Motion loads beyond static; see `paper2_.../SCIENCE.md` for issues + next steps |
 | 3 — Self-consistent | Gated | No implementation until Paper 1 (+ ideally 2) |
 
 ## Campaign phases (raw archive in `validation/`)
@@ -76,5 +76,5 @@ Last updated: 2026-09-10
 ## Next actions
 
 1. Free-space CW + author metadata for Paper 1 submission polish
-2. Paper 2 soft \(\Delta r\) scan; then phase; refine Radio Science draft
+2. Paper 2 per `paper2_oscillating_sheath_boundary/SCIENCE.md` §5 (reframe draft; soft-edge sensitivity; sparse \(f\); phase)
 3. Paper 3 remains gated

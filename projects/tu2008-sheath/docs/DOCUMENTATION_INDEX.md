@@ -12,7 +12,7 @@ All paths relative to `projects/tu2008-sheath/`.
 | Dashboard | [../STATUS.md](../STATUS.md) |
 | **Paper 0** — campaign chronicle | [../paper0_sheath_campaign/](../paper0_sheath_campaign/) |
 | **Paper 1** — static \(C_\mathrm{sh}\) | [../paper1_static_sheath_capacitance/](../paper1_static_sheath_capacitance/) |
-| **Paper 2** — oscillating \(r_s(t)\) | [../paper2_oscillating_sheath_boundary/](../paper2_oscillating_sheath_boundary/) |
+| **Paper 2** — oscillating \(r_s(t)\) | [../paper2_oscillating_sheath_boundary/](../paper2_oscillating_sheath_boundary/) · [SCIENCE.md](../paper2_oscillating_sheath_boundary/SCIENCE.md) |
 | **Paper 3** — self-consistent sheath | [../paper3_self_consistent_sheath/](../paper3_self_consistent_sheath/) |
 
 ## Paper 0 campaign findings
