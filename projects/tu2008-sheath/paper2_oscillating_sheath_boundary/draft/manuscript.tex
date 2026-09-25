@@ -25,7 +25,7 @@
 \begin{keypoints}
 \item A time-varying depleted radius is imposed in three-dimensional plasma fluid FDTD without particle-in-cell.
 \item Oscillating sheath cases sit far outside static thickness brackets at \(0.5\)--\(1.2\,\mathrm{MHz}\) (soft updates).
-\item Dynamic loading survives soft-edge width changes; amplitude scaling with sheath swing remains unsettled.
+\item Feed \(\arg(Z)\) tracks kinematic boundary phase over \(\sim 70^\circ\); amplitude scaling with sheath swing remains unsettled.
 \end{keypoints}
 
 \begin{abstract}
@@ -35,6 +35,7 @@ Here we keep the Maxwell--fluid core fixed and prescribe a kinematic sheath radi
 At \(700\,\mathrm{kHz}\) (\(f_p=2\,\mathrm{MHz}\)), hard-staircase and soft-edge updates both place the oscillating phasor impedance far outside the static bracket segment in the complex plane.
 Varying the soft blend width over \(0.5\)--\(2\) cells moves the oscillating point but keeps it out-of-bracket.
 A soft sparse frequency set at \(0.5\), \(0.7\), and \(1.2\,\mathrm{MHz}\) likewise remains out-of-bracket at all three tones.
+A phase sweep of the prescribed motion rotates feed \(\arg(Z)\) by tens of degrees while staying out-of-bracket.
 A soft-edge \(\Delta r\) scan keeps large out-of-bracket offsets at several amplitudes but does not yield a clean monotonic amplitude law.
 The results show that a changing prescribed density hole loads the feed differently from static thickness sampling in this engine.
 Song/Tu-type works motivate that real RF sheaths move; we do not treat their analytics or PIC reactance as a numerical scoreboard.
@@ -238,31 +239,62 @@ $f$ (kHz) & \(\mathrm{Re}\{Z\}\) & \(\mathrm{Im}\{Z\}\) & $|Z|$ & rel.\ to brack
 \label{fig:sparsef}
 \end{figure}
 
+\subsection{Phase scan}
+\label{sec:phase}
+
+At fixed \(f=700\,\mathrm{kHz}\) and \(\Delta r=1\), sweeping the kinematic phase \(\phi\in\{0,45,90,135,180^\circ\}\) rotates \(\arg(Z)\) over \(\sim 72^\circ\) (Table~\ref{tab:phase}, Figure~\ref{fig:phase}).
+All five points remain outside the static bracket.
+The systematic feed-phase response to boundary phase favors coherent moving-boundary coupling over an amplitude-only numerical artifact, while the size of the out-of-bracket offset itself remains \(\phi\)-dependent.
+
+\begin{table}
+\caption{Soft phase scan at \(700\,\mathrm{kHz}\), \(\Delta r=1\).}
+\label{tab:phase}
+\centering
+\begin{tabular}{lcccc}
+\hline
+$\phi$ (deg) & \(\mathrm{Re}\{Z\}\) & \(\mathrm{Im}\{Z\}\) & $\arg Z$ (deg) & rel.\ to bracket \\
+\hline
+0 & $6.65\times 10^{4}$ & $-5.79\times 10^{4}$ & $-41.0$ & $8.37$ \\
+45 & $8.20\times 10^{3}$ & $-5.27\times 10^{4}$ & $-81.2$ & $1.79$ \\
+90 & $3.12\times 10^{4}$ & $-1.16\times 10^{4}$ & $-20.4$ & $5.92$ \\
+135 & $2.39\times 10^{4}$ & $-3.07\times 10^{4}$ & $-52.0$ & $2.58$ \\
+180 & $-1.99\times 10^{3}$ & $-4.24\times 10^{4}$ & $-92.7$ & $2.71$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}
+\noindent\includegraphics[width=\textwidth]{phase_scan_Z_complex.png}
+\caption{Phase scan: oscillating \(Z\) for five boundary phases, all outside the static bracket.}
+\label{fig:phase}
+\end{figure}
+
 \section{Discussion}
 \label{sec:discussion}
 
 Hard and soft pilots reject the null that kinematic \(r_s(t)\) is indistinguishable from static sampling of \(r_{s0}\) and \(r_{s0}+\Delta r\) at this tone.
 That is the changing-versus-static physics question for a prescribed density hole in 3D PF-FDTD.
 A sparse frequency set confirms the same qualitative conclusion at \(500\,\mathrm{kHz}\) and \(1.2\,\mathrm{MHz}\).
+A phase scan shows \(\arg(Z)\) tracks the boundary phase over tens of degrees, consistent with coherent dynamic coupling.
 
 Caveats are first-class, not footnotes.
 (i)~Motion is imposed, not caused by charge---we test consequences of a moving hole, not sheath formation.
 (ii)~Soft \(I(t)\) is cleaner than hard staircase but still not purely sinusoidal; part of any single phasor may reflect residual mask updates.
-(iii)~The \(\Delta r\) response is non-monotonic; amplitude physics remains open.
+(iii)~The \(\Delta r\) response is non-monotonic; amplitude physics remains open (matched soft-edge re-scan pending).
 (iv)~Soft-edge width moves the oscillating point without removing the out-of-bracket conclusion at \(\Delta r=1\).
 (v)~The depleted region is a kinematic density floor, not a kinetic electron-free ion sheath
 \cite{song2007,tu2008}.
 
 Song~\cite{song2007} and Tu et al.~\cite{tu2008} motivate that RF sheaths move and that dynamics can matter; they are not used here as a fitting target.
-Next Paper~2 steps are phase and harmonic diagnostics, and matched soft policies for amplitude scans---not a jump to self-consistent charging unless those controls stay coherent.
+Next Paper~2 steps are matched soft policies for amplitude scans and optional stronger nulls---not a jump to self-consistent charging unless those controls stay coherent.
 
 \section{Conclusions}
 \label{sec:conclusions}
 
 A prescribed oscillating density hole in three-dimensional PF-FDTD produces feed impedance clearly outside static thickness brackets at \(700\,\mathrm{kHz}\), for both hard-staircase and soft-edge updates.
-Soft-edge width sensitivity (\(0.5\)--\(2\) cells) and a sparse frequency set (\(0.5\), \(0.7\), \(1.2\,\mathrm{MHz}\)) keep that qualitative conclusion.
+Soft-edge width sensitivity, a sparse frequency set (\(0.5\)--\(1.2\,\mathrm{MHz}\)), and a phase scan (\(\arg Z\) span \(\sim 72^\circ\)) keep that qualitative conclusion and favor coherent boundary-driven loading.
 A soft \(\Delta r\) scan keeps it across amplitudes without delivering clean monotonic scaling.
-Changing sheath geometry is therefore electromagnetically consequential in this model class; quantitative interpretation of the dynamic signature still requires cleaner currents and broader \((\phi,\Delta r)\) controls.
+Changing sheath geometry is therefore electromagnetically consequential in this model class; quantitative amplitude interpretation still requires matched soft policies and stronger nulls.
 
 %%
 

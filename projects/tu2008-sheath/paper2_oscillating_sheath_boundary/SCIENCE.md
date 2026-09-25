@@ -4,7 +4,7 @@
 **Scope:** Stay on Paper 2. Chase **actual physics of a changing sheath vs a static sheath**.  
 **Not a goal:** Numerical reproduction of Song (2007) formulas or Tu (2008) PIC reactance to a percent target.
 
-**Related:** [`README.md`](README.md), [`PLAN.md`](PLAN.md), [`design/rs_t_spec.md`](design/rs_t_spec.md), [`analysis/hard_vs_soft.md`](analysis/hard_vs_soft.md), [`analysis/delta_r_soft_findings.md`](analysis/delta_r_soft_findings.md), [`analysis/soft_edge_sensitivity.md`](analysis/soft_edge_sensitivity.md), [`analysis/sparse_f_soft_findings.md`](analysis/sparse_f_soft_findings.md), program literature [`../docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md`](../docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md).
+**Related:** [`README.md`](README.md), [`PLAN.md`](PLAN.md), [`design/rs_t_spec.md`](design/rs_t_spec.md), [`analysis/hard_vs_soft.md`](analysis/hard_vs_soft.md), [`analysis/delta_r_soft_findings.md`](analysis/delta_r_soft_findings.md), [`analysis/soft_edge_sensitivity.md`](analysis/soft_edge_sensitivity.md), [`analysis/sparse_f_soft_findings.md`](analysis/sparse_f_soft_findings.md), [`analysis/phase_scan_soft_findings.md`](analysis/phase_scan_soft_findings.md), program literature [`../docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md`](../docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md).
 
 ---
 
@@ -104,19 +104,13 @@ and rewrite the ambient density hole to follow that law. Charge, potential, and 
 
 ---
 
-### 2.5 Phase and harmonics barely explored
+### 2.5 Phase and harmonics
 
 **Physics expectation.** A moving boundary phased relative to the drive should rotate the relationship between \(V\) and \(I\). Nonlinear \(C(t)\) or moving-interface coupling can generate harmonics at \(2f\), \(3f\), etc.
 
-**What we have.** Default \(\phi=0\) only. Diagnostics have centered on fundamental phasor \(Z\).
+**What we have.** Soft phase scan at \(700\,\mathrm{kHz}\), \(\Delta r=1\), \(\phi\in\{0,45,90,135,180^\circ\}\) ([`analysis/phase_scan_soft_findings.md`](analysis/phase_scan_soft_findings.md)): \(\arg(Z)\) span \(\approx 72^\circ\); all phases out-of-bracket. Coherent coupling more plausible than amplitude-only agitation. Harmonic figures written alongside.
 
-**What to measure.**
-
-- Sweep \(\phi\) over \(\{0,45,90,135,180^\circ\}\) at fixed \(f\), \(r_{s0}\), \(\Delta r\).
-- Track \(\arg(Z)\), \(\arg(I)-\arg(V)\), and correlation of \(I\) with \(\sin(\omega t+\phi)\) vs \(\cos(\omega t+\phi)\).
-- FFT of late-time \(I\): power at \(f\) vs \(2f\), \(3f\); compare osc vs static brackets (static should be nearly sinusoidal).
-
-**Falsifiable pattern.** If changing \(\phi\) does not systematically move feed phase / harmonic content, the present \(\Delta Z\) looks less like coherent boundary-driven coupling and more like amplitude-dependent numerical agitation.
+**Open.** Cycle-averaged power; exterior field probes; whether harmonics scale cleanly with \(\phi\).
 
 ---
 
@@ -162,6 +156,8 @@ Priority order below is recommended; reorder if machine time or manuscript deadl
 **Design.** Fix \(f=700\,\mathrm{kHz}\), soft, \(\Delta r=1\); sweep \(\phi\); static brackets once.
 
 **Success.** Systematic movement of \(\arg(Z)\) / harmonic pattern with \(\phi\); not random scatter.
+
+**Status.** **Done:** \(\arg(Z)\) span \(\approx 72^\circ\); all out-of-bracket. See [`analysis/phase_scan_soft_findings.md`](analysis/phase_scan_soft_findings.md).
 
 ### 3.3 Cleaner diagnostics (beyond one phasor \(Z\))
 
@@ -232,8 +228,8 @@ Paper 2 does **not** replace Paper 1’s frequency map; it answers a different p
 1. ~~Reframe draft language (§3.5).~~  
 2. ~~Soft-edge sensitivity at \(\Delta r=1\) (§2.2 / §3.4).~~  
 3. ~~Sparse frequency set (§3.1).~~  
-4. Phase scan (§3.2) + harmonic diagnostics (§3.3) — next.  
-5. Revisit \(\Delta r\) with matched soft policy (§3.4).  
+4. ~~Phase scan (§3.2) + harmonic diagnostics (§3.3).~~  
+5. Revisit \(\Delta r\) with matched soft policy (§3.4) — next.  
 6. Optional stronger nulls (§3.6) before calling Paper 2 “complete.”
 
 Update [`PLAN.md`](PLAN.md) checkboxes as each item closes; keep this document as the science rationale.

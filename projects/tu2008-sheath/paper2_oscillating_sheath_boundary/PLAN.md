@@ -29,7 +29,8 @@ Last updated: 2026-09-24
 - [x] Soft \(\Delta r\) scan (non-monotonic; documented)
 - [x] Soft-edge width sensitivity (0.5 / 1 / 2); out-of-bracket survives
 - [x] Sparse frequency set (500 / 700 / 1200 kHz); out-of-bracket at 3/3
-- [x] Radio Science draft Results (hard + soft + \(\Delta r\) + edge sens + sparse \(f\)); framing rewrite done
+- [x] Phase scan \(\phi\) at 700 kHz (\(\arg Z\) span \(\sim 72^\circ\); coherent)
+- [x] Radio Science draft Results (through phase scan); framing rewrite done
 
 ## Forward work (from SCIENCE.md §3, §5)
 
@@ -40,13 +41,13 @@ Last updated: 2026-09-24
 ### Numerics / \(\Delta r\)
 
 - [x] Soft-edge sensitivity at fixed \(\Delta r=1\) (0.5 / 1 / 2 cell edge)
-- [ ] Revisit \(\Delta r\) with matched soft policy (\(\mathrm{soft}\propto\Delta r\) or fixed fraction); prefer absolute \(\Delta Z\) plots over rel-to-bracket alone
+- [ ] Revisit \(\Delta r\) with matched soft policy (\(\mathrm{soft}\propto\Delta r\) or fixed fraction) — **runs next**
 
 ### Physics scans
 
 - [x] Sparse frequency set (2–3 tones, soft \(\Delta r=1\) + brackets) — not a full Paper 1 grid
-- [ ] Phase scan \(\phi\) at 700 kHz — **runs started** (45/90/135/180; \(\phi=0\) from soft pilot)
-- [ ] Cleaner diagnostics: harmonics of \(I\), cycle-averaged power; optional exterior \(E\) probe
+- [x] Phase scan \(\phi\) at 700 kHz
+- [x] Cleaner diagnostics: harmonics of \(I\) (phase campaign); cycle-averaged power / exterior \(E\) still open
 
 ### Optional stronger nulls
 
