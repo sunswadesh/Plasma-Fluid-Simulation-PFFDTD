@@ -4,7 +4,7 @@
 **Scope:** Stay on Paper 2. Chase **actual physics of a changing sheath vs a static sheath**.  
 **Not a goal:** Numerical reproduction of Song (2007) formulas or Tu (2008) PIC reactance to a percent target.
 
-**Related:** [`README.md`](README.md), [`PLAN.md`](PLAN.md), [`design/rs_t_spec.md`](design/rs_t_spec.md), [`analysis/hard_vs_soft.md`](analysis/hard_vs_soft.md), [`analysis/delta_r_soft_findings.md`](analysis/delta_r_soft_findings.md), program literature [`../docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md`](../docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md).
+**Related:** [`README.md`](README.md), [`PLAN.md`](PLAN.md), [`design/rs_t_spec.md`](design/rs_t_spec.md), [`analysis/hard_vs_soft.md`](analysis/hard_vs_soft.md), [`analysis/delta_r_soft_findings.md`](analysis/delta_r_soft_findings.md), [`analysis/soft_edge_sensitivity.md`](analysis/soft_edge_sensitivity.md), [`analysis/sparse_f_soft_findings.md`](analysis/sparse_f_soft_findings.md), program literature [`../docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md`](../docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md).
 
 ---
 
@@ -18,7 +18,7 @@ That is a question about **consequences of time-dependent geometry** in Maxwell�
 
 **Working hypothesis (actual physics):** A changing sheath is the more realistic RF picture than a static one; a controlled kinematic \(r_s(t)\) should produce measurable dynamic loading beyond quasi-static thickness sampling.
 
-**Evidence so far:** At 700 kHz, hard- and soft-edge oscillating cases sit far outside static brackets; soft edge reduces impulsive current but does not remove the out-of-bracket phasor. A soft \(\Delta r\) scan keeps large offsets at several amplitudes but **not** a clean monotonic amplitude law.
+**Evidence so far:** At 700 kHz, hard- and soft-edge oscillating cases sit far outside static brackets; soft edge reduces impulsive current but does not remove the out-of-bracket phasor. Soft-edge width and a sparse frequency set (500 / 700 / 1200 kHz) keep that qualitative conclusion. A soft \(\Delta r\) scan keeps large offsets at several amplitudes but **not** a clean monotonic amplitude law.
 
 ---
 
@@ -93,17 +93,14 @@ and rewrite the ambient density hole to follow that law. Charge, potential, and 
 
 ### 2.4 One frequency only
 
-**What we know.** Primary evidence is at \(f=700\,\mathrm{kHz}\) with \(f_p=2\,\mathrm{MHz}\) (drive well below plasma frequency, in the capacitive / series-loading–relevant band familiar from Paper 1).
+**What we know.** Soft sparse set at \(f\in\{500,700,1200\}\,\mathrm{kHz}\) with \(f_p=2\,\mathrm{MHz}\) ([`analysis/sparse_f_soft_findings.md`](analysis/sparse_f_soft_findings.md)): out-of-bracket at **all three** (rel ≈ 1.22 / 8.37 / 3.07). Dynamic loading is not a 700 kHz accident.
 
 **What we do not know.**
 
-- Is dynamic loading stronger, weaker, or reversed nearer \(f_p\)?
-- Does it persist deeper in the low-\(f\) asymptote (more “pure \(C(t)\)”)?
-- Is the effect an accident of one electrical size / grid / collision setting?
+- Fine structure between these tones / nearer \(f_p\).
+- Whether a denser Paper 1–style grid would change the story (deferred).
 
-**Why not a full Paper 1 frequency grid yet.** Paper 1 maps **static** \(Z(f)\) because series \(C\) is a spectral concept. Paper 2’s first question is an A/B test at drive-locked \(r_s(t)\). Each CW frequency is a long run; oscillation cannot be replaced by a single pulse FFT without a new analysis design. A **sparse** frequency set answers “fluke or not”; a dense grid is a later campaign if the sparse set stays interesting.
-
-**Proposed sparse set (see §3.1):** e.g. \(\sim 0.4\,f_p\), \(0.35\,f_p\) (700 kHz done), \(\sim 0.75\,f_p\)—same soft \(\Delta r=1\) + brackets.
+**Why not a full Paper 1 frequency grid yet.** Paper 1 maps **static** \(Z(f)\) because series \(C\) is a spectral concept. Paper 2’s first question is an A/B test at drive-locked \(r_s(t)\). The sparse set answers “fluke or not”; a dense grid is a later campaign if needed.
 
 ---
 
@@ -156,7 +153,7 @@ Priority order below is recommended; reorder if machine time or manuscript deadl
 
 **Success.** Out-of-bracket behavior at ≥2 frequencies, or an honest map of where it fails.
 
-**Cost.** ~3 cases × ~2 new frequencies ≈ 6 long runs (plus reuse 700 kHz). Not a Paper 1–scale grid.
+**Status.** **Done** (500 / 700 / 1200 kHz): out-of-bracket at 3/3. See [`analysis/sparse_f_soft_findings.md`](analysis/sparse_f_soft_findings.md).
 
 ### 3.2 Phase scan \(\phi\)
 
@@ -234,8 +231,8 @@ Paper 2 does **not** replace Paper 1’s frequency map; it answers a different p
 
 1. ~~Reframe draft language (§3.5).~~  
 2. ~~Soft-edge sensitivity at \(\Delta r=1\) (§2.2 / §3.4).~~  
-3. Sparse frequency set (§3.1) — next.  
-4. Phase scan (§3.2) + harmonic diagnostics (§3.3).  
+3. ~~Sparse frequency set (§3.1).~~  
+4. Phase scan (§3.2) + harmonic diagnostics (§3.3) — next.  
 5. Revisit \(\Delta r\) with matched soft policy (§3.4).  
 6. Optional stronger nulls (§3.6) before calling Paper 2 “complete.”
 

@@ -28,7 +28,8 @@ Last updated: 2026-09-24
 - [x] Soft-edge re-test; hard-vs-soft note
 - [x] Soft \(\Delta r\) scan (non-monotonic; documented)
 - [x] Soft-edge width sensitivity (0.5 / 1 / 2); out-of-bracket survives
-- [x] Radio Science draft Results (hard + soft + \(\Delta r\) + edge sens); framing rewrite done
+- [x] Sparse frequency set (500 / 700 / 1200 kHz); out-of-bracket at 3/3
+- [x] Radio Science draft Results (hard + soft + \(\Delta r\) + edge sens + sparse \(f\)); framing rewrite done
 
 ## Forward work (from SCIENCE.md §3, §5)
 
@@ -43,7 +44,7 @@ Last updated: 2026-09-24
 
 ### Physics scans
 
-- [ ] Sparse frequency set (2–3 tones, soft \(\Delta r=1\) + brackets) — **runs started** (500 kHz, 1.2 MHz)
+- [x] Sparse frequency set (2–3 tones, soft \(\Delta r=1\) + brackets) — not a full Paper 1 grid
 - [ ] Phase scan \(\phi\) at 700 kHz
 - [ ] Cleaner diagnostics: harmonics of \(I\), cycle-averaged power; optional exterior \(E\) probe
 
