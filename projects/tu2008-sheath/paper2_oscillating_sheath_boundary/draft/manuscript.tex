@@ -1,32 +1,31 @@
 % Radio Science (AGU) manuscript draft — Paper 2
-% Prefer agujournal2025.cls (from Paper 1 draft) or agujournal2019.cls from AGU.
-%
-\documentclass[draft]{agujournal2019}
+% Build (this directory): xelatex; bibtex; xelatex; xelatex
+\documentclass[draft]{agujournal2025}
 \usepackage{amsmath}
-\usepackage{graphicx}
-\usepackage{url}
-\usepackage{lineno}
-\linenumbers
 
-\graphicspath{{../analysis/figures/}}
-
-\journalname{Radio Science}
+\graphicspath{{../analysis/figures/}{./figures/}}
 
 \begin{document}
 
+\journalname{Radio Science}
+
 \title{Prescribed Dynamic Sheath Versus Static Vacuum Jacket in Three-Dimensional Plasma Fluid FDTD: Measurable Dynamic Feed Loading}
 
-\authors{A. Author\affil{1}, B. Author\affil{1}}
+\authors{%
+A.~Author\affil{1}, B.~Author\affil{1}%
+}
 
-\affiliation{1}{Institution, City, Country}
+\affiliation{1}{Institution, City, Country (update before submission)}
 
-\correspondingauthor{A. Author}{author@example.edu}
+\correspondingauthor{A.~Author}{author@example.edu}
 
-\begin{keypoints}
-\item A time-varying depleted radius is imposed in three-dimensional plasma fluid FDTD without particle-in-cell.
-\item Oscillating sheath cases sit far outside static thickness brackets at \(0.5\)--\(1.2\,\mathrm{MHz}\) (soft updates).
-\item Feed \(\arg(Z)\) tracks kinematic boundary phase over \(\sim 70^\circ\); amplitude scaling with sheath swing remains unsettled.
-\end{keypoints}
+\authorrunninghead{Ignored.}
+\titlerunninghead{Ignored.}
+
+\keypoints%
+{A time-varying depleted radius is imposed in three-dimensional plasma fluid FDTD without particle-in-cell.}%
+{Oscillating sheath cases sit far outside static thickness brackets at \(0.5\)--\(1.2\,\mathrm{MHz}\) (soft updates).}%
+{Feed \(\arg(Z)\) tracks kinematic boundary phase over \(\sim 70^\circ\); amplitude scaling with sheath swing remains unsettled.}
 
 \begin{abstract}
 Radio-frequency antennas in plasma are surrounded by a depleted near-zone layer whose thickness need not be frozen over a drive cycle.
@@ -39,14 +38,16 @@ A phase sweep of the prescribed motion rotates feed \(\arg(Z)\) by tens of degre
 A soft-edge \(\Delta r\) scan, and a matched re-scan with \(\mathrm{soft}=\Delta r\), keep large out-of-bracket offsets at several amplitudes but do not yield a clean monotonic amplitude law.
 The results show that a changing prescribed density hole loads the feed differently from static thickness sampling in this engine.
 Song/Tu-type works motivate that real RF sheaths move; we do not treat their analytics or PIC reactance as a numerical scoreboard.
-\end{abstract}
-
-\section*{Plain Language Summary}
+\begin{plainlanguagesummary}
 Antennas in space plasmas sit inside a low-density sheath.
 In strong radio-frequency drive that sheath can breathe---growing and shrinking each cycle---instead of staying a fixed gap.
 We force that breathing as a known function of time inside a three-dimensional fluid electromagnetic code and compare the antenna voltage and current to cases with a fixed gap.
 The breathing cases look electrically different from the fixed gaps, even after we smooth the numerical sheath edge.
 That means sheath motion itself can matter for how the antenna loads, before any self-consistent charging model is added.
+\end{plainlanguagesummary}
+\end{abstract}
+
+\maketitle
 
 \section{Introduction}
 \label{sec:intro}

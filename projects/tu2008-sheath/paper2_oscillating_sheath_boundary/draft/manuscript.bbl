@@ -1,0 +1,141 @@
+\begin{thebibliography}{}
+
+\bibitem [\protect \citeauthoryear {%
+Balmain%
+}{%
+Balmain%
+}{%
+{\protect \APACyear {1964}}%
+}]{%
+balmain1964}
+\APACinsertmetastar {%
+balmain1964}%
+\begin{APACrefauthors}%
+Balmain, K\BPBI G.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1964}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The Impedance of a Short Dipole Antenna in a
+  Magnetoplasma} {The impedance of a short dipole antenna in a
+  magnetoplasma}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE Transactions on Antennas and
+  Propagation}{12}{5}{605--617}.
+\newblock
+\begin{APACrefDOI} \doi{10.1109/TAP.1964.1138278} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Liu%
+\ \protect \BOthers {.}}{%
+Liu%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2025}}%
+}]{%
+liu_sheath}
+\APACinsertmetastar {%
+liu_sheath}%
+\begin{APACrefauthors}%
+Liu%
+\BCBT {}\ \BOthersPeriod {.}
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2025}{}{}.
+\newblock
+\APACrefbtitle {Sheath-Aware Measurement Uncertainty for Plasma Impedance
+  Probes.} {Sheath-aware measurement uncertainty for plasma impedance probes.}
+\newblock
+\APACrefnote{Manuscript under review; update when published}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Song%
+, Reinisch%
+\BCBL {}\ \protect \BOthers {.}}{%
+Song%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2007}}%
+}]{%
+song2007}
+\APACinsertmetastar {%
+song2007}%
+\begin{APACrefauthors}%
+Song, P.%
+, Reinisch, B\BPBI W.%
+\BCBL {}\ \BOthersPeriod {.}\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2007}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {High-voltage antenna-plasma interaction in whistler wave
+  transmission} {High-voltage antenna-plasma interaction in whistler wave
+  transmission}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Geophysical Research: Space Physics}{}{}{}.
+\newblock
+\APACrefnote{Full author list and pages to be completed from campaign PDF
+  archive}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Tu%
+, Song%
+\BCBL {}\ \BBA {} Reinisch%
+}{%
+Tu%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2008}}%
+}]{%
+tu2008}
+\APACinsertmetastar {%
+tu2008}%
+\begin{APACrefauthors}%
+Tu, J.%
+, Song, P.%
+\BCBL {}\ \BBA {} Reinisch, B\BPBI W.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2008}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Plasma sheath structures around a high-voltage antenna}
+  {Plasma sheath structures around a high-voltage antenna}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Geophysical Research: Space Physics}{}{}{}.
+\newblock
+\APACrefnote{Full pages and DOI to be completed from campaign PDF archive}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Ward%
+}{%
+Ward%
+}{%
+{\protect \APACyear {2006}}%
+}]{%
+ward2006}
+\APACinsertmetastar {%
+ward2006}%
+\begin{APACrefauthors}%
+Ward, J\BPBI D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{2006}.
+\unskip\
+\newblock
+\APACrefbtitle {Plasma Frequency Probe and related Plasma Fluid FDTD modeling}
+  {Plasma frequency probe and related plasma fluid fdtd modeling}\
+  \APACtypeAddressSchool {\BUPhD}{}{}.
+\unskip\
+\newblock
+\APACaddressSchool {}{Utah State University}.
+\unskip\
+\newblock
+\APACrefnote{Confirm exact thesis title against USU archive}
+\PrintBackRefs{\CurrentBib}
+
+\end{thebibliography}
