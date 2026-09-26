@@ -59,6 +59,7 @@ Root [`../analysis/`](../analysis/) is a **redirect** only.
 | `scripts/run_paper2_phase_scan.ps1` | Paper 2: soft phase scan \(\phi\) at 700 kHz |
 | `scripts/analyze_paper2_phase.py` | Paper 2: phase + harmonic diagnostics |
 | `scripts/run_paper2_delta_r_matched.ps1` | Paper 2: \(\Delta r\) with \(\mathrm{soft}=c\Delta r\) |
+| `scripts/analyze_paper2_delta_r_matched.py` | Paper 2: matched soft \(\Delta r\) metrics + figures |
 | `scripts/run_sheath_cw_lowf.ps1` | Low-f CW 0.5–1.5 MHz, Sd=0,2,10 |
 | `scripts/run_sheath_sweep.ps1` | Broadband pulse Sd sweep |
 | `scripts/run_sheath_cw_tu.ps1` | Dense CW Tu band sweep |

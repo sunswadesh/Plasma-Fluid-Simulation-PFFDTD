@@ -21,7 +21,7 @@ Last updated: 2026-09-24
 |-------|--------|-------|
 | 0 — Campaign chronicle | **Complete (archive)** | Phases 0–8 evidence under `paper0_.../analysis/` |
 | 1 — Static \(C_\mathrm{sh}\) | **Active** | Radio Science draft + \(C_\mathrm{eff}\) done; free-space still open |
-| 2 — Oscillating boundary | **Active** | Phase scan done (coherent \(\arg Z\)); matched soft \(\Delta r\) next — `SCIENCE.md` §5 |
+| 2 — Oscillating boundary | **Active (optional nulls)** | Planned physics sequence done; frozen-\(r_s\) / effective-radius nulls optional — `SCIENCE.md` §5 |
 | 3 — Self-consistent | Gated | No implementation until Paper 1 (+ ideally 2) |
 
 ## Campaign phases (raw archive in `validation/`)
@@ -76,5 +76,5 @@ Last updated: 2026-09-24
 ## Next actions
 
 1. Free-space CW + author metadata for Paper 1 submission polish
-2. Paper 2: matched soft \(\Delta r\) running/next; then optional stronger nulls per `SCIENCE.md` §5
+2. Paper 2: planned sequence complete; optional frozen-\(r_s\) / effective-radius nulls per `SCIENCE.md` §3.6
 3. Paper 3 remains gated

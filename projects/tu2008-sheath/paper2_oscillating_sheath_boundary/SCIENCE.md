@@ -18,7 +18,7 @@ That is a question about **consequences of time-dependent geometry** in Maxwell�
 
 **Working hypothesis (actual physics):** A changing sheath is the more realistic RF picture than a static one; a controlled kinematic \(r_s(t)\) should produce measurable dynamic loading beyond quasi-static thickness sampling.
 
-**Evidence so far:** At 700 kHz, hard- and soft-edge oscillating cases sit far outside static brackets; soft edge reduces impulsive current but does not remove the out-of-bracket phasor. Soft-edge width and a sparse frequency set (500 / 700 / 1200 kHz) keep that qualitative conclusion. A soft \(\Delta r\) scan keeps large offsets at several amplitudes but **not** a clean monotonic amplitude law.
+**Evidence so far:** At 700 kHz, hard- and soft-edge oscillating cases sit far outside static brackets; soft edge reduces impulsive current but does not remove the out-of-bracket phasor. Soft-edge width, a sparse frequency set (500 / 700 / 1200 kHz), and a phase scan (\(\arg Z\sim 72^\circ\)) keep that qualitative conclusion and favor coherent coupling. Soft and matched-soft \(\Delta r\) scans keep large offsets at several amplitudes but **not** a clean monotonic amplitude law.
 
 ---
 
@@ -75,19 +75,11 @@ and rewrite the ambient density hole to follow that law. Charge, potential, and 
 
 ### 2.3 Non-monotonic \(\Delta r\) response
 
-**Symptom.** Soft scan ([`analysis/delta_r_soft_findings.md`](analysis/delta_r_soft_findings.md)): relative distance to the static bracket segment is large at \(\Delta r=0.5,1,1.5,2\) but **not** monotonically increasing (roughly 11 → 8 → 26 → 5). \(|Z|\) also does not grow smoothly with \(\Delta r\).
+**Symptom.** Soft scan with fixed edge=1 ([`analysis/delta_r_soft_findings.md`](analysis/delta_r_soft_findings.md)): relative distance to the static bracket is large at \(\Delta r=0.5,1,1.5,2\) but **not** monotonically increasing. \(|Z|\) also does not grow smoothly with \(\Delta r\).
 
-**Why a monotonic law was a reasonable prior.** If the dominant extra coupling scaled with boundary speed \(\sim\omega\Delta r\), larger \(\Delta r\) should strengthen the dynamic signature in some orderly way. Absence of that order does **not** cancel “motion ≠ static”; it blocks a simple amplitude-scaling story.
+**Matched soft re-test.** With \(\mathrm{SheathSoftEdge}=\Delta r\) ([`analysis/delta_r_matched_findings.md`](analysis/delta_r_matched_findings.md)): still out-of-bracket at **4/4** amplitudes (rel ≈ 9.0 / 8.4 / 6.3 / 11.2), and still **non-monotonic**. Soft-vs-amplitude mismatch was therefore **not** the sole cause.
 
-**Candidate explanations (to test, not assert).**
-
-1. **Soft-edge vs amplitude mismatch.** Fixed `SheathSoftEdge=1` while \(\Delta r\) runs from 0.5 to 2 mixes “sharp relative to motion” and “soft relative to motion.” Try \(\mathrm{soft}\propto\Delta r\) or soft fixed as a fraction of \(\Delta r\).
-2. **Bracket definition.** Bracket uses \(S_d\in\{r_{s0},\,r_{s0}+\lceil\Delta r\rceil\}\). Ceiling jumps discretely; comparing “rel_to_bracket” across \(\Delta r\) mixes different static baselines (e.g. need \(S_d=6\) once \(\Delta r>1\)).
-3. **Nonlinear fluid / floor.** Density floor and fluid clipping may saturate or invert response at large hole excursions.
-4. **Regime change in complex \(Z\).** At \(\Delta r=1.5\), soft data show \(\mathrm{Im}\{Z\}>0\) while neighbors are capacitive—possible diagnostic of a different operating regime, not a smooth continuation.
-5. **Residual update noise** that depends on how often the soft profile refreshes as \(\dot{r}_s\) grows.
-
-**Paper stance until resolved.** Report the scan honestly: dynamic loading is robustly out-of-bracket; amplitude scaling is **unsettled**. Do not claim \(\propto\dot{r}_s\).
+**Paper stance.** Report dynamic loading as robust across amplitudes; treat amplitude scaling as **unsettled** (finding, not failure). Prefer absolute \(|Z-Z_\mathrm{mid}|\) alongside rel-to-bracket.
 
 ---
 
@@ -176,11 +168,7 @@ Priority order below is recommended; reorder if machine time or manuscript deadl
 
 **Goal.** Either restore a clear amplitude trend under matched numerics, or document regimes.
 
-**Actions.**
-
-- Re-run \(\Delta r\in\{0.5,1,1.5,2\}\) with \(\mathrm{SheathSoftEdge}=c\Delta r\) (e.g. \(c=1\)) or fixed fraction.  
-- Always plot absolute \(Z_\mathrm{osc}-Z_\mathrm{static}\) in the complex plane, not only “rel_to_bracket” (which renormalizes by changing bracket span).  
-- If non-monotonicity persists under matched soft parameters, dedicate a Results subsection to “non-monotonic amplitude response” as a finding, not a failure.
+**Status.** **Done (mapped):** matched soft \(\mathrm{soft}=\Delta r\) keeps out-of-bracket at all four amplitudes and remains non-monotonic ([`analysis/delta_r_matched_findings.md`](analysis/delta_r_matched_findings.md)). Dedicate a Results subsection to non-monotonic amplitude response as a finding.
 
 ### 3.5 Reframe the manuscript
 
@@ -229,7 +217,7 @@ Paper 2 does **not** replace Paper 1’s frequency map; it answers a different p
 2. ~~Soft-edge sensitivity at \(\Delta r=1\) (§2.2 / §3.4).~~  
 3. ~~Sparse frequency set (§3.1).~~  
 4. ~~Phase scan (§3.2) + harmonic diagnostics (§3.3).~~  
-5. Revisit \(\Delta r\) with matched soft policy (§3.4) — next.  
-6. Optional stronger nulls (§3.6) before calling Paper 2 “complete.”
+5. ~~Revisit \(\Delta r\) with matched soft policy (§3.4).~~  
+6. Optional stronger nulls (§3.6) — next if pursuing “complete.”
 
 Update [`PLAN.md`](PLAN.md) checkboxes as each item closes; keep this document as the science rationale.
