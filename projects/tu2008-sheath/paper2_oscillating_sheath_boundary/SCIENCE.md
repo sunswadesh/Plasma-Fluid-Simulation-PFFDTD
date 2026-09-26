@@ -1,10 +1,10 @@
 # Paper 2 — Science framing, outstanding issues, and forward plan
 
-**Last updated:** 2026-09-24  
+**Last updated:** 2026-09-25  
 **Scope:** Stay on Paper 2. Chase **actual physics of a changing sheath vs a static sheath**.  
 **Not a goal:** Numerical reproduction of Song (2007) formulas or Tu (2008) PIC reactance to a percent target.
 
-**Related:** [`README.md`](README.md), [`PLAN.md`](PLAN.md), [`design/rs_t_spec.md`](design/rs_t_spec.md), [`analysis/hard_vs_soft.md`](analysis/hard_vs_soft.md), [`analysis/delta_r_soft_findings.md`](analysis/delta_r_soft_findings.md), [`analysis/soft_edge_sensitivity.md`](analysis/soft_edge_sensitivity.md), [`analysis/sparse_f_soft_findings.md`](analysis/sparse_f_soft_findings.md), [`analysis/phase_scan_soft_findings.md`](analysis/phase_scan_soft_findings.md), program literature [`../docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md`](../docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md).
+**Related:** [`README.md`](README.md), [`PLAN.md`](PLAN.md), [`design/rs_t_spec.md`](design/rs_t_spec.md), [`analysis/hard_vs_soft.md`](analysis/hard_vs_soft.md), [`analysis/delta_r_soft_findings.md`](analysis/delta_r_soft_findings.md), [`analysis/soft_edge_sensitivity.md`](analysis/soft_edge_sensitivity.md), [`analysis/sparse_f_soft_findings.md`](analysis/sparse_f_soft_findings.md), [`analysis/phase_scan_soft_findings.md`](analysis/phase_scan_soft_findings.md), [`analysis/delta_r_matched_findings.md`](analysis/delta_r_matched_findings.md), program literature [`../docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md`](../docs/SHEATH_MODELS_LITERATURE_DISCUSSION.md).
 
 ---
 

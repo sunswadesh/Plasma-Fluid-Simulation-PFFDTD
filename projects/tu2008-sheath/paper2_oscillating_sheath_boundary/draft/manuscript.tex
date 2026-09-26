@@ -269,6 +269,35 @@ $\phi$ (deg) & \(\mathrm{Re}\{Z\}\) & \(\mathrm{Im}\{Z\}\) & $\arg Z$ (deg) & re
 \label{fig:phase}
 \end{figure}
 
+\subsection{Matched soft $\Delta r$ re-scan}
+\label{sec:matched}
+
+Repeating the amplitude scan with \(\mathrm{SheathSoftEdge}=\Delta r\) (removing soft-vs-amplitude mismatch) keeps all four oscillating points outside their static brackets (relative offsets \(\approx 9.0\), \(8.4\), \(6.3\), \(11.2\); Table~\ref{tab:matched}, Figure~\ref{fig:matched}).
+Absolute mid-bracket distance and \(|Z|\) remain non-monotonic.
+Matched soft numerics therefore do not restore a simple \(\propto\Delta r\) law; non-monotonic amplitude response is reported as a finding.
+
+\begin{table}
+\caption{Matched soft \(\Delta r\) scan at \(700\,\mathrm{kHz}\) (\(\mathrm{soft}=\Delta r\)).}
+\label{tab:matched}
+\centering
+\begin{tabular}{lcccc}
+\hline
+$\Delta r$ & soft & \(\mathrm{Re}\{Z\}\) & \(\mathrm{Im}\{Z\}\) & rel.\ to bracket \\
+\hline
+0.5 & 0.5 & $2.02\times 10^{4}$ & $1.07\times 10^{4}$ & $8.99$ \\
+1.0 & 1.0 & $6.65\times 10^{4}$ & $-5.79\times 10^{4}$ & $8.37$ \\
+1.5 & 1.5 & $-7.16\times 10^{3}$ & $-3.80\times 10^{4}$ & $6.31$ \\
+2.0 & 2.0 & $2.44\times 10^{4}$ & $-6.01\times 10^{3}$ & $11.24$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}
+\noindent\includegraphics[width=\textwidth]{delta_r_matched_Z_complex.png}
+\caption{Matched soft \(\Delta r\): oscillating \(Z\) remains out-of-bracket at all amplitudes without a monotonic amplitude law.}
+\label{fig:matched}
+\end{figure}
+
 \section{Discussion}
 \label{sec:discussion}
 
@@ -280,21 +309,21 @@ A phase scan shows \(\arg(Z)\) tracks the boundary phase over tens of degrees, c
 Caveats are first-class, not footnotes.
 (i)~Motion is imposed, not caused by charge---we test consequences of a moving hole, not sheath formation.
 (ii)~Soft \(I(t)\) is cleaner than hard staircase but still not purely sinusoidal; part of any single phasor may reflect residual mask updates.
-(iii)~The \(\Delta r\) response is non-monotonic; amplitude physics remains open (matched soft-edge re-scan pending).
+(iii)~Both fixed-soft and matched-soft \(\Delta r\) scans are non-monotonic; amplitude physics remains open as a documented finding.
 (iv)~Soft-edge width moves the oscillating point without removing the out-of-bracket conclusion at \(\Delta r=1\).
 (v)~The depleted region is a kinematic density floor, not a kinetic electron-free ion sheath
 \cite{song2007,tu2008}.
 
 Song~\cite{song2007} and Tu et al.~\cite{tu2008} motivate that RF sheaths move and that dynamics can matter; they are not used here as a fitting target.
-Next Paper~2 steps are matched soft policies for amplitude scans and optional stronger nulls---not a jump to self-consistent charging unless those controls stay coherent.
+Optional next controls are frozen-\(r_s\) snapshots and effective-radius static nulls---not a jump to self-consistent charging unless those controls stay coherent.
 
 \section{Conclusions}
 \label{sec:conclusions}
 
 A prescribed oscillating density hole in three-dimensional PF-FDTD produces feed impedance clearly outside static thickness brackets at \(700\,\mathrm{kHz}\), for both hard-staircase and soft-edge updates.
-Soft-edge width sensitivity, a sparse frequency set (\(0.5\)--\(1.2\,\mathrm{MHz}\)), and a phase scan (\(\arg Z\) span \(\sim 72^\circ\)) keep that qualitative conclusion and favor coherent boundary-driven loading.
-A soft \(\Delta r\) scan keeps it across amplitudes without delivering clean monotonic scaling.
-Changing sheath geometry is therefore electromagnetically consequential in this model class; quantitative amplitude interpretation still requires matched soft policies and stronger nulls.
+Soft-edge width sensitivity, a sparse frequency set (\(0.5\)--\(1.2\,\mathrm{MHz}\)), a phase scan (\(\arg Z\) span \(\sim 72^\circ\)), and matched soft \(\Delta r\) scans keep that qualitative conclusion and favor coherent boundary-driven loading.
+Amplitude scaling with sheath swing remains non-monotonic even under matched soft edges.
+Changing sheath geometry is therefore electromagnetically consequential in this model class; optional stronger nulls can further separate motion from instantaneous thickness sampling.
 
 %%
 
