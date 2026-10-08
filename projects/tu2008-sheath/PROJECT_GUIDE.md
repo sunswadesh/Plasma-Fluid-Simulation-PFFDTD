@@ -18,13 +18,12 @@ Authoritative program guide. Update when paper boundaries or success metrics cha
 
 ### Program goal
 
-Build a **clear, publishable path** from the existing PF-FDTD prescribed-sheath capability to Song/Tu-class antenna–sheath physics, without forcing one misaligned observable to carry the whole story.
+Build a **clear, publishable path** from the existing PF-FDTD prescribed-sheath capability from prescribed sheath geometry to self-consistent antenna–sheath physics, without forcing one misaligned observable to carry the whole story.
 
 ### Physical picture
 
 1. **Series sheath.** A vacuum (or depleted) layer between conductor and bulk plasma inserts \(Z_\mathrm{sh}\approx 1/(j\omega C_\mathrm{sh})\) in series with the plasma-loaded antenna impedance. Phase-zero can move **down** relative to bulk plasma features (Liu \(f_{\phi0}\) intuition).  
-2. **Song (2007).** HV bare dipole; electron-free ion sheath; net charge antenna+sheath ≈ 0; \(r_s(t)\) oscillates; \(\dot{r}_s\) supplies radiation current; system predominantly reactive; analytic \(C_\mathrm{sh}\) ~20% low vs IMAGE/RPI.  
-3. **Tu (2008).** 1D PIC of Song’s problem; self-consistent charging; reactance ~10% better than Song analytics.  
+2. **Driven sheaths (context).** For high-voltage transmitting dipoles the sheath is electron-free and predominantly reactive, its boundary oscillates at the drive frequency, and the boundary motion itself can supply radiation current; analytic treatments of that regime underpredict measured sheath capacitance by ~20%, and 1D PIC of the same configuration improves the reactance estimate to ~10%. This is the dynamic regime Papers 2–3 approach; Paper 1 deliberately isolates the static geometry first.  
 4. **This solver.** 3D Maxwell + **fluid** plasma; optional prescribed density hole of width \(S_d\) cells (`ApplySheath` in `src/physics/plasma.cpp`).
 
 ### End-to-end chain
@@ -33,10 +32,10 @@ Build a **clear, publishable path** from the existing PF-FDTD prescribed-sheath 
 Paper 0 — campaign Phases 0–8 (coupling, CW, low-f, discrepancy)
         │
         ▼
-Paper 1 — static Sd → C_eff(Sd) vs coax / Song static
+Paper 1 — static Sd → C_eff(Sd) vs dipole coax
         │
         ▼
-Paper 2 — prescribe rs(t) → test Song ṙs mechanism in 3D FDTD
+Paper 2 — prescribe rs(t) → test moving-boundary (ṙs) coupling in 3D FDTD
         │
         ▼
 Paper 3 — self-consistent sheath
@@ -51,7 +50,7 @@ Paper 3 — self-consistent sheath
 |--------|-------------|
 | Pre-fix: \(Z\) independent of \(S_d\) | Sheath never entered the feed (seed bug) |
 | Post-fix: \(\lvert\Delta Z\rvert/\lvert Z_0\rvert\) large | Volumetric sheath **works** in PF-FDTD |
-| \(f_\mathrm{res}(0)\approx1.85\,\mathrm{MHz}\), \(f_\mathrm{res}(2)\approx0.66\,\mathrm{MHz}\), \(f_\mathrm{res}(10)\lesssim0.5\,\mathrm{MHz}\) | Im-zero tracks **series \(C\)**, not “Tu upward shift” |
+| \(f_\mathrm{res}(0)\approx1.85\,\mathrm{MHz}\), \(f_\mathrm{res}(2)\approx0.66\,\mathrm{MHz}\), \(f_\mathrm{res}(10)\lesssim0.5\,\mathrm{MHz}\) | Im-zero tracks **series \(C\)**, not dielectric unloading toward free space |
 | Song/Tu read carefully | Wrong scoreboard was \(f_\mathrm{res}\uparrow\); right Song quantities are \(C_\mathrm{sh}\), \(X_s\), \(\dot{r}_s\) |
 
 Evidence: [`CHRONICLE.md`](CHRONICLE.md), [`paper0_sheath_campaign/`](paper0_sheath_campaign/), [`validation/`](validation/).
@@ -65,7 +64,7 @@ Evidence: [`CHRONICLE.md`](CHRONICLE.md), [`paper0_sheath_campaign/`](paper0_she
 | Paper 0 | Campaign / methods | Coupling proof; discovery of series-\(C\) trend | Done |
 | Paper 1 | Static prescribed \(S_d\) | \(C_\mathrm{eff}(S_d)\), multi-marker \(Z(f)\) | No |
 | Paper 2 | Kinematic \(r_s(t)\) | Feed \(Z\), radiated fields vs \(\dot{r}_s\) | Small (time-varying mask) |
-| Paper 3a | Fluid + nonlinear charging (Song-encoded) | \(C_\mathrm{sh}\), bias, sheath structure | Yes — plasma/sheath module |
+| Paper 3a | Fluid + nonlinear charging | \(C_\mathrm{sh}\), bias, sheath structure | Yes — plasma/sheath module |
 | Paper 3b | PIC (Tu-like) | Reactance vs Song/Tu | Yes — kinetic engine |
 
 Varying static \(S_d\) **partially** simulates a changing sheath (quasi-static thickness samples). It does **not** replace \(\dot{r}_s\) dynamics or self-consistent charging.

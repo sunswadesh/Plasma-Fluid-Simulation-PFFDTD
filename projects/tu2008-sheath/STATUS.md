@@ -43,7 +43,7 @@ Last updated: 2026-09-24
 1. Plasma-loaded dipole impedance near \(f_p\) is measurable on this grid.
 2. After the PEC-seeded fix, volumetric sheath **strongly** changes feed \(Z\).
 3. With Im{Z} +→− as the metric: \(f_\mathrm{res}(0)\approx1.85\,\mathrm{MHz}\), \(f_\mathrm{res}(2)\approx0.66\,\mathrm{MHz}\), \(f_\mathrm{res}(10)\lesssim0.50\,\mathrm{MHz}\) — series-\(C\) behavior.
-4. Paper 1 reframes success as \(C_\mathrm{eff}(S_d)\) vs analytic coax / Song static.
+4. Paper 1 reframes success as \(C_\mathrm{eff}(S_d)\) vs the dipole coaxial estimate.
 
 ## Open items (Paper 1 first)
 

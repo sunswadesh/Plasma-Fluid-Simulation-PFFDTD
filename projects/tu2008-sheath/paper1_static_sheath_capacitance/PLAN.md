@@ -24,7 +24,7 @@ Last updated: 2026-09-15
 ## Manuscript scaffolding
 
 - [x] Radio Science / AGU draft: `draft/paper1_radioscience.tex` (+ PDF rebuild)
-- [x] Explicit “not Tu dynamic fidelity” disclaimer in Discussion
+- [x] Science-first wiring (2026-10-08): Song/Tu demoted to one context citation; Discussion carries a “Scope: what a prescribed jacket represents” subsection; three science questions (topology, scaling, separability) organize the paper
 - [x] Series-jacket geometry + all \(S_d\) in the dense band
 
 ## Done (campaign inheritance)
