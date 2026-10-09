@@ -59,6 +59,37 @@ def coax_dipole(sd: int, r_eff: float = R_EFF) -> float:
     return coax_monopole(sd, r_eff) / 4.0
 
 
+FP_HZ = 2.0e6
+NU_HZ = 0.2e6  # collision frequency nu = 0.1 * fp used in all CW runs
+# Free-space dipole capacitance from the plasma-off pilot run on the same grid
+# (results/free_space_cw/fs_f1500000: Z = 1 - 22944j ohm at 1.5 MHz).
+C_FS = -1.0 / (2.0 * math.pi * 1.5e6 * -22944.0)
+
+
+def qs_anchor_z(freq: float) -> complex:
+    """Quasi-static cold-plasma anchor for Sd=0: Z = 1 / (j w C_fs eps_p).
+
+    eps_p = 1 - fp^2 / (f (f - j nu)) is the cold unmagnetized plasma
+    permittivity (Balmain-limit, lumped-capacitance form). This is an
+    infinite-medium, zero-radiation reference, not a fit to the simulation.
+    """
+    eps = 1.0 - FP_HZ**2 / (freq * (freq - 1j * NU_HZ))
+    return 1.0 / (1j * 2.0 * math.pi * freq * C_FS * eps)
+
+
+def write_qs_anchor_table(by_sd):
+    lines = [
+        "# Quasi-static cold-plasma anchor vs simulated Sd=0 (Balmain lumped limit)",
+        "# Z_qs = 1/(j w C_fs eps_p), eps_p = 1 - fp^2/(f(f - j nu)), fp=2 MHz, nu=0.2 MHz",
+        f"# C_fs = {C_FS*1e12:.2f} pF from free-space pilot fs_f1500000 (Z=1-22944j ohm at 1.5 MHz)",
+        "# f_Hz\tRe_sim\tIm_sim\tRe_qs\tIm_qs",
+    ]
+    for fr, re, im, _az in sorted(by_sd[0]):
+        z = qs_anchor_z(fr)
+        lines.append(f"{fr:.0f}\t{re:.3f}\t{im:.3f}\t{z.real:.3f}\t{z.imag:.3f}")
+    (DATADIR / "qs_anchor_sd0.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def ceff_from_im(freq: float, imz: float) -> float | None:
     if imz >= 0:
         return None
@@ -275,6 +306,12 @@ def fig_z_dense(by_sd):
 def fig_z_combined(by_sd):
     fig, axes = plt.subplots(2, 1, figsize=(7.2, 6.4), sharex=True)
     plot_zi(axes[0], axes[1], by_sd, [0, 2, 10], fmin=0.5e6, fmax=2.3e6)
+    f_qs = [0.5e6 + 0.025e6 * i for i in range(73)]  # 0.50-2.30 MHz
+    z_qs = [qs_anchor_z(f) for f in f_qs]
+    for ax, vals in ((axes[0], [z.real for z in z_qs]), (axes[1], [z.imag for z in z_qs])):
+        ax.plot([f / 1e6 for f in f_qs], vals, color="0.25", ls="--", lw=1.2,
+                label=r"quasi-static $\varepsilon_p$ anchor ($S_d=0$)")
+    axes[0].legend(ncol=3, loc="best")
     for ax in axes:
         ax.axvspan(0.5, 1.5, color="0.88", zorder=0)
     axes[0].set_title(r"Combined $0.50$–$2.30$ MHz ($S_d=0,2,10$)")
@@ -639,6 +676,7 @@ def main():
     fig_ceff_freq(ceff_by_sd)
     fig_ceff_sd(lowf_means)
     fig_circuit_overlay(by_sd)
+    write_qs_anchor_table(by_sd)
     write_tables(rows, ceff_by_sd, lowf_means, by_sd)
 
     print("Low-f C_eff diagnostic (0.8-1.2 MHz):")

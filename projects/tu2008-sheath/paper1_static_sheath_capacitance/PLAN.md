@@ -16,7 +16,9 @@ Last updated: 2026-09-15
 - [x] Complete methods: \(\nu\), species, \(T\), \(\Delta t\), ABC, hard \(E_z\), \(V/I\) definition, domain size
 - [x] Bibliography: Brooks DOI; Mlodnosky & Garriott; Galejs; Lee (Radio Science)
 - [x] Drop internal Paper 0 cite from manuscript body
-- [ ] Free-space CW on the same dipole (`analysis/FREE_SPACE_CONTROL.md`)
+- [x] Quasi-static solver anchor for $S_d=0$ (2026-10-09): $C_\mathrm{fs}=4.62$ pF from the plasma-off pilot; $Z_\mathrm{qs}=1/(j\omega C_\mathrm{fs}\varepsilon_p)$ vs simulated $S_d=0$ in `analysis/data/qs_anchor_sd0.txt`, dashed overlay in `z_combined.png`, anchor subsection in the manuscript (sign + crossing 1.99 vs 1.846 MHz; Im within ~50% at 0.5–0.8 MHz; Re excess 4–9x noted)
+- [ ] Box-size convergence: 105x105x98 grid, $S_d=0,2$ at 1.70 MHz (queued overnight 2026-10-09, `run_convergence.sh`)
+- [ ] Free-space CW on the same dipole (`analysis/FREE_SPACE_CONTROL.md`) — pilot 1.5 MHz done; 1.5–2.3 MHz sweep running 2026-10-09
 - [ ] Low-\(f\) CW for \(S_d=4,6,8\) + denser \(S_d=2\) tones (`analysis/LOWF_INTERMEDIATE_PLAN.md`)
 - [ ] Fill author list, affiliations, corresponding address
 - [ ] Replace Open Research with archival DOI
