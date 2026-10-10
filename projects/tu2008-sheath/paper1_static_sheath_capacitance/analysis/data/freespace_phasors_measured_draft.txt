@@ -1,0 +1,18 @@
+# Free-space (plasma-off) CW phasors on the Paper 1 dipole grid, 2026-10-09
+# Solver native plasma-off path (2-arg call); phasor Z=V/I on last 50% of .vc record
+# Recomputed 2026-10-09 from results/free_space_cw/fs_f{F}/data.vc (run_controls.sh freespace, all DONE exit=0)
+# NOTE: Re{Z} is at the phasor noise floor (V/I near 90 deg out of phase; Re swings with window). Im{Z} and C_fs are the robust observables.
+# f_Hz	Re_Z	Im_Z	Abs_Z	Cfs_pF
+1500000	3.960	-22913.228	22913.228	4.631
+1600000	3.989	-21480.861	21480.861	4.631
+1700000	282.038	-20364.928	20366.881	4.597
+1750000	435.542	-19701.807	19706.621	4.616
+1800000	-358.592	-18494.375	18497.852	4.781
+1850000	42.074	-18508.929	18508.977	4.648
+1900000	432.705	-18293.255	18298.372	4.579
+2000000	3.545	-17183.450	17183.450	4.631
+2100000	-442.203	-16876.205	16881.998	4.491
+2200000	264.403	-15582.282	15584.525	4.643
+2300000	-52.149	-15516.768	15516.856	4.460
+# C_fs: 4.631 pF at 1.50-1.60 MHz; 4.46-4.65 pF across 1.50-2.30 MHz ex the 1.80 MHz outlier (4.781 pF).
+# No Im sign change through 2.30 MHz; Im flattens at the top tones (2.20 MHz -15582, 2.30 MHz -15517 ohm).

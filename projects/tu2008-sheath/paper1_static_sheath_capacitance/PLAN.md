@@ -10,6 +10,7 @@ Last updated: 2026-09-15
 ## Review response (2026-09-14)
 
 - [x] Fix coax comparison: dipole \(C_\mathrm{sh}=C_\mathrm{mono}/4\) (was falsely “scale factor 0.3”)
+- [x] Critique 3 (2026-10-10): demoted C_eff '~20%' headline claim (option 3) — abstract and conclusions now report factor ~1.2 as a consistency check with scatter comparable to the agreement; and r_eff sensitivity made conditional (option 2) — both band means fall inside the r_eff in [0.23,0.5]dx band (Sd=2: 6.12-8.64 pF; Sd=10: 3.66-4.57 pF)
 - [x] Primary evidence = \(\mathrm{Im}\{Z\}(S_d)\) at fixed \(f\); report near-\(f_p\) reversal
 - [x] Circuit overlay \(Z(S_d=0)+1/(j\omega C_\mathrm{dip})\); show \(\mathrm{Re}\{Z\}\) failure
 - [x] Tone down \(f_\mathrm{res}(S_d)\) claims (bounds only for \(S_d=4,6,8\); provisional \(S_d=2\))

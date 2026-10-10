@@ -1,0 +1,24 @@
+# Free-space CW phasors (plasma off, same 70x70x65 grid) -- sweep COMPLETE 2026-10-09T17:43Z
+# Method: phasor Z = V/I on last 50% of data.vc (same as analyze_cw_tu_partial.py)
+# Source runs: results/free_space_cw/fs_f{F}/data.vc (run_controls.sh freespace)
+# Computed: 2026-10-09T15:31Z (1.50-1.75 MHz); 2.00-2.30 MHz appended 2026-10-09T17:45Z after sweep completion (f2300000 DONE exit=0, vc=4001637)
+# F_Hz	Re_Z	Im_Z	C_eff_pF	note
+1500000	4.0	-22913.2	4.631	pilot tone; cf. quoted 1-22944j (C_fs=4.62 pF)
+1600000	4.0	-21480.9	4.631
+1700000	282.0	-20364.9	4.597	Re rising, still purely capacitive Im
+1750000	435.5	-19701.8	4.616
+1800000	-358.6	-18494.4	4.781	Re small/negative (phasor noise floor); C +3.4% vs 1.5 MHz
+1850000	42.1	-18508.9	4.648	added 2026-10-09T16:22Z
+1900000	432.7	-18293.3	4.579	added 2026-10-09T16:22Z
+2000000	3.5	-17183.4	4.631	added 2026-10-09T17:45Z
+2100000	-442.2	-16876.2	4.491	added 2026-10-09T17:45Z; Re at phasor noise floor
+2200000	264.4	-15582.3	4.643	added 2026-10-09T17:45Z
+2300000	-52.1	-15516.8	4.460	added 2026-10-09T17:45Z; Im nearly flat vs 2.20 MHz (-15582)
+# C_eff is 4.58-4.65 pF across 1.50-1.90 MHz excluding the 1.80 MHz outlier (4.78 pF):
+# the C_fs used in the qs anchor (Z_qs = 1/(j w C_fs eps_p), qs_anchor_sd0.txt)
+# is not a single-tone tune, at the few-percent level (flat to ~1.5% ex-outlier).
+# Full sweep (1.50-2.30 MHz complete 2026-10-09T17:43Z): C_eff 4.46-4.65 pF ex-outlier,
+# i.e. the anchor C_fs = 4.62 pF holds to ~3.5% across the whole band; the two softest
+# points are the top tones (2.10 MHz: 4.49 pF; 2.30 MHz: 4.46 pF, Im flattening).
+# No Im sign change through 2.30 MHz: no free-space resonance precursor in band;
+# the simulated plasma-band crossing (Sd=0, ~1.846 MHz) is not a free-space artefact.
