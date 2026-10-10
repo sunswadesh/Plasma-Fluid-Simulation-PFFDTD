@@ -118,7 +118,7 @@ C_\mathrm{sh}^\mathrm{(dip)}=\frac{C_\mathrm{sh}^\mathrm{(mono)}}{4}
 =\frac{\pi\varepsilon_0 L}{2\ln\!\bigl(1+S_d\Delta x/r_\mathrm{eff}\bigr)}.
 \label{eq:coax_dip}
 \end{equation}
-We take \(r_\mathrm{eff}=0.23\Delta x\) as a Holland-type thin-wire estimate for the analytic comparison only \cite{holland1981}, and also show \(r_\mathrm{eff}=0.5\Delta x\) as a staircased-radius sensitivity. The quasi-static diagnostic average uses \(0.8\)--\(1.2\,\mathrm{MHz}\) (capacitive points only) for \(S_d=2,10\). Dense-band \(C_\mathrm{eff}\) near \(f_p\) is not treated as a quasi-static capacitor.
+We take \(r_\mathrm{eff}=0.23\Delta x\) as the Holland-type thin-wire value for the analytic comparison only \cite{holland1981}. The one-cell staircase wire also admits purely geometric radii: an equal-area circle (\(\pi r_\mathrm{eff}^2=\Delta x^2\)) gives \(r_\mathrm{eff}=\Delta x/\sqrt{\pi}\approx 0.56\Delta x\), an equal-perimeter circle (\(2\pi r_\mathrm{eff}=4\Delta x\)) gives \(r_\mathrm{eff}=2\Delta x/\pi\approx 0.64\Delta x\), and the inscribed circle gives \(0.5\Delta x\). Together these define a principled band \(r_\mathrm{eff}\in[0.23,0.64]\Delta x\) derived from the wire's shape alone, without reference to the simulation; Figure~\ref{fig:ceffsd}a shades the corresponding span of the dipole estimate. The quasi-static diagnostic average uses \(0.8\)--\(1.2\,\mathrm{MHz}\) (capacitive points only) for \(S_d=2,10\). Dense-band \(C_\mathrm{eff}\) near \(f_p\) is not treated as a quasi-static capacitor.
 
 \section{Results}
 
@@ -187,7 +187,7 @@ Table~\ref{tab:fres} and Figure~\ref{fig:fres} collect \(\mathrm{Im}\{Z\}\) \(+\
 
 \subsection{Capacitance diagnostic and circuit overlay}
 
-Figure~\ref{fig:cefff} shows \(C_\mathrm{eff}(f)\) from equation~(\ref{eq:ceff}). The quantity is not flat in the \(0.8\)--\(1.2\,\mathrm{MHz}\) window: for \(S_d=10\) the band scatter is \(\approx 43\%\) of the mean. Band means are therefore diagnostics, not high-precision capacitors (Table~\ref{tab:ceff}). Figure~\ref{fig:ceffsd} compares those means with monopole and dipole coax formulae. After the dipole correction, \(C_\mathrm{eff}/C_\mathrm{sh}^\mathrm{(dip)}\approx 1.20\) (\(S_d=2\)) and \(1.17\) (\(S_d=10\)). The comparison is conditional on the effective wire radius rather than tuned by it: across \(r_\mathrm{eff}\in[0.23,0.5]\Delta x\) the dipole estimate spans \(6.12\)--\(8.64\,\mathrm{pF}\) at \(S_d=2\) and \(3.66\)--\(4.57\,\mathrm{pF}\) at \(S_d=10\) (Figure~\ref{fig:ceffsd}a, dotted curve), and both band means fall inside that band. The monopole formula yields the previously reported factor \(\approx 0.3\) and overstates the analytic capacitance by four.
+Figure~\ref{fig:cefff} shows \(C_\mathrm{eff}(f)\) from equation~(\ref{eq:ceff}). The quantity is not flat in the \(0.8\)--\(1.2\,\mathrm{MHz}\) window: for \(S_d=10\) the band scatter is \(\approx 43\%\) of the mean. Band means are therefore diagnostics, not high-precision capacitors (Table~\ref{tab:ceff}). Figure~\ref{fig:ceffsd} compares those means with monopole and dipole coax formulae. After the dipole correction, \(C_\mathrm{eff}/C_\mathrm{sh}^\mathrm{(dip)}\approx 1.20\) (\(S_d=2\)) and \(1.17\) (\(S_d=10\)). The comparison is conditional on the effective wire radius rather than tuned by it: across the geometric band \(r_\mathrm{eff}\in[0.23,0.64]\Delta x\) the dipole estimate spans \(6.12\)--\(9.81\,\mathrm{pF}\) at \(S_d=2\) and \(3.66\)--\(4.95\,\mathrm{pF}\) at \(S_d=10\) (Figure~\ref{fig:ceffsd}a, shaded band), and both band means fall inside. Inverting the formula, the two means imply \(r_\mathrm{eff}\approx 0.35\Delta x\) (\(S_d=2\)) and \(0.40\Delta x\) (\(S_d=10\))---between the Holland thin-wire value and the equal-area staircase value---but the \(\approx 43\%\) band scatter at \(S_d=10\) maps through the logarithm to a wide implied range, so this is consistency of the simulation with the wire geometry, not a measurement of \(r_\mathrm{eff}\). The monopole formula yields the previously reported factor \(\approx 0.3\) and overstates the analytic capacitance by four.
 
 \begin{table}
 \caption{Diagnostic band-averaged \(C_\mathrm{eff}\) (\(0.8\)--\(1.2\,\mathrm{MHz}\)) versus monopole and dipole coaxial references (\(r_\mathrm{eff}=0.23\Delta x\)).}
@@ -211,7 +211,7 @@ Figure~\ref{fig:cefff} shows \(C_\mathrm{eff}(f)\) from equation~(\ref{eq:ceff})
 
 \begin{figure}
 \noindent\includegraphics[width=\textwidth]{figures/ceff_vs_sd.png}
-\caption{(a)~Monopole coax (dashed), dipole coax (solid), and staircased-radius dipole sensitivity (dotted), with diagnostic low-frequency \(C_\mathrm{eff}\) means. (b)~Ratio to the dipole formula is order unity (\(\approx 1.2\)).}
+\caption{(a)~Monopole coax (dashed), dipole coax (solid), and the geometric \(r_\mathrm{eff}\in[0.23,0.64]\Delta x\) sensitivity band (shaded), with diagnostic low-frequency \(C_\mathrm{eff}\) means. (b)~Ratio to the dipole formula is order unity (\(\approx 1.2\)).}
 \label{fig:ceffsd}
 \end{figure}
 
@@ -236,7 +236,7 @@ Thickening the jacket simultaneously (i) removes plasma dielectric near the wire
 
 \subsection{Analytic coax: monopole versus dipole}
 
-Equation~(\ref{eq:coax_mono}) is the cylindrical coax limit used since Mlodnosky and Garriott and in later Balmain-era jacket and insulated-antenna models \cite{mlodnosky1962,galejs1966}. It describes a \emph{single} metal arm relative to exterior plasma. Applying that formula unchanged to a center-fed dipole of total length \(L\) overpredicts feed capacitance by a factor of four. With equation~(\ref{eq:coax_dip}), the diagnostic ratios become order unity, and both band means fall inside the \(r_\mathrm{eff}\in[0.23,0.5]\Delta x\) sensitivity band. Any residual offset is consistent with staircasing, plasma reactance remaining inside the mixed \(C_\mathrm{eff}\), and the electrically small domain; the estimate is a consistency check, not a fitted parameter.
+Equation~(\ref{eq:coax_mono}) is the cylindrical coax limit used since Mlodnosky and Garriott and in later Balmain-era jacket and insulated-antenna models \cite{mlodnosky1962,galejs1966}. It describes a \emph{single} metal arm relative to exterior plasma. Applying that formula unchanged to a center-fed dipole of total length \(L\) overpredicts feed capacitance by a factor of four. With equation~(\ref{eq:coax_dip}), the diagnostic ratios become order unity, and both band means fall inside the geometric \(r_\mathrm{eff}\in[0.23,0.64]\Delta x\) band, across which the estimate itself moves by \(\sim 35\)--\(60\%\). Any residual offset is consistent with staircasing, plasma reactance remaining inside the mixed \(C_\mathrm{eff}\), and the electrically small domain; the estimate is a consistency check, not a fitted parameter.
 
 \subsection{Scope: what a prescribed jacket represents}
 
@@ -249,7 +249,7 @@ A prescribed step jacket is a controlled geometry, not a sheath solution. It rep
 \item Intermediate widths \(S_d=4,6,8\) lack low-frequency CW; \(f_\mathrm{res}\) for those cases is only an upper bound. Denser tones around \(0.55\)--\(0.70\,\mathrm{MHz}\) for \(S_d=2\) are also open.
 \item \(C_\mathrm{eff}\) mixes sheath and plasma reactance and is frequency-dependent; it is a diagnostic, not a de-embedded gap capacitance.
 \item Absolute \(Z\) and \(C_\mathrm{eff}\) may include box/ABC contributions on this electrically small domain.
-\item Absolute coax comparison still depends on \(r_\mathrm{eff}\); we report Holland-like \(0.23\Delta x\) and staircased \(0.5\Delta x\).
+\item Absolute coax comparison still depends on \(r_\mathrm{eff}\); we report the geometric band \(r_\mathrm{eff}\in[0.23,0.64]\Delta x\) (Holland thin-wire to equal-perimeter staircase).
 \item Campaigns here are effectively unmagnetized; PIP upper-hybrid markers require \(B\neq 0\).
 \item Cold fluid \(T=0\) has no thermal Debye length; physical-sheath comparisons use ionospheric \(T_e\) only as context.
 \end{enumerate}

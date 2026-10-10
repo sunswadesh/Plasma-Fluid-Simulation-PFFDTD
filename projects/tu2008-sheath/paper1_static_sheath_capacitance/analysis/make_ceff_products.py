@@ -34,6 +34,7 @@ DX = 0.04
 L = 25 * DX  # total dipole length (m)
 R_EFF = 0.23 * DX
 R_STAIR = 0.5 * DX
+R_GEOM_HI = 0.64 * DX  # equal-perimeter circle for the 1x1-cell staircase wire
 N_MIN_RATIO = 1e-6
 N0_BULK = 4.0 * math.pi**2 * (2e6) ** 2 * 9.1066e-31 * EPS0 / (1.6021917e-19) ** 2
 OUTLIER = {(0, 1_500_000)}
@@ -458,13 +459,14 @@ def fig_ceff_sd(lowf_means):
         lw=1.8,
         label=r"dipole $C_{\mathrm{sh}}=C_{\mathrm{mono}}/4$",
     )
-    ax.plot(
+    ax.fill_between(
         s_cont,
-        [coax_dipole(s, R_STAIR) * 1e12 for s in s_cont],
-        color="0.45",
-        ls=":",
-        lw=1.4,
-        label=r"dipole, $r_{\mathrm{eff}}=0.5\Delta x$",
+        [coax_dipole(s) * 1e12 for s in s_cont],
+        [coax_dipole(s, R_GEOM_HI) * 1e12 for s in s_cont],
+        color="0.72",
+        alpha=0.55,
+        zorder=0,
+        label=r"dipole, $r_{\mathrm{eff}}\in[0.23,0.64]\Delta x$ (geometric band)",
     )
     if lowf_means:
         ax.errorbar(
