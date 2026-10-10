@@ -6,6 +6,7 @@
 // File Opening
 FILE *openfile(const char filepre[81], const char filesuf[3]);
 FILE *openfile2(const char filepre[81], const char filesuf[3]);
+FILE *openfile_append(const char filepre[81], const char filesuf[3]);
 
 // Setup / Import
 int setup1(FILE *fp1);

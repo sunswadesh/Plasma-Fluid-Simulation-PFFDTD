@@ -21,6 +21,7 @@ TEST_DIR = tests
 SOURCES = $(SRC_DIR)/pffdtd.cpp \
           $(SRC_DIR)/utils/memallocate.cpp \
           $(SRC_DIR)/io/file_handler.cpp \
+          $(SRC_DIR)/io/checkpoint.cpp \
           $(SRC_DIR)/io/output.cpp \
           $(SRC_DIR)/source/source.cpp \
           $(SRC_DIR)/fields/field_calculator.cpp \

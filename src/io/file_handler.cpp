@@ -51,6 +51,22 @@ FILE *openfile(const char filepre[81], const char filesuf[3])
   return filevar;
 }
 
+FILE *openfile_append(const char filepre[81], const char filesuf[3])
+{
+  char temp[560];
+  FILE *filevar;
+
+  strncpy(temp, filepre, sizeof(temp) - 1);
+  temp[sizeof(temp) - 1] = '\0';
+  strncat(temp, filesuf, sizeof(temp) - strlen(temp) - 1);
+  if ((filevar = fopen(temp,"a")) == NULL)
+    {
+      printf("Error opening file for append: %s\n", temp);
+      exit(1);
+    }
+  return filevar;
+}
+
 FILE *openfile2(const char filepre[81], const char filesuf[3])
 {
   char temp[560];
