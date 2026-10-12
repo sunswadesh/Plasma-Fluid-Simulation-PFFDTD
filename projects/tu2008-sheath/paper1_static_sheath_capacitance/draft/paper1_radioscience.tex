@@ -240,13 +240,15 @@ Equation~(\ref{eq:coax_mono}) is the cylindrical coax limit used since Mlodnosky
 
 \subsection{Scope: what a prescribed jacket represents}
 
+\paragraph{Scale mismatch.} The grid cell is \(4\,\mathrm{cm}\), so the tested jackets span \(8\)--\(40\,\mathrm{cm}\) (\(S_d=2\)--\(10\))---one to two orders of magnitude wider than a Debye-scale ionospheric sheath (\(\lambda_D\sim 0.3\)--\(1\,\mathrm{cm}\) at F-region densities and temperatures, with sheaths a few \(\lambda_D\) thick). The grid cannot resolve a true Debye sheath, and this paper does not attempt to. What transfers to physical sheaths is the functional form: the series topology, the thickness scaling of the loading, and the non-separability of sheath and plasma reactance. A thinner physical sheath would sit on the thin-gap end of the same scaling; the absolute widths here are set by what the grid can represent, not by a claim of physical equivalence.
+
 A prescribed step jacket is a controlled geometry, not a sheath solution. It represents the depleted region's \emph{electromagnetic} role---a vacuum gap the feed current must cross---while discarding the charging physics that sets a real sheath's width, profile, and time dependence. That separation is the point of the experiment: topology, width scaling, and non-separability of the loading can be established here, on their own terms, before any sheath model is asked to predict the width. Conversely, nothing in this paper tests how a sheath forms, oscillates, or responds to drive amplitude; those questions require time-varying boundaries or self-consistent charging and are outside the static result claimed here.
 
 \subsection{Limitations}
 
 \begin{enumerate}
 \item Free-space \(f_\mathrm{res}\) on the same dipole remains an open upper anchor (run plan documented with the analysis products).
-\item Intermediate widths \(S_d=4,6,8\) lack low-frequency CW; \(f_\mathrm{res}\) for those cases is only an upper bound. Denser tones around \(0.55\)--\(0.70\,\mathrm{MHz}\) for \(S_d=2\) are also open.
+\item Intermediate widths \(S_d=4,6,8\) lack low-frequency CW; \(f_\mathrm{res}\) for those cases is only an upper bound. Denser \(S_d=2\) tones at \(0.55\) and \(0.625\,\mathrm{MHz}\) are complete (both capacitive); \(675\)/\(700\,\mathrm{kHz}\) runs were in flight at writing.
 \item \(C_\mathrm{eff}\) mixes sheath and plasma reactance and is frequency-dependent; it is a diagnostic, not a de-embedded gap capacitance.
 \item Absolute \(Z\) and \(C_\mathrm{eff}\) may include box/ABC contributions on this electrically small domain.
 \item Absolute coax comparison still depends on \(r_\mathrm{eff}\); we report the geometric band \(r_\mathrm{eff}\in[0.23,0.64]\Delta x\) (Holland thin-wire to equal-perimeter staircase).
