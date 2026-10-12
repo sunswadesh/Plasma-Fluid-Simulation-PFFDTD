@@ -345,7 +345,8 @@ def fig_zabs_dense(by_sd):
 def fig_fres():
     fig, ax = plt.subplots(figsize=(6.8, 4.0))
     ax.plot([0], [1.846], "o", color=SD_COLORS[0], ms=10, label=r"$S_d=0$: $1.846$ MHz (plasma-loaded)")
-    ax.plot([2], [0.655], "s", color=SD_COLORS[2], ms=10, label=r"$S_d=2$: $0.655$ MHz (single inductive sample)")
+    # S_d=2 omitted: the single 0.60 MHz inductive sample is bracketed by
+    # capacitive tones at 0.55 and 0.625 MHz, so no crossing is established.
     # Upper limits plotted at the bound with downward arrows; do not invent values below.
     ax.errorbar(
         [4, 6, 8],
@@ -641,8 +642,12 @@ def load_all_rows():
     paper1 = DATADIR / "ceff_vs_frequency.txt"
     lowf_path = P0 / "data" / "cw_lowf_summary.txt"
     dense_path = P0 / "data" / "cw_tu_summary.txt"
+    denser_path = DATADIR / "sd2_denser_tones.txt"
     if lowf_path.exists() and dense_path.exists():
-        return merge_unique(load_rows(lowf_path, True), load_rows(dense_path, False))
+        rows = merge_unique(load_rows(lowf_path, True), load_rows(dense_path, False))
+        if denser_path.exists():
+            rows = merge_unique(rows, load_rows(denser_path, True))
+        return rows
     if paper1.exists():
         print("WARNING: paper0 summaries missing; using paper1/analysis/data/ceff_vs_frequency.txt")
         return load_from_paper1_table(paper1)

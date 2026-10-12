@@ -42,5 +42,5 @@ Dense-band \(\mathrm{Im}\{Z\}(S_d)\) at 1.60â€“1.80 MHz is monotonic (thicker â†
 ## Caveats
 
 - \(C_\mathrm{eff}\) is frequency-dependent (mixed sheath+plasma+box).
-- \(S_d=2\) crossing rests on one inductive sample at 0.60 MHz.
+- \(S_d=2\) has no established crossing: the lone 0.60 MHz inductive sample is bracketed by capacitive tones at 0.55 and 0.625 MHz (denser runs 2026-10-11); the interpolated 0.655 MHz value is retired.
 - Electrically small domain; absolute \(Z\) may include ABC/box contributions.

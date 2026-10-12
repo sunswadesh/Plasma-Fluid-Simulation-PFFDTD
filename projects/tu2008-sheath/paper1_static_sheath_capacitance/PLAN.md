@@ -13,7 +13,7 @@ Last updated: 2026-09-15
 - [x] Critique 3 (2026-10-10): demoted C_eff '~20%' headline claim (option 3) — abstract/conclusions report factor ~1.2 as a consistency check, scatter comparable to the agreement; geometric r_eff band [0.23,0.64]dx from the staircase wire (Holland/equal-area/equal-perimeter/inscribed), shaded in fig:ceffsd; band means imply r_eff ~0.35/0.40dx inside the band (consistency, not a measurement)
 - [x] Primary evidence = \(\mathrm{Im}\{Z\}(S_d)\) at fixed \(f\); report near-\(f_p\) reversal
 - [x] Circuit overlay \(Z(S_d=0)+1/(j\omega C_\mathrm{dip})\); show \(\mathrm{Re}\{Z\}\) failure
-- [x] Tone down \(f_\mathrm{res}(S_d)\) claims (bounds only for \(S_d=4,6,8\); provisional \(S_d=2\))
+- [x] Critique 4 resolved 2026-10-12: denser Sd=2 tones (0.55, 0.625 MHz, both capacitive) bracket the lone 0.60 MHz inductive sample — no crossing established; 0.655 MHz value retired from text, table, and fres figure; new tones stitched into z_lowf/z_combined
 - [x] Complete methods: \(\nu\), species, \(T\), \(\Delta t\), ABC, hard \(E_z\), \(V/I\) definition, domain size
 - [x] Bibliography: Brooks DOI; Mlodnosky & Garriott; Galejs; Lee (Radio Science)
 - [x] Drop internal Paper 0 cite from manuscript body

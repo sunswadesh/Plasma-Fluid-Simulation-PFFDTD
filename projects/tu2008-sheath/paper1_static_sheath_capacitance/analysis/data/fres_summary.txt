@@ -1,6 +1,6 @@
 # Sd	f_res_MHz	note
 0	1.846	Im +to- in dense band (plasma-loaded resonance; not a sheath marker)
-2	0.655	Im +to- in low-f band; rests on single inductive sample at 0.60 MHz
+2	---	no crossing established; isolated inductive sample at 0.60 MHz bracketed by capacitive tones at 0.55 and 0.625 MHz (denser sampling 2026-10-11)
 4	<1.50	upper bound only; all Im<0 in dense band; no low-f run
 6	<1.50	upper bound only; all Im<0 in dense band; no low-f run
 8	<1.50	upper bound only; all Im<0 in dense band; no low-f run
