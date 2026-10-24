@@ -194,7 +194,7 @@ Priority order below is recommended; reorder if machine time or manuscript deadl
 
 **B. Time-averaged effective radius null.** Define a static run at \(S_d\) equal to round(\(\langle r_s\rangle\)) or to an effective radius from \(\langle C\rangle\) intuition; require osc ≠ that static, not only ≠ min/max brackets. Stronger statement: dynamics ≠ quasi-static equivalent thickness.
 
-**C. Frozen-\(r_s\) control.** Hold \(r_s=r_{s0}+\Delta r\sin\phi_0\) fixed in time (various \(\phi_0\)) vs true osc—separates “instantaneous thickness samples” from “motion through thickness.”
+**C. Frozen-\(r_s\) control.** Hold \(r_s=r_{s0}+\Delta r\sin\phi_0\) fixed in time (various \(\phi_0\)) vs true osc—separates “instantaneous thickness samples” from “motion through thickness.” **Done 2026-10-23:** frozen soft radii \(r\in\{3.0,3.5,4.0,4.5,5.0\}\) (the full visited swing) — oscillating phasor lies outside the frozen locus entirely (Re exceeds max frozen Re by 61%; distance to cycle-averaged quasi-static predictions \(\approx 43\,\mathrm{k}\Omega \approx 0.49\,|Z_\mathrm{osc}|$). Dynamic loading confirmed; see [`analysis/frozen_rs_findings.md`](analysis/frozen_rs_findings.md).
 
 ---
 

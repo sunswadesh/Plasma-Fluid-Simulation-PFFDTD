@@ -36,6 +36,7 @@ Varying the soft blend width over \(0.5\)--\(2\) cells moves the oscillating poi
 A soft sparse frequency set at \(0.5\), \(0.7\), and \(1.2\,\mathrm{MHz}\) likewise remains out-of-bracket at all three tones.
 A phase sweep of the prescribed motion rotates feed \(\arg(Z)\) by tens of degrees while staying out-of-bracket.
 A soft-edge \(\Delta r\) scan, and a matched re-scan with \(\mathrm{soft}=\Delta r\), keep large out-of-bracket offsets at several amplitudes but do not yield a clean monotonic amplitude law.
+Frozen-$r_s$ statics spanning the visited swing ($3.0$--$5.0$ cells) and their cycle averages miss the oscillating phasor by $\sim 43\,\mathrm{k}\Omega$, so the signature is not quasi-static thickness sampling.
 The results show that a changing prescribed density hole loads the feed differently from static thickness sampling in this engine.
 Song/Tu-type works motivate that real RF sheaths move; we do not treat their analytics or PIC reactance as a numerical scoreboard.
 \begin{plainlanguagesummary}
@@ -299,6 +300,49 @@ $\Delta r$ & soft & \(\mathrm{Re}\{Z\}\) & \(\mathrm{Im}\{Z\}\) & rel.\ to brack
 \label{fig:matched}
 \end{figure}
 
+\subsection{Frozen-$r_s$ verdict control}
+\label{sec:frozen}
+
+The bracket comparisons above test static jackets only at the swing endpoints ($r_{s0}$ and $r_{s0}+\Delta r$).
+A stronger quasi-static null asks whether the oscillating phasor is recoverable from \emph{any} static radius the swing visits---or from any cycle average of them.
+We ran five frozen-$r_s$ cases ($r=3.0,3.5,4.0,4.5,5.0$ cells; $f=700\,\mathrm{kHz}$) with the identical soft-mask machinery of \S\ref{sec:soft} but $f_\mathrm{osc}=0.001\,\mathrm{Hz}$ (mask drift $\sim 10^{-7}$ rad per run), so the sheath stays static, and extracted phasor $Z$ on the last half of each CW record (Table~\ref{tab:frozen}, Figure~\ref{fig:frozen}).
+
+\begin{table}
+\caption{Frozen-$r_s$ phasors at $700\,\mathrm{kHz}$ (one-cell soft edge, static mask).}
+\label{tab:frozen}
+\centering
+\begin{tabular}{lcccc}
+\hline
+$r$ (cells) & \(\mathrm{Re}\{Z\}\) ($\Omega$) & \(\mathrm{Im}\{Z\}\) ($\Omega$) & $|Z|$ ($\Omega$) & $\arg Z$ (deg) \\
+\hline
+3.0 & $2.30\times 10^{4}$ & $-2.93\times 10^{4}$ & $3.72\times 10^{4}$ & $-51.8$ \\
+3.5 & $4.12\times 10^{4}$ & $-3.45\times 10^{4}$ & $5.37\times 10^{4}$ & $-40.0$ \\
+4.0 & $3.33\times 10^{4}$ & $-3.60\times 10^{4}$ & $4.90\times 10^{4}$ & $-47.2$ \\
+4.5 & $1.76\times 10^{4}$ & $-4.75\times 10^{4}$ & $5.06\times 10^{4}$ & $-69.7$ \\
+5.0 & $2.51\times 10^{4}$ & $-4.40\times 10^{4}$ & $5.06\times 10^{4}$ & $-60.2$ \\
+\hline
+\end{tabular}
+\end{table}
+
+The frozen $Z(r)$ locus is strongly nonlinear and non-monotonic in both components: $\mathrm{Re}\{Z\}$ peaks at $r=3.5$ then falls, reversing any reading that static resistance climbs with thickness.
+As a consistency check, the $r=4.5$ soft point reproduces the integer $S_d=4$ static from the original campaign ($17{,}607-47{,}481j\,\Omega$) to $\sim 4$ significant figures---expected, since a 1-cell soft edge at a half-integer radius reproduces the integer mask, and confirming the frozen extraction is consistent with the original campaign.
+
+Interpolating the frozen locus over the swing $r(\theta)=4+\sin\theta$ and averaging uniformly in $\theta$ gives the quasi-static prediction $\langle Z\rangle = 2.77\times 10^{4}-3.83\times 10^{4}j\,\Omega$.
+The reciprocal-admittance convention $1/\langle Y\rangle = 2.84\times 10^{4}-3.86\times 10^{4}j\,\Omega$ agrees to $\sim 800\,\Omega$, so the verdict does not hinge on how the quasi-static average is formed.
+
+Against the oscillating phasor ($6.65\times 10^{4}-5.79\times 10^{4}j\,\Omega$):
+the quasi-static predictions miss by $\sim 43\,\mathrm{k}\Omega$, about half of $|Z_\mathrm{osc}|$;
+more strongly, the oscillating point lies \emph{outside the frozen locus's entire bounding box}---its $\mathrm{Re}\{Z\}$ exceeds the largest frozen $\mathrm{Re}$ by $61\%$, and its $\mathrm{Im}\{Z\}$ is more capacitive than every frozen state.
+No static radius visited, and no mixture of static radii, reproduces it (nearest locus point $34{,}428\,\Omega \approx 0.39\,|Z_\mathrm{osc}|$ away).
+Because the frozen runs use the identical soft-mask machinery with no per-step updates, this also retires the simplest mask-update-noise explanation (caveat~(ii) in \S\ref{sec:discussion}): static masks at every visited thickness, and any cycle average of them, fail by a wide margin.
+A velocity/memory (dynamic) term is required.
+
+\begin{figure}
+\noindent\includegraphics[width=\textwidth]{frozen_rs_Z_complex.png}
+\caption{Frozen-$r_s$ null at $700\,\mathrm{kHz}$ (one-cell soft edge): static phasors at $r=3.0$--$5.0$ cells (circles, connected), the two quasi-static cycle-averaged predictions (square: $\langle Z\rangle$; triangle: $1/\langle Y\rangle$), and the oscillating $\Delta r=1$ phasor (star), which lies outside the locus's bounding box.}
+\label{fig:frozen}
+\end{figure}
+
 \section{Discussion}
 \label{sec:discussion}
 
@@ -316,7 +360,10 @@ Caveats are first-class, not footnotes.
 \cite{song2007,tu2008}.
 
 Song~\cite{song2007} and Tu et al.~\cite{tu2008} motivate that RF sheaths move and that dynamics can matter; they are not used here as a fitting target.
-Optional next controls are frozen-\(r_s\) snapshots and effective-radius static nulls---not a jump to self-consistent charging unless those controls stay coherent.
+The frozen-\(r_s\) control closes the quasi-static question: no static radius in the swing range, and no cycle average of them, reproduces the oscillating phasor, so the out-of-bracket signature cannot be reduced to nonlinear quasi-static thickness sampling.
+Retiring the mask-update-noise explanation with it, the remaining mechanism candidate is a velocity/memory term---the feed senses the boundary in motion, not a sequence of instantaneous thicknesses.
+The effective-radius null is subsumed: a single static radius that reproduces \(Z_\mathrm{osc}\) does not exist within the visited range.
+The next step toward mechanism, not just verdict, is a jump to self-consistent charging (Paper~3) or a targeted probe of the moving-boundary current itself.
 
 \section{Conclusions}
 \label{sec:conclusions}
@@ -324,7 +371,8 @@ Optional next controls are frozen-\(r_s\) snapshots and effective-radius static 
 A prescribed oscillating density hole in three-dimensional PF-FDTD produces feed impedance clearly outside static thickness brackets at \(700\,\mathrm{kHz}\), for both hard-staircase and soft-edge updates.
 Soft-edge width sensitivity, a sparse frequency set (\(0.5\)--\(1.2\,\mathrm{MHz}\)), a phase scan (\(\arg Z\) span \(\sim 72^\circ\)), and matched soft \(\Delta r\) scans keep that qualitative conclusion and favor coherent boundary-driven loading.
 Amplitude scaling with sheath swing remains non-monotonic even under matched soft edges.
-Changing sheath geometry is therefore electromagnetically consequential in this model class; optional stronger nulls can further separate motion from instantaneous thickness sampling.
+Frozen-$r_s$ statics spanning the visited swing and their cycle averages miss the oscillating phasor by $\sim 43\,\mathrm{k}\Omega$, so the signature is not quasi-static thickness sampling.
+Changing sheath geometry is therefore electromagnetically consequential in this model class: the feed responds to the boundary in motion, not to a sequence of instantaneous thicknesses.
 
 %%
 
@@ -334,7 +382,7 @@ Funding statement to be added.
 
 \section*{Open Research}
 Inputs and scripts live under \texttt{projects/tu2008-sheath/} (binary \texttt{pffdtd\_parallel\_rs\_t}; pilots \texttt{run\_paper2\_rs\_t\_pilot.ps1}, \texttt{run\_paper2\_delta\_r\_scan.ps1}; analyzers \texttt{analyze\_paper2\_pilot.py}, \texttt{analyze\_paper2\_delta\_r.py}).
-Derived products are under \texttt{paper2\_oscillating\_sheath\_boundary/analysis/}.
+Derived products are under \texttt{paper2\_oscillating\_sheath\_boundary/analysis/}, including the frozen-$r_s$ campaign (checkpointed runner \texttt{run\_frozen\_ckpt.sh}; findings \texttt{analysis/frozen\_rs\_findings.md} and phasor table \texttt{analysis/data/frozen\_rs\_phasor\_Z.tsv}).
 Public archival deposit will accompany journal submission.
 
 \bibliography{references}

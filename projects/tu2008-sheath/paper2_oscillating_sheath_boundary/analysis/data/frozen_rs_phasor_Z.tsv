@@ -1,0 +1,9 @@
+case	radius_cells	ReZ_ohm	ImZ_ohm	|Z|_ohm	argZ_deg
+frozen	3.0	2.3019e+04	-2.9280e+04	3.7245e+04	-51.827
+frozen	3.5	4.1182e+04	-3.4535e+04	5.3746e+04	-39.983
+frozen	4.0	3.3332e+04	-3.5951e+04	4.9025e+04	-47.165
+frozen	4.5	1.7609e+04	-4.7479e+04	5.0639e+04	-69.652
+frozen	5.0	2.5133e+04	-4.3967e+04	5.0644e+04	-60.246
+quasistatic_avgZ	-	2.7717e+04	-3.8273e+04	4.7255e+04	-54.088
+quasistatic_inv_avgY	-	2.8397e+04	-3.8634e+04	4.7948e+04	-53.683
+oscillating_soft_pilot	-	6.6480e+04	-5.7886e+04	8.8150e+04	-41.047

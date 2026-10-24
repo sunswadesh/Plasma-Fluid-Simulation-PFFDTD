@@ -52,8 +52,8 @@ Last updated: 2026-09-25
 
 ### Optional stronger nulls
 
-- [ ] Frozen-\(r_s\) snapshots vs true osc
-- [ ] Time-averaged / effective-radius static null
+- [x] Frozen-\(r_s\) snapshots vs true osc — DONE 2026-10-23 (`analysis/frozen_rs_findings.md`): osc phasor outside the frozen locus entirely; dynamic loading confirmed vs quasi-static averaging
+- [x] Time-averaged / effective-radius static null — subsumed by the frozen campaign (cycle-averaged \(\langle Z\rangle\) and \(1/\langle Y\rangle\) both miss osc by ~43 k$\Omega$)
 
 ## Explicit non-goals (Paper 2)
 
